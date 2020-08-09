@@ -35,7 +35,7 @@ deploy-firestore:
 prod-hosting:
   stage: deploy
   script:
-    - npm run build
+    - CI=false npm run build
     - firebase deploy --only hosting --token $FIREBASE_TOKEN
   only:
     - master
