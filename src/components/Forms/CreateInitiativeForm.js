@@ -1,38 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import MobileStepper from '@material-ui/core/MobileStepper';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import { Paper, Typography, TextField, Button, MobileStepper, InputBase } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import addImage from '../../assets/images/addImage.png'
+import { useRecoilState } from 'recoil';
+import { creatingAtom, markerAtom , markersAtom } from '../../global/Atoms'
+import { useStorage, useStorageDownloadURL } from 'reactfire';
+import { v1 as uuidv1 } from 'uuid';
+import { useGeoFirestore } from '../../global/Hooks'
+import * as firebase from 'firebase/app';
 
-const tutorialSteps = [
-  {
-    label: 'San Francisco – Oakland Bay Bridge, United States',
-    imgPath:
-      'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?auto=format&fit=crop&w=400&h=250&q=60',
-  },
-  {
-    label: 'Bird',
-    imgPath:
-      'https://images.unsplash.com/photo-1538032746644-0212e812a9e7?auto=format&fit=crop&w=400&h=250&q=60',
-  },
-  {
-    label: 'Bali, Indonesia',
-    imgPath:
-      'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&h=250&q=80',
-  },
-  {
-    label: 'NeONBRAND Digital Marketing, Las Vegas, United States',
-    imgPath:
-      'https://images.unsplash.com/photo-1518732714860-b62714ce0c59?auto=format&fit=crop&w=400&h=250&q=60',
-  },
-  {
-    label: 'Goč, Serbia',
-    imgPath:
-      'https://images.unsplash.com/photo-1512341689857-198e7e2f3ca8?auto=format&fit=crop&w=400&h=250&q=60',
-  },
+const formSteps = [
+  [
+    {
+      type: "text",
+      id: "name",
+      label: "Name and locate your initiative"
+    }
+  ],
+  [
+    {
+      type: "image", 
+      id: "addImage",
+      imgPath: addImage,
+      label: "+ Add cover image"
+    }
+  ],
+  [
+    {
+      type: "text",
+      id: "problem",
+      label: "Describe the problem?",
+      rows: 3
+    },
+    {
+      type: "text",
+      id: "outcome",
+      label: "Describe expected outcome?",
+      rows: 3
+    },
+  ],
+  [
+    {
+      type: "text",
+      id: "context",
+      label: "Describe the context of the initiative?",
+      rows: 6
+    },
+  ]
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -43,38 +59,63 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     bottom: "1rem",
     right: "1rem",
-    backgroundColor: "white",
     maxHeight: 350,
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
 		},
   },
-
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    height: 50,
-    margin: "auto",
-    backgroundColor: theme.palette.background.default,
-    textAlign: "center"
-
+  paper:{
+    borderRadius: "5px",
   },
   img: {
-    height: 255,
+    height: '200px',
     maxWidth: 400,
     overflow: 'hidden',
     display: 'block',
-    width: '100%',
+    width: 'auto',
     margin: "auto",
+    borderTopLeftRadius: "5px",
+    borderTopRightRadius: "5px"
+  },
+
+  MobileStepper:{
+    background: "none"
+  },
+
+  text:{
+    width: "calc( 100% - 2rem )",
+    margin: "1rem",
+    marginBottom: 0,
+    position: "relative"
+  },
+
+  button:{
+    margin: "0.5rem"
+  },
+
+  imageButton: {
+    position: "absolute",
+    top: "1rem",
+    left: "1rem"
+  },
+  input: {
+    display: 'none',
   },
   
 }));
 
-export default ()=> {
+export default ({ getMarker })=> {
   const classes = useStyles();
   const theme = useTheme();
-  const [activeStep, setActiveStep] = React.useState(0);
-  const maxSteps = tutorialSteps.length;
+  const [activeStep, setActiveStep] = useState(0);
+  const maxSteps = formSteps.length;
+  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
+  const [marker, setMarker] = useRecoilState(markerAtom)
+  const [markers, setMarkers] = useRecoilState(markersAtom)
+  const [uuid, setUuid] = useState(uuidv1())
+  const imageRef = useStorage().ref().child('initiatives').child(uuid)
+  const [imageLoadedURL, setImageLoadedURL] = useState(null)
+  const markersCollection = useGeoFirestore().collection('markers')
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -85,33 +126,171 @@ export default ()=> {
   };
 
   return (
-    <div className={classes.root}>
-      <Paper square elevation={0} className={classes.header}>
-        <Typography className={classes.header}>{tutorialSteps[activeStep].label}</Typography>
-      </Paper>
-      <img
-        className={classes.img}
-        src={tutorialSteps[activeStep].imgPath}
-        alt={tutorialSteps[activeStep].label}
-      />
+    <form className={classes.root} noValidate autoComplete="off">
+    {/* <div className={classes.root}> */}
+      <Paper elevation={1} className={classes.paper}>  
+      {
+        formSteps[activeStep].map(( input, i )=>{
+          switch (input.type){
+            case 'text':
+              return input.rows? (
+                <TextField 
+                  key={input.id}
+                  id={input.id} 
+                  label={input.label}
+                  className={classes.text}
+                  variant="outlined"
+                  multiline
+                  rows={input.rows}
+                  onChange={(e)=>{
+                    setMarker(Object.assign(marker?Object.assign({}, marker):{}, { [input.id]: e.target.value }))
+                  }}
+                  defaultValue={marker && marker[input.id]?marker[input.id]:""}
+                />
+              ):(
+                <TextField 
+                  key={input.id}
+                  id={input.id} 
+                  label={input.label}
+                  className={classes.text}
+                  variant="outlined"
+                  onChange={(e)=>{
+                    setMarker(Object.assign(marker?Object.assign({}, marker):{}, { [input.id]: e.target.value }))
+                  }}
+                  defaultValue={marker && marker[input.id]?marker[input.id]:""}
+                />
+              );
+            case 'image':
+              return (
+                <div className={classes.img} key={input.id}>
+                  <img
+                    key={input.id}
+                    className={classes.img}
+                    src={imageLoadedURL?imageLoadedURL:input.imgPath}
+                    alt={input.label}
+                  />
+
+                    <input
+                      accept="image/*"
+                      className={classes.input}
+                      id="contained-button-file"
+                      multiple
+                      type="file"
+                      onChange={(event)=>{
+                        var file = event.target.files[0];
+                        const uploadTask = imageRef.put(file)
+                        // Listen for state changes, errors, and completion of the upload.
+                        uploadTask.on('state_changed', // or 'state_changed'
+                          function(snapshot) {
+                            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            console.log('Upload is ' + progress + '% done');
+                            switch (snapshot.state) {
+                              case 'paused': // or 'paused'
+                                console.log('Upload is paused');
+                                break;
+                              case 'running': // or 'running'
+                                console.log('Upload is running');
+                                break;
+                            }
+                          }, function(error) {
+                            switch (error.code) {
+                              case 'storage/unauthorized':
+                                // User doesn't have permission to access the object
+                                break;
+
+                              case 'storage/canceled':
+                                // User canceled the upload
+                                break;
+
+                              case 'storage/unknown':
+                                // Unknown error occurred, inspect error.serverResponse
+                                break;
+                            }
+                          }, function() {
+                            // Upload completed successfully, now we can get the download URL
+                            uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                              setImageLoadedURL(downloadURL)
+                            });
+                        });
+                    }} />
+                    <label htmlFor="contained-button-file">
+                      <Button className={classes.imageButton} variant="outlined" component="span" size="small">
+                        {imageLoadedURL?"Change Image":input.label }
+                      </Button>
+                    </label>
+                </div>
+              );
+            default:
+              return null;
+          }
+        })
+      }    
+
       <MobileStepper
         steps={maxSteps}
         position="static"
         variant="text"
         activeStep={activeStep}
+        className={classes.MobileStepper}
         nextButton={
-          <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
-            Next
-            {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-          </Button>
+          activeStep === (maxSteps - 1) ? (
+            <Button color="primary" className={classes.button} variant="contained" size="small" onClick={()=>{
+              console.log('submit')
+              
+              markersCollection.add({
+                ...marker,
+                // The coordinates field must be a GeoPoint!
+                coordinates: new firebase.firestore.GeoPoint(...getMarker().toArray())
+              })
+              const query = markersCollection.near({ center: new firebase.firestore.GeoPoint(...getMarker().toArray()), radius: 1000 });
+              query.get().then((value) => {
+                const features = value.docs.map(v=>{
+                  const {coordinates, g, ...properties} = v.data()
+                  const feature = {
+                    type:"Feature",
+                    geometry:{
+                      type:"Point",
+                      coordinates:Object.values(coordinates)
+                    },
+                    properties
+                  }
+                  return feature
+                })
+
+                setMarkers({type:"FeatureCollection", features: features })
+                setIsCreating(false)
+
+              });
+            }}>
+              Submit
+            </Button>
+          ):(
+            <Button size="small" className={classes.button} onClick={handleNext}>
+              Next
+              {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </Button>
+          )
         }
         backButton={
-          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-            {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-            Back
-          </Button>
+          activeStep === 0 ? (
+            <Button className={classes.button} variant="contained" size="small" onClick={()=>{
+              setIsCreating(false)
+              setMarker(null)
+              if(imageLoadedURL) imageRef.delete()
+            }} >
+              Cancel
+            </Button>
+          ):(
+            <Button size="small" className={classes.button} onClick={handleBack} >
+              {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+              Back
+            </Button>
+          )
         }
       />
-    </div>
+      </Paper>
+    {/* </div> */}
+    </form>
   );
 }

@@ -1,0 +1,26 @@
+    (
+      <Fab 
+        disabled={false}
+        onClick={()=>{
+          if(active){
+            setIsCreating(true)
+          }else{
+            setAlert({description: "You need to login to create a marker"})
+          }
+        }}
+        raised="true"
+        className={classes.createFab} 
+      >
+        <img alt="React Firebase" src={AddLocationIcon} width={32} height={32} />
+      </Fab>
+    )
+
+              onClick={() => {
+            console.log(getMarker())
+            const point =  {type:"FeatureCollection", features:[
+              {type:"Feature", geometry:{
+                type:"Point",
+                coordinates: Object.values(getMarker())
+              }}]}
+            setMarker(point)
+          }}

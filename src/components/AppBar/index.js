@@ -5,7 +5,7 @@ import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
 import firebase from 'firebase'
 import useMeasure from "use-measure";
-import { barAtom } from '../../global/Atoms'
+import { barAtom, userAtom } from '../../global/Atoms'
 
 import { useAuth, useUser } from 'reactfire';
 import { useRecoilState } from 'recoil';
@@ -38,7 +38,7 @@ const Styles = makeStyles( theme => ({
   userProfileAvatar: {
     height: 24,
     width: 24,
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(1),
   },
 }))
 
@@ -47,6 +47,10 @@ const LogIn = ()=>{
 
   const auth = useAuth()
   const user = useUser();
+  const [current, setCurrent] = useRecoilState(userAtom)
+  useEffect(()=>{
+    setCurrent(JSON.parse(JSON.stringify(user)))
+  }, [user] )
   const provider = new firebase.auth.GoogleAuthProvider()
   const signInWithGoogle = () => {
     auth.signInWithRedirect(provider)
@@ -55,14 +59,15 @@ const LogIn = ()=>{
   return(
           user?  
             <div className={classes.userProfileContainer}>
+
+              <Typography className={classes.progressText}  type="body1" component="p">
+                { user.displayName }
+              </Typography>
               <Avatar
                 alt={user.displayName}
                 src={user.photoURL}
                 className={classes.userProfileAvatar}
               />
-              <Typography className={classes.progressText}  type="body1" component="p">
-                { user.displayName }
-              </Typography>
               <Button onClick={()=>auth.signOut().then(()=>{console.log("logout")})} dense="true" color="inherit" className={classes.button}>
                 {/* <AccountCircle /> */}
                 Logout

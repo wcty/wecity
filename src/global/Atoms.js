@@ -40,3 +40,8 @@ export const mapAtom = atom({
   key: 'map',
   default: {},
 });
+
+export const userAtom = atom({
+  key: 'user',
+  default: null,
+});

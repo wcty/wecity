@@ -1,28 +1,24 @@
 import React, { Suspense, Component, useEffect, useState, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, CircularProgress, Typography, Fab } from '@material-ui/core'
+import { Grid, CircularProgress, Typography, Fab, Collapse } from '@material-ui/core'
+import { Alert, AlertTitle } from '@material-ui/lab';
 import MapGL, { Source, Layer, FeatureState, MapContext } from '@urbica/react-map-gl'
 import { mapBox } from '../../config'
 import * as firebase from 'firebase/app';
 //import 'firebase/firestore';
-import * as geofirestore from 'geofirestore';
-import { locationAtom, markerAtom, markersAtom, viewAtom, creatingAtom, mapAtom } from '../../global/Atoms'
+import { useGeoFirestore } from '../../global/Hooks'
+import { locationAtom, markerAtom, markersAtom, viewAtom, creatingAtom, mapAtom, userAtom } from '../../global/Atoms'
 import IMGCross from '../../assets/images/cross.svg'
 import { useAuth, useUser, AuthCheck, useFirestoreDocData, useFirestore, SuspenseWithPerf, useFirebaseApp } from 'reactfire';
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import AddLocationIcon from '../../assets/images/addlocation.svg'
 import Marker from '../../assets/images/marker.svg'
+import MarkerActive from '../../assets/images/markerActive.svg'
+
 import CreateInitiativeForm from '../Forms/CreateInitiativeForm'
 
 import { AddLocation } from '@material-ui/icons'
-
-
-function useGeoFirestore() {
-  const firestore = useFirestore()    //.settings({ experimentalForceLongPolling: true });
-  const [GeoFirestore] = useState(geofirestore.initializeApp(firestore));
-  return GeoFirestore;
-}
 
 const useStyles = makeStyles(theme => ({
   mapContainer: {
@@ -43,14 +39,20 @@ const useStyles = makeStyles(theme => ({
   },
   createFab: {
     position: 'absolute',
-    top: '2rem',
-    right: '2rem'
+    top: '1rem',
+    right: '1rem'
   },
   marker: {
     position: 'absolute',
     top: 'calc( ( 100% - 350px ) / 2  )',
     left: '50%',
     transform: 'translate(-16px, -16px)'
+  },
+  alert: {
+    position: 'absolute',
+    top: '1rem',
+    left: '1rem',
+    maxWidth: '60%'
   }
 }))          
 
@@ -100,8 +102,7 @@ const Markers = ()=>{
         }
         return feature
       })
-      setMarkers({type:"FeatureCollection",features})
-      console.log(markers)
+      setMarkers({type:"FeatureCollection", features})
     });
   
   }, [GeoFirestore])
@@ -139,101 +140,43 @@ const Markers = ()=>{
   )
 }
 
-const CreateMarker = ()=>{
+const CreateMarker = (props)=>{
   const GeoFirestore = useGeoFirestore()    //.settings({ experimentalForceLongPolling: true });
   const [marker, setMarker] = useRecoilState(markerAtom)
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const classes = useStyles()
 
-  useEffect(()=>{
-    const geocollection = GeoFirestore.collection('markers');
-    // Add a GeoDocument to a GeoCollection
-    // geocollection.add({
-    //   name: 'Geofirestore',
-    //   score: 100,
-    //   // The coordinates field must be a GeoPoint!
-    //   coordinates: new firebase.firestore.GeoPoint(40.7589, -73.9851)
-    // })
-    // Create a GeoQuery based on a location
-    //const query = geocollection.near({ center: new firebase.firestore.GeoPoint(40.7589, -73.9851), radius: 1000 });
-    // Get query (as Promise)
-    // query.get().then((value) => {
-    //   // All GeoDocument returned by GeoQuery, like the GeoDocument added above
-    //   value.docs.forEach(v=>console.log(v.data()))
-    // });
-    
-  }, [GeoFirestore])
   return <> 
-    { isCreating && !marker && (
+    { isCreating && (
       <>
-      <CreateInitiativeForm />
-      <img alt="React Firebase" src={Marker}  className={classes.marker} width={32} height={32} />
-      </>
-    )}
-    {marker && isCreating && (
-      <>
-        <Source
-          id='newMarker'
-          type='geojson'
-          data={marker}
-        />
-        <Layer
-          id='newMarker'
-          type='symbol'
-          source='newMarker'
-          paint={{
-            'text-color': 'black',
-            'text-opacity': 1,
-            'icon-opacity-transition': {'duration': 0},
-            'text-halo-width': 1,
-            'text-halo-color': "white",
-          }}
-          layout={{
-            'icon-image': 'marker',
-            "icon-ignore-placement": true,
-            "icon-allow-overlap": true,
-            'text-field': ['get', 'name'],
-            'text-anchor': 'bottom',
-            'text-font': ["Montserrat SemiBold"],
-            'text-size': 13,
-            'text-padding': 12,
-            'text-offset': [0, 2.2]
-          }}
-          transition={{
-            "duration": 0,
-            "delay": 0
-          }}
-        />
+      <CreateInitiativeForm {...props} />
+      <img alt="React Firebase" src={MarkerActive}  className={classes.marker} width={42} height={42} />
       </>
     )}
   </>
 }
-
 
 const CreateFab = ({active, getMarker })=>{
   const classes = useStyles()
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const [view, setView] = useRecoilState(viewAtom)
   const [marker, setMarker] = useRecoilState(markerAtom)
-  const [set, setSet] = useState(false)
+  const [alert, setAlert] = useState(null)
+  const user = useRecoilValue(userAtom)
 
-  useEffect(()=>{
-
-  }, [set])
   return (
     <>
-    { isCreating ? (
+    { !isCreating && (
       <>
         <Fab 
-          onClick={() => {
-            console.log(getMarker())
-            const point =  {type:"FeatureCollection", features:[
-              {type:"Feature", geometry:{
-                type:"Point",
-                coordinates: Object.values(getMarker())
-              }}]}
-            setMarker(point)
+          onClick={()=>{
+            if(active){
+              setIsCreating(true)
+            }else{
+              setAlert({description: "You need to login to create a marker"})
+            }
           }}
+        
           className={classes.createFab} 
           raised="true" 
           color="primary" 
@@ -242,16 +185,19 @@ const CreateFab = ({active, getMarker })=>{
           <AddLocation />
         </Fab>
       </>
-    ) : (
-      <Fab 
-        disabled={!active}
-        onClick={()=>{setIsCreating(true)}}
-        raised="true"
-        className={classes.createFab} 
-      >
-        <img alt="React Firebase" src={AddLocationIcon} width={32} height={32} />
-      </Fab>
-    )}
+    ) 
+
+    }
+    { alert && !user && (
+      <Collapse in={Boolean(alert)}>
+        <Alert severity="info" className={classes.alert} onClose={() => {setAlert(null)}}>
+          <AlertTitle>Info</AlertTitle>
+          {alert.description}
+        </Alert>
+      </Collapse>
+    )
+
+    }
     </>
   )
 }
@@ -268,6 +214,7 @@ const HomeScreen = ()=>{
     zoom: 15
   });
   const mapRef = useRef()
+  const mapDimensions = useRecoilValue(mapAtom)
 
   useEffect(()=>{
       if ("geolocation" in navigator) {
@@ -301,8 +248,9 @@ const HomeScreen = ()=>{
             <CreateFab active={false} />   
           }>
             <CreateFab active={true} getMarker={()=>{
-              //const cLR = map.unproject ([w,h]).toArray()
-              return mapRef.current.getMap().getCenter()
+              const w = mapDimensions.width/2
+              const h = (mapDimensions.height - 350)/2
+              return mapRef.current.getMap().unproject ([w,h])
             }}/>
           </AuthCheck>
         </Suspense>
@@ -321,7 +269,11 @@ const HomeScreen = ()=>{
             </div>
           } traceId={'load-markers'}>
               <Markers />
-              <CreateMarker />
+              <CreateMarker getMarker={()=>{
+              const w = mapDimensions.width/2
+              const h = (mapDimensions.height - 350)/2
+              return mapRef.current.getMap().unproject ([w,h])
+            }}/>
           </SuspenseWithPerf>
         </MapGL>
       </>

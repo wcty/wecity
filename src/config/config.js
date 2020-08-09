@@ -9,7 +9,6 @@ export const firebaseConfig = {
   measurementId: "G-017VVRXFJC"
 };
 
-
 export const mapBox = {
   accessToken: 'pk.eyJ1Ijoic3dpdGNoOSIsImEiOiJjamozeGV2bnkxajV2M3FvNnpod3h4ODlpIn0.CTt2IXV8II6finbTlxEddg',
 }
