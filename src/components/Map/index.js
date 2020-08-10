@@ -16,7 +16,10 @@ import LocationIcon from './Layers/LocationIcon.js'
 
 import CreateInitiativeForm from './Forms/CreateInitiativeForm'
 import Markers from './Layers/Markers.js'
-import CreateFab from './Layers/CreateFab.js'
+import CreateFab from './Interfaces/CreateFab.js'
+import LocateFab from './Interfaces/LocateFab.js'
+import Initiative from './Interfaces/Initiative.js'
+
 
 const useStyles = makeStyles(theme => ({
   mapContainer: {
@@ -44,8 +47,6 @@ const useStyles = makeStyles(theme => ({
 }))          
 
 const NewMarkerDialog = (props)=>{
-  const GeoFirestore = useGeoFirestore()    //.settings({ experimentalForceLongPolling: true });
-  const [marker, setMarker] = useRecoilState(markerAtom)
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const classes = useStyles()
 
@@ -98,8 +99,10 @@ export default ()=>{
               const h = (mapDimensions.height - 350)/2
               return mapRef.current.getMap().unproject ([w,h])
             }}/>
+            <Initiative />
           </AuthCheck>
         </Suspense>
+        <LocateFab mapRef={mapRef} loaded={loaded} />
         <MapGL
           style={{ width: '100%', height: '100%', border:"none", outline: "none" }}
           mapStyle="mapbox://styles/switch9/ckahu5spr0amr1ik3n1fg0fvt"

@@ -1,18 +1,11 @@
-import React, { Suspense, Component, useEffect, useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, CircularProgress, Typography, Fab, Collapse } from '@material-ui/core'
+import { Fab, Collapse } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
-import MapGL, { Source, Layer, FeatureState, MapContext } from '@urbica/react-map-gl'
-import { mapboxConfig } from 'config'
-import * as firebase from 'firebase/app';
-import { useAuth, useUser, AuthCheck, useFirestoreDocData, useFirestore, SuspenseWithPerf, useFirebaseApp } from 'reactfire';
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { locationAtom, markerAtom, markersAtom, viewAtom, creatingAtom, mapAtom, userAtom } from 'global/Atoms'
-import { useGeoFirestore } from 'global/Hooks'
-
-import { AddLocation } from '@material-ui/icons'
-import MarkerActive from 'assets/images/markerActive.svg'
-
+import {  markerAtom, viewAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
+import { AddLocation, MyLocation } from '@material-ui/icons'
+import useMeasure from "use-measure";
 
 const useStyles = makeStyles(theme => ({
   createFab: {
@@ -33,8 +26,11 @@ export default ({ active, getMarker })=>{
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const [view, setView] = useRecoilState(viewAtom)
   const [marker, setMarker] = useRecoilState(markerAtom)
+  const [map] = useRecoilState(mapAtom)
   const [alert, setAlert] = useState(null)
   const user = useRecoilValue(userAtom)
+  const fabRef = useRef()
+  const fab = useMeasure(fabRef)
 
   return (
     <>
@@ -48,11 +44,12 @@ export default ({ active, getMarker })=>{
               setAlert({description: "You need to login to create a marker"})
             }
           }}
-        
+          ref={fabRef}
           className={classes.createFab} 
           raised="true" 
           color="primary" 
           aria-label="add"
+          //style={{left: map&&fab? (map.width- (fab.width/2))/2:0}}
         >
           <AddLocation />
         </Fab>

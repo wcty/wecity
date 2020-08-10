@@ -77,10 +77,11 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 400,
     overflow: 'hidden',
     display: 'block',
-    width: 'auto',
+    width: '100%',
     margin: "auto",
     borderTopLeftRadius: "5px",
-    borderTopRightRadius: "5px"
+    borderTopRightRadius: "5px",
+    objectFit: 'cover'
   },
 
   MobileStepper:{
@@ -238,6 +239,7 @@ export default ({ getMarker })=> {
               markersCollection.add({
                 ...marker,
                 timestamp: + new Date(),
+                imageURL: imageLoadedURL,
                 coordinates: new firebase.firestore.GeoPoint(...getMarker().toArray())
               }).then(function(docRef) {
                 console.log("Document written with ID: ", docRef.id);
