@@ -21,6 +21,11 @@ export const markerAtom = atom({
   default: null,
 });
 
+export const selectedAtom = atom({
+  key: 'selected',
+  default: null,
+});
+
 export const markersAtom = atom({
   key: 'markers',
   default: {type:"FeatureCollection", features:[]},

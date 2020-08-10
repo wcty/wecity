@@ -5,7 +5,7 @@ import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
 import firebase from 'firebase'
 import useMeasure from "use-measure";
-import { barAtom, userAtom } from '../../global/Atoms'
+import { barAtom, userAtom } from 'global/Atoms'
 
 import { useAuth, useUser } from 'reactfire';
 import { useRecoilState } from 'recoil';
@@ -20,8 +20,10 @@ const Styles = makeStyles( theme => ({
   },
   progress: {
     color: 'inherit',
+    marginRight: theme.spacing(1),
   },
   progressText: {
+    ...theme.typography.button,
     color: 'inherit',
     marginRight: '1rem'
   },
@@ -60,7 +62,7 @@ const LogIn = ()=>{
           user?  
             <div className={classes.userProfileContainer}>
 
-              <Typography className={classes.progressText}  type="body1" component="p">
+              <Typography className={classes.progress}  type="body1" component="p">
                 { user.displayName }
               </Typography>
               <Avatar
@@ -75,12 +77,11 @@ const LogIn = ()=>{
             </div>
           :
         <Button onClick={signInWithGoogle} dense="true" color="inherit" className={classes.button}>
-          <AccountCircle />
+          <AccountCircle  className={classes.progress} />
           Login
         </Button>
   )
 }
-
 
 const Bar = (props)=>{
 
@@ -105,8 +106,8 @@ const Bar = (props)=>{
         <Suspense fallback={            
             <div className={classes.progressLoaderContainer}>
               <CircularProgress size={24} className={classes.progress} />
-              <Typography className={classes.progressText} type="body1" component="p">
-                Loading..
+              <Typography className={classes.progressText} type="button" component="p">
+                Loading
               </Typography>
             </div>
           }>

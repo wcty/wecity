@@ -3,20 +3,22 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, Typography, TextField, Button, MobileStepper, InputBase } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import addImage from '../../assets/images/addImage.png'
+import addImage from 'assets/images/addImage.png'
 import { useRecoilState } from 'recoil';
-import { creatingAtom, markerAtom , markersAtom } from '../../global/Atoms'
+import { creatingAtom, markerAtom , markersAtom } from 'global/Atoms'
 import { useStorage, useStorageDownloadURL } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
-import { useGeoFirestore } from '../../global/Hooks'
+import { useGeoFirestore } from 'global/Hooks'
 import * as firebase from 'firebase/app';
+import { getFeatures } from 'global/Misc'
 
 const formSteps = [
   [
     {
       type: "text",
       id: "name",
-      label: "Name and locate your initiative"
+      label: "Name and locate your initiative",
+      maxLength: 40
     }
   ],
   [
@@ -32,13 +34,15 @@ const formSteps = [
       type: "text",
       id: "problem",
       label: "Describe the problem?",
-      rows: 3
+      rows: 3,
+      maxLength: 100
     },
     {
       type: "text",
       id: "outcome",
       label: "Describe expected outcome?",
-      rows: 3
+      rows: 3,
+      maxLength: 100
     },
   ],
   [
@@ -46,7 +50,8 @@ const formSteps = [
       type: "text",
       id: "context",
       label: "Describe the context of the initiative?",
-      rows: 6
+      rows: 6,
+      maxLength: 100
     },
   ]
 ];
@@ -127,39 +132,31 @@ export default ({ getMarker })=> {
 
   return (
     <form className={classes.root} noValidate autoComplete="off">
-    {/* <div className={classes.root}> */}
       <Paper elevation={1} className={classes.paper}>  
       {
         formSteps[activeStep].map(( input, i )=>{
           switch (input.type){
             case 'text':
-              return input.rows? (
+              return (
                 <TextField 
                   key={input.id}
                   id={input.id} 
                   label={input.label}
                   className={classes.text}
                   variant="outlined"
-                  multiline
-                  rows={input.rows}
+                  multiline={input.rows? true: undefined}
+                  rows={input.rows? input.rows: undefined}
+                  inputProps={{
+                    maxLength: input.maxLength
+                  }}
                   onChange={(e)=>{
                     setMarker(Object.assign(marker?Object.assign({}, marker):{}, { [input.id]: e.target.value }))
                   }}
                   defaultValue={marker && marker[input.id]?marker[input.id]:""}
+                  helperText={`${marker && marker[input.id]?marker[input.id].length:0}/${input.maxLength}`}
+
                 />
-              ):(
-                <TextField 
-                  key={input.id}
-                  id={input.id} 
-                  label={input.label}
-                  className={classes.text}
-                  variant="outlined"
-                  onChange={(e)=>{
-                    setMarker(Object.assign(marker?Object.assign({}, marker):{}, { [input.id]: e.target.value }))
-                  }}
-                  defaultValue={marker && marker[input.id]?marker[input.id]:""}
-                />
-              );
+              )
             case 'image':
               return (
                 <div className={classes.img} key={input.id}>
@@ -240,25 +237,18 @@ export default ({ getMarker })=> {
               
               markersCollection.add({
                 ...marker,
-                // The coordinates field must be a GeoPoint!
+                timestamp: + new Date(),
                 coordinates: new firebase.firestore.GeoPoint(...getMarker().toArray())
+              }).then(function(docRef) {
+                console.log("Document written with ID: ", docRef.id);
               })
+              .catch(function(error) {
+                  console.error("Error adding document: ", error);
+              });
+
               const query = markersCollection.near({ center: new firebase.firestore.GeoPoint(...getMarker().toArray()), radius: 1000 });
               query.get().then((value) => {
-                const features = value.docs.map(v=>{
-                  const {coordinates, g, ...properties} = v.data()
-                  const feature = {
-                    type:"Feature",
-                    geometry:{
-                      type:"Point",
-                      coordinates:Object.values(coordinates)
-                    },
-                    properties
-                  }
-                  return feature
-                })
-
-                setMarkers({type:"FeatureCollection", features: features })
+                setMarkers({type:"FeatureCollection", features: getFeatures(value) })
                 setIsCreating(false)
 
               });
@@ -290,7 +280,6 @@ export default ({ getMarker })=> {
         }
       />
       </Paper>
-    {/* </div> */}
     </form>
   );
 }
