@@ -249,7 +249,7 @@ export default ({ getMarker })=> {
               
               markersCollection.add({
                 ...marker,
-                timestamp: + new Date(),
+                timestamp: new Date(),
                 imageURL: imageLoadedURL,
                 members: [user.uid],
                 coordinates: new firebase.firestore.GeoPoint(...getMarker().toArray())

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import registerServiceWorker from '../registerServiceWorker'
+import * as serviceWorker from '../serviceWorker';
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Snackbar, Button } from '@material-ui/core'
 import AppBar from './AppBar'
@@ -65,7 +65,7 @@ const Layout = ()=>{
   };
   
   useEffect(() => {
-    registerServiceWorker({ onUpdate: onSWUpdate });
+    serviceWorker.register({ onUpdate: onSWUpdate });
   }, []);
 
   useEffect(()=>{
