@@ -1,4 +1,4 @@
-import React, { Suspense, useRef, useEffect } from 'react'
+import React, { Suspense, useRef, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { AppBar, Toolbar, Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
 import { AccountCircle } from '@material-ui/icons'
@@ -6,9 +6,10 @@ import MenuIcon from '@material-ui/icons/Menu';
 import firebase from 'firebase'
 import useMeasure from "use-measure";
 import { barAtom, userAtom } from 'global/Atoms'
-
+import Drawer from './drawer'
 import { useAuth, useUser } from 'reactfire';
 import { useRecoilState } from 'recoil';
+import ErrorBoundary from 'global/ErrorBoundary'
 
 const Styles = makeStyles( theme => ({
   appbar: {
@@ -89,15 +90,16 @@ const Bar = (props)=>{
   const barRef = useRef()
   const barMeasure = useMeasure(barRef)
   const [barDimensions, setBarDimensions] = useRecoilState(barAtom)
-
+  const [drawer, setDrawer] = useState(false)
   useEffect(()=>{
     setBarDimensions(barMeasure)
     //console.log(barMeasure)
   },[barMeasure])
   return (
+    <>
       <AppBar position="static" className={classes.appbar} ref={barRef}>
         <Toolbar>
-        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+        <IconButton onClick={()=>{setDrawer(!drawer)}} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
           <MenuIcon />
         </IconButton>
         <Typography type="title" color="inherit" className={classes.flex} style={{marginLeft: 15}}>
@@ -112,9 +114,11 @@ const Bar = (props)=>{
             </div>
           }>
           <LogIn />
+          <Drawer state={drawer} setState={setDrawer}/>
         </Suspense>
         </Toolbar>
       </AppBar>
+    </>
     )
 }
 
