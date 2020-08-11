@@ -1,15 +1,5 @@
-import React, { Suspense, Component, useEffect, useState, useRef } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Grid, CircularProgress, Typography, Fab, Collapse } from '@material-ui/core'
-import { Alert, AlertTitle } from '@material-ui/lab';
-import MapGL, { Source, Layer, FeatureState, MapContext } from '@urbica/react-map-gl'
-import { mapboxConfig } from 'config'
-import * as firebase from 'firebase/app';
-import { useAuth, useUser, AuthCheck, useFirestoreDocData, useFirestore, SuspenseWithPerf, useFirebaseApp } from 'reactfire';
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { locationAtom, markerAtom, markersAtom, viewAtom, creatingAtom, mapAtom, userAtom } from 'global/Atoms'
-import { useGeoFirestore } from 'global/Hooks'
-
+import React, { useEffect } from 'react'
+import { Source, Layer } from '@urbica/react-map-gl'
 import MarkerActive from 'assets/images/markerActive.svg'
 import Marker from 'assets/images/marker.svg'
 
@@ -128,7 +118,6 @@ export default ({ mapRef, loaded, location })=>{
       loadMarker(map, Marker, 'marker-fixed', 20, )
       loadMarker(map, MarkerActive, 'marker-active', 30)
     }
-    console.log(location)
   }, [mapRef, loaded])
 
   return (

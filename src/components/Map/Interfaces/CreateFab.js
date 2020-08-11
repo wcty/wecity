@@ -24,8 +24,6 @@ const useStyles = makeStyles(theme => ({
 export default ({ active, getMarker })=>{
   const classes = useStyles()
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
-  const [view, setView] = useRecoilState(viewAtom)
-  const [marker, setMarker] = useRecoilState(markerAtom)
   const [map] = useRecoilState(mapAtom)
   const [alert, setAlert] = useState(null)
   const user = useRecoilValue(userAtom)
@@ -49,7 +47,6 @@ export default ({ active, getMarker })=>{
           raised="true" 
           color="primary" 
           aria-label="add"
-          //style={{left: map&&fab? (map.width- (fab.width/2))/2:0}}
         >
           <AddLocation />
         </Fab>

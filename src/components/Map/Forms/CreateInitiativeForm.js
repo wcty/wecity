@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Typography, TextField, Button, MobileStepper, InputBase } from '@material-ui/core';
+import { Paper, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState } from 'recoil';
-import { creatingAtom, markerAtom , markersAtom } from 'global/Atoms'
-import { useStorage, useStorageDownloadURL } from 'reactfire';
+import { creatingAtom, markerAtom , markersAtom, userAtom } from 'global/Atoms'
+import { useStorage, useUser,useStorageDownloadURL } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
 import { useGeoFirestore } from 'global/Hooks'
 import * as firebase from 'firebase/app';
@@ -122,6 +122,7 @@ export default ({ getMarker })=> {
   const imageRef = useStorage().ref().child('initiatives').child(uuid)
   const [imageLoadedURL, setImageLoadedURL] = useState(null)
   const markersCollection = useGeoFirestore().collection('markers')
+  const user = useUser()
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -130,6 +131,10 @@ export default ({ getMarker })=> {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
+  useEffect(()=>{
+    console.log(user)
+  }, [user])
 
   return (
     <form className={classes.root} noValidate autoComplete="off">
@@ -161,12 +166,18 @@ export default ({ getMarker })=> {
             case 'image':
               return (
                 <div className={classes.img} key={input.id}>
-                  <img
+                  {/* <CircularProgressWithLabel value={progress} /> */}
+                  <section 
+                    className={classes.img} 
                     key={input.id}
-                    className={classes.img}
-                    src={imageLoadedURL?imageLoadedURL:input.imgPath}
                     alt={input.label}
-                  />
+                    style={{
+                      backgroundImage: `url(${imageLoadedURL?imageLoadedURL:input.imgPath})`,
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover',
+                      backgroundRepeat: 'no-repeat'
+                  }}>
+                  </section>
 
                     <input
                       accept="image/*"
@@ -240,6 +251,7 @@ export default ({ getMarker })=> {
                 ...marker,
                 timestamp: + new Date(),
                 imageURL: imageLoadedURL,
+                members: [user.uid],
                 coordinates: new firebase.firestore.GeoPoint(...getMarker().toArray())
               }).then(function(docRef) {
                 console.log("Document written with ID: ", docRef.id);

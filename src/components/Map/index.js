@@ -1,16 +1,11 @@
-import React, { Suspense, Component, useEffect, useState, useRef } from 'react'
+import React, { Suspense, useEffect, useState, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, CircularProgress, Typography, Fab, Collapse } from '@material-ui/core'
-import { Alert, AlertTitle } from '@material-ui/lab';
-import MapGL, { Source, Layer, FeatureState, MapContext } from '@urbica/react-map-gl'
+import { CircularProgress } from '@material-ui/core'
+import MapGL from '@urbica/react-map-gl'
 import { mapboxConfig } from 'config'
-import * as firebase from 'firebase/app';
-import { useAuth, useUser, AuthCheck, useFirestoreDocData, useFirestore, SuspenseWithPerf, useFirebaseApp } from 'reactfire';
+import { AuthCheck, SuspenseWithPerf } from 'reactfire';
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { locationAtom, markerAtom, markersAtom, viewAtom, creatingAtom, mapAtom, userAtom } from 'global/Atoms'
-import { useGeoFirestore } from 'global/Hooks'
-
-import { AddLocation } from '@material-ui/icons'
+import { locationAtom,viewAtom, creatingAtom, mapAtom, selectedAtom } from 'global/Atoms'
 import MarkerActive from 'assets/images/markerActive.svg'
 import LocationIcon from './Layers/LocationIcon.js'
 
@@ -63,17 +58,21 @@ export default ()=>{
   const classes = useStyles()
   const [location, setLocation] = useRecoilState(locationAtom)
   const [view, setView] = useRecoilState(viewAtom)
-  const [viewport, setViewport] = useState({ ...location, zoom: 15 });
+  const [viewport, setViewport] = useState({ latitude: 50.4501, longitude: 30.5234, zoom:15 });
   const mapRef = useRef()
   const mapDimensions = useRecoilValue(mapAtom)
   const [loaded, setLoaded] = useState(false)
+  const [selected, setSelected] = useRecoilState(selectedAtom)
+  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
 
   useEffect(()=>{
       if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          const updateLocation = Object.assign(viewport,
-            {longitude: position.coords.longitude, 
-            latitude: position.coords.latitude})
+        navigator.geolocation.watchPosition(function(position) {
+          const updateLocation = {
+            longitude: position.coords.longitude, 
+            latitude: position.coords.latitude,
+            zoom: viewport.zoom
+          }
           setLocation(updateLocation);
         })
       }
@@ -111,6 +110,10 @@ export default ()=>{
           onLoad={()=>{setLoaded(true)}}
           ref={mapRef}
           {...viewport}
+          onClick={()=>{
+            setSelected(null)
+            setIsCreating(null)
+          }}
         >
           <SuspenseWithPerf fallback={
             <div className={classes.overlay}>

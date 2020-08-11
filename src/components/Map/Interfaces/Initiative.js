@@ -3,12 +3,14 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, Typography, TextField, Button, MobileStepper, InputBase } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState } from 'recoil';
-import { creatingAtom, markerAtom , markersAtom, selectedAtom } from 'global/Atoms'
+import { creatingAtom, markerAtom , markersAtom, selectedAtom, locationAtom } from 'global/Atoms'
 import { useStorage, useStorageDownloadURL, useFirestore } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
 import { useGeoFirestore } from 'global/Hooks'
 import * as firebase from 'firebase/app';
 import { getFeatures } from 'global/Misc';
+import { People, LocationOn } from '@material-ui/icons'
+import distance from '@turf/distance'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,6 +62,10 @@ const useStyles = makeStyles((theme) => ({
   input: {
     display: 'none',
   },
+
+  info:{
+    padding: theme.spacing(2)
+  }
   
 }));
 
@@ -73,6 +79,7 @@ export default ({ initiativeID })=> {
   const [initiative, setInitiative] = useState(null)
   const [selected, setSelected] = useRecoilState(selectedAtom)
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
+  const [location, setLocation] = useRecoilState(locationAtom)
 
   useEffect(()=>{
     if(selected) {
@@ -83,8 +90,6 @@ export default ({ initiativeID })=> {
           delete data.g
           console.log("Document data:", data);
           setInitiative(data);
-          //  { context, coordinates, name, outcome, problem, timestamp, imageURL }
-
         }else{
           console.log("No such document!");
           setInitiative(null);
@@ -95,16 +100,42 @@ export default ({ initiativeID })=> {
     }
   }, [selected])
 
-
   return (
     <form className={classes.root} noValidate autoComplete="off">
-      { initiative && (
+      { selected && initiative && (
         <Paper elevation={1} className={classes.paper}> 
-          <img
-            className={classes.img}
-            src={initiative.imageURL || addImage}
+          <section 
+            className={classes.img} 
             alt="Cover of the initiative"
-          />
+            style={{
+              backgroundImage: `url(${initiative.imageURL || addImage})`,
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat'
+          }}>
+          </section>
+          <div className={classes.info}>
+            <span className={classes.span}>
+              <LocationOn style={{fontSize: 'large'}} />
+              {initiative.coordinates ? (
+                <> {
+                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<=1 ? 
+                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +"m from me":
+                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +"km from me"
+
+                } 
+                  
+                </>
+              ): <> Distance is unknown </>}
+            </span>
+            <span style={{marginLeft: "2rem"}}>
+              <People style={{fontSize: 'large'}} /> 
+              {initiative.members?initiative.member.lenght:0}
+            </span>
+            <Typography variant="h6">
+              {initiative.name? initiative.name: "Name is not set"}
+            </Typography>
+          </div>
         </Paper>
         )
       }
