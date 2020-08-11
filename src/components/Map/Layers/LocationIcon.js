@@ -103,7 +103,7 @@ const markerSVG = (svg, size)=>{
 const loadMarker = (map, Marker, name, size)=>{
   var img = new Image();
   img.onload = function() {
-    map.addImage(name, markerSVG( img, size ));
+    map.addImage(name, markerSVG( img, size ), { pixelRatio: 2 });
   }
   img.src = Marker;
 }
@@ -115,8 +115,8 @@ export default ({ mapRef, loaded, location })=>{
       const map = mapRef.getMap()
       map.addImage('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
       const svgWrapper = document.createElement("div")
-      loadMarker(map, Marker, 'marker-fixed', 20, )
-      loadMarker(map, MarkerActive, 'marker-active', 30)
+      loadMarker(map, Marker, 'marker-fixed', 40, )
+      loadMarker(map, MarkerActive, 'marker-active', 60)
     }
   }, [mapRef, loaded])
 

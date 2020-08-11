@@ -8,7 +8,7 @@ import { MyLocation } from '@material-ui/icons'
 const useStyles = makeStyles(theme => ({
   locateFab: {
     position: 'absolute',
-    top: '5rem',
+    top: '6rem',
     right: '1rem'
   }
 }))  

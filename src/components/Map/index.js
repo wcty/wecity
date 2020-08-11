@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     top: 'calc( ( 100% - 350px ) / 2  )',
     left: '50%',
-    transform: 'translate(-16px, -16px)'
+    transform: 'translate(-21px, -42px)'
   }
 }))          
 
@@ -48,7 +48,7 @@ const NewMarkerDialog = (props)=>{
   return <> 
     { isCreating && (<>
       <CreateInitiativeForm {...props} />
-      <img alt="React Firebase" src={MarkerActive}  className={classes.marker} width={42} height={42} />
+      <img alt="React Firebase" src={MarkerActive} className={classes.marker} width={42} height={42} />
     </>)}
   </>
 }

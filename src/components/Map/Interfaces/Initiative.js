@@ -131,7 +131,7 @@ export default ({ initiativeID })=> {
             </span>
             <span style={{marginLeft: "2rem"}}>
               <People style={{fontSize: 'large'}} /> 
-              {initiative.members?initiative.member.lenght:0}
+              {initiative.members?initiative.members.length:0}
             </span>
             <Typography variant="h6">
               {initiative.name? initiative.name: "Name is not set"}
