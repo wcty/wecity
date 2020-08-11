@@ -98,8 +98,10 @@ export default ()=>{
               const h = (mapDimensions.height - 350)/2
               return mapRef.current.getMap().unproject ([w,h])
             }}/>
-            <Initiative />
           </AuthCheck>
+        </Suspense>
+        <Suspense fallback={null}>
+          <Initiative />
         </Suspense>
         <LocateFab mapRef={mapRef} loaded={loaded} />
         <MapGL
