@@ -119,10 +119,11 @@ export default ({ initiativeID })=> {
               <LocationOn style={{fontSize: 'large'}} />
               {initiative.coordinates ? (
                 <> {
-                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<=1 ? 
+                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<1 ? 
                   (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +"m from me":
-                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +"km from me"
-
+                  ((distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<10 ? 
+                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +"km from me":
+                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +"km from me")
                 } 
                   
                 </>
