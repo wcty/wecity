@@ -5,4 +5,4 @@ import registerServiceWorker from './registerServiceWorker'
 import './styles/index.css'
 
 ReactDOM.unstable_createRoot(document.getElementById('root')).render(<App />);
-registerServiceWorker()
+//registerServiceWorker()

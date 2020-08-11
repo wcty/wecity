@@ -1,6 +1,7 @@
-import React, { Component, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import registerServiceWorker from '../registerServiceWorker'
 import { makeStyles } from '@material-ui/core/styles'
-import { Box } from '@material-ui/core'
+import { Box, Snackbar, Button } from '@material-ui/core'
 import AppBar from './AppBar'
 import Map from './Map'
 import { barAtom, mapAtom } from 'global/Atoms'
@@ -46,6 +47,26 @@ const Layout = ()=>{
   const mapRef = useRef()
   const mapMeasure = useMeasure(mapRef)
   const [mapDimensions, setMapDimensions] = useRecoilState(mapAtom)
+  
+  const [showReload, setShowReload] = useState(false);
+  const [waitingWorker, setWaitingWorker] = useState(null);
+  
+  const onSWUpdate = (registration) => {
+    setShowReload(true);
+    setWaitingWorker(registration.waiting);
+    console.log('SWUpdate')
+  };
+
+  const reloadPage = () => {
+    if(waitingWorker) waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+    setShowReload(false);
+    window.location.reload(true);
+    console.log('reloadPage')
+  };
+  
+  useEffect(() => {
+    registerServiceWorker({ onUpdate: onSWUpdate });
+  }, []);
 
   useEffect(()=>{
     setMapDimensions(mapMeasure)
@@ -53,6 +74,21 @@ const Layout = ()=>{
 
   return (
     <Box className={classes.root}>
+      <Snackbar
+        open={showReload}
+        message="A new version is available!"
+        onClick={reloadPage}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        action={
+          <Button
+            color="inherit"
+            size="small"
+            onClick={reloadPage}
+          >
+            Reload
+          </Button>
+        }
+      />
       <AppBar />
       <Box className={classes.map} style={{top: barDimensions.height}} ref={mapRef}>
         <Map />
