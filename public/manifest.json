@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "Wecity_icon_white_192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "Wecity_icon_white_512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

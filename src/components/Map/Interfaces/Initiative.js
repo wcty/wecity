@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Typography, TextField, Button, MobileStepper, InputBase } from '@material-ui/core';
+import { Paper, Typography, Fab } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState } from 'recoil';
 import { creatingAtom, markerAtom , markersAtom, selectedAtom, locationAtom } from 'global/Atoms'
@@ -9,7 +9,7 @@ import { v1 as uuidv1 } from 'uuid';
 import { useGeoFirestore } from 'global/Hooks'
 import * as firebase from 'firebase/app';
 import { getFeatures } from 'global/Misc';
-import { People, LocationOn } from '@material-ui/icons'
+import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
 import distance from '@turf/distance'
 
 const useStyles = makeStyles((theme) => ({
@@ -48,25 +48,27 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 0,
     position: "relative"
   },
-
   button:{
     margin: "0.5rem"
   },
-
   imageButton: {
     position: "absolute",
     top: "1rem",
     left: "1rem"
   },
-
   input: {
     display: 'none',
   },
-
   info:{
     padding: theme.spacing(2)
+  },
+  favourites:{
+    position: 'absolute',
+    left: theme.spacing(2),
+    top: 0,
+    transform: 'translateY(-50%)',
+    backgroundColor: 'white'
   }
-  
 }));
 
 export default ({ initiativeID })=> {
@@ -103,7 +105,11 @@ export default ({ initiativeID })=> {
   return (
     <form className={classes.root} noValidate autoComplete="off">
       { selected && initiative && (
+
         <Paper elevation={1} className={classes.paper}> 
+          <Fab className={classes.favourites} elevation={0}>
+            <StarBorder />
+          </Fab>
           <section 
             className={classes.img} 
             alt="Cover of the initiative"
@@ -129,6 +135,7 @@ export default ({ initiativeID })=> {
                 </>
               ): <> Distance is unknown </>}
             </span>
+            <span style={{float:'right'}}> <ExpandLess /></span>
             <span style={{marginLeft: "2rem"}}>
               <People style={{fontSize: 'large'}} /> 
               {initiative.members?initiative.members.length:0}
