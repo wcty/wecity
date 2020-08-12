@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress } from '@material-ui/core';
+import { Paper, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import addImage from 'assets/images/addImage.png'
@@ -55,6 +55,36 @@ const formSteps = [
     },
   ]
 ];
+
+function CircularProgressWithLabel(props) {
+
+  return (
+   <Box         
+      top={"50%"}
+      left={"50%"}
+      style={{transform: "translate(-50%, -100%)"}}
+      position="absolute"
+      alignItems="center"
+      justifyContent="center" 
+    >
+      <CircularProgress variant="static" {...props} />
+      <Box
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        position="absolute"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Typography variant="caption" style={{visibility: props.style.visibility}} component="div" color="textSecondary">{`${Math.round(
+          props.value,
+        )}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -119,10 +149,12 @@ export default ({ getMarker })=> {
   const [marker, setMarker] = useRecoilState(markerAtom)
   const [markers, setMarkers] = useRecoilState(markersAtom)
   const [uuid, setUuid] = useState(uuidv1())
-  const imageRef = useStorage().ref().child('initiatives').child(uuid)
+  const imageRef = useStorage().ref().child('initiatives')
   const [imageLoadedURL, setImageLoadedURL] = useState(null)
   const markersCollection = useGeoFirestore().collection('markers')
   const user = useUser()
+  const [progressState, setProgress] = useState(null)
+  const [fileName, setFileName] = useState(null)
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -166,7 +198,7 @@ export default ({ getMarker })=> {
             case 'image':
               return (
                 <div className={classes.img} key={input.id}>
-                  {/* <CircularProgressWithLabel value={progress} /> */}
+                  <CircularProgressWithLabel value={progressState} style={{color: "#ffffff", visibility:progressState?"visible":"hidden"}}/> 
                   <section 
                     className={classes.img} 
                     key={input.id}
@@ -187,21 +219,17 @@ export default ({ getMarker })=> {
                       type="file"
                       onChange={(event)=>{
                         var file = event.target.files[0];
-                        const uploadTask = imageRef.put(file)
+                        console.log(file)
+                        const newName = uuid + '.' + file.name.split(".").reverse()[0]
+                        setFileName(newName)
+                        const uploadTask = imageRef.child(newName).put(file)
                         // Listen for state changes, errors, and completion of the upload.
                         uploadTask.on('state_changed', // or 'state_changed'
                           function(snapshot) {
                             // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
                             var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            console.log('Upload is ' + progress + '% done');
-                            switch (snapshot.state) {
-                              case 'paused': // or 'paused'
-                                console.log('Upload is paused');
-                                break;
-                              case 'running': // or 'running'
-                                console.log('Upload is running');
-                                break;
-                            }
+                            //console.log('Upload is ' + progress + '% done');
+                            setProgress(progress)
                           }, function(error) {
                             switch (error.code) {
                               case 'storage/unauthorized':
@@ -218,6 +246,7 @@ export default ({ getMarker })=> {
                             }
                           }, function() {
                             // Upload completed successfully, now we can get the download URL
+                            setProgress(null)
                             uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
                               setImageLoadedURL(downloadURL)
                             });
@@ -281,7 +310,8 @@ export default ({ getMarker })=> {
             <Button className={classes.button} variant="contained" size="small" onClick={()=>{
               setIsCreating(false)
               setMarker(null)
-              if(imageLoadedURL) imageRef.delete()
+              console.log(fileName)
+              if(imageLoadedURL) imageRef.child(fileName).delete()
             }} >
               Cancel
             </Button>
