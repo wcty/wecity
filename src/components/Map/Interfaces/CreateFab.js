@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Fab, Collapse } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useRecoilState, useRecoilValue } from 'recoil'
-import {  markerAtom, viewAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
+import {  selectedAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
 import { AddLocation, MyLocation } from '@material-ui/icons'
 import useMeasure from "use-measure";
 
@@ -29,6 +29,8 @@ export default ({ active, getMarker })=>{
   const user = useRecoilValue(userAtom)
   const fabRef = useRef()
   const fab = useMeasure(fabRef)
+  const [selected, setSelected] = useRecoilState(selectedAtom)
+
 
   return (
     <>
@@ -38,6 +40,8 @@ export default ({ active, getMarker })=>{
           onClick={()=>{
             if(active){
               setIsCreating(true)
+              setSelected(null)
+              
             }else{
               setAlert({description: "You need to login to create a marker"})
             }
@@ -45,7 +49,6 @@ export default ({ active, getMarker })=>{
           ref={fabRef}
           className={classes.createFab} 
           raised="true" 
-          color="primary" 
           aria-label="add"
         >
           <AddLocation />

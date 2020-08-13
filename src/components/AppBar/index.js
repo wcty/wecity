@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { AppBar, Toolbar, Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
+import { AppBar, Toolbar, Paper, Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
 import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
 import firebase from 'firebase'
@@ -10,23 +10,24 @@ import Drawer from './drawer'
 import { useAuth, useUser } from 'reactfire';
 import { useRecoilState } from 'recoil';
 import ErrorBoundary from 'global/ErrorBoundary'
+import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
 
 const Styles = makeStyles( theme => ({
   appbar: {
-    zIndex: 999
+    zIndex: 10,
   },
   button: {
     margin: theme.spacing(0),
     marginLeft: 'auto'
   },
   progress: {
-    color: 'inherit',
+    color: 'black',
     marginRight: theme.spacing(1),
   },
   progressText: {
     ...theme.typography.button,
-    color: 'inherit',
-    marginRight: '1rem'
+    marginRight: '1rem',
+    color: 'black'
   },
   progressLoaderContainer: {
     display: 'flex',
@@ -63,21 +64,26 @@ const LogIn = ()=>{
           user?  
             <div className={classes.userProfileContainer}>
 
-              <Typography className={classes.progress}  type="body1" component="p">
+              {/* <Typography className={classes.progress}  type="body1" component="p">
                 { user.displayName }
-              </Typography>
+              </Typography> */}
               <Avatar
                 alt={user.displayName}
                 src={user.photoURL}
                 className={classes.userProfileAvatar}
+                onClick={()=>auth.signOut()} 
               />
-              <Button onClick={()=>auth.signOut().then(()=>{console.log("logout")})} dense="true" color="inherit" className={classes.button}>
-                {/* <AccountCircle /> */}
+              <Button 
+                onClick={()=>auth.signOut()} 
+                dense="true" 
+                color="default" 
+                className={classes.button}
+              >
                 Logout
               </Button>
             </div>
           :
-        <Button onClick={signInWithGoogle} dense="true" color="inherit" className={classes.button}>
+        <Button onClick={signInWithGoogle} dense="true" color="default" className={classes.button}>
           <AccountCircle  className={classes.progress} />
           Login
         </Button>
@@ -97,17 +103,23 @@ const Bar = (props)=>{
   },[barMeasure])
   return (
     <>
-      <AppBar position="static" className={classes.appbar} ref={barRef}>
-        <Toolbar>
-        <IconButton onClick={()=>{setDrawer(!drawer)}} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+      <AppBar elevation={1} position="static" className={classes.appbar} ref={barRef}>
+        <Toolbar >
+        <IconButton onClick={()=>{setDrawer(!drawer)}} 
+          edge="start" 
+          className={classes.menuButton} 
+          color="default" 
+          aria-label="menu"
+        >
           <MenuIcon />
         </IconButton>
-        <Typography type="title" color="inherit" className={classes.flex} style={{marginLeft: 15}}>
-          Wecity
-        </Typography>
+        <Logo style={{ height:"20px"}}></Logo>
+
+        {/* <Typography type="title" color="inherit" className={classes.flex} style={{marginLeft: 15}}>
+        </Typography> */}
         <Suspense fallback={            
             <div className={classes.progressLoaderContainer}>
-              <CircularProgress size={24} className={classes.progress} />
+              <CircularProgress size={24} color="default" className={classes.progress} />
               <Typography className={classes.progressText} type="button" component="p">
                 Loading
               </Typography>

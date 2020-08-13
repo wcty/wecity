@@ -26,6 +26,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: `100%`,
     position: 'fixed',
+    zIndex:0,
 	},
 	sidebar: {
 		marginTop: `100%`,
@@ -90,7 +91,7 @@ const Layout = ()=>{
         }
       />
       <AppBar />
-      <Box className={classes.map} style={{top: barDimensions.height}} ref={mapRef}>
+      <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>
         <Map />
       </Box>
     </Box>

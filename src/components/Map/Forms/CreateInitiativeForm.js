@@ -164,10 +164,6 @@ export default ({ getMarker })=> {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  useEffect(()=>{
-    console.log(user)
-  }, [user])
-
   return (
     <form className={classes.root} noValidate autoComplete="off">
       <Paper elevation={1} className={classes.paper}>  
