@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     minHeight: "250px",
     width: "100%",
-    overflow: 'auto'
+    overflow: expanded?'auto':'hidden'
   },
   img: {
     height: '160px',
