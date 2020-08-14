@@ -7,6 +7,7 @@ import { creatingAtom, markerAtom , barAtom, markersAtom, selectedAtom, location
 import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire';
 import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
 import distance from '@turf/distance'
+import translate from '@turf/transform-translate'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default ({ initiativeID })=> {
+export default ({ mapRef, loaded })=> {
   const classes = useStyles();
   const theme = useTheme();
   const [marker, setMarker] = useRecoilState(markerAtom)
@@ -77,13 +78,65 @@ export default ({ initiativeID })=> {
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const [location, setLocation] = useRecoilState(locationAtom)
   const [expanded, setExpanded] = useState(false)
-  const map = useRecoilValue(mapAtom)
+  const mapDimensions = useRecoilValue(mapAtom)
   const bar = useRecoilValue(barAtom)
   const user = useUser()
 
   useEffect(()=>{
     setExpanded(false)
   },[selected])
+
+  useEffect(()=>{
+    if(loaded&&initiative){
+      const map = mapRef.current.getMap()
+      const center = Object.values(initiative.coordinates)
+      const w = mapDimensions.width/2
+      const h = (mapDimensions.height - 350)/2
+      const offPoint = Object.values(map.unproject([w,h]))
+      const point = Object.values(map.getCenter())
+      const dist = distance(point, offPoint)
+      console.log(dist)
+      const newOffPoint = translate({
+        type:"FeatureCollection",
+        features:[
+          {
+            type: "Feature",
+            geometry:{
+              type: "Point",
+              coordinates: center
+            }
+          }
+        ]
+      }, dist, 180)
+      map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
+    }
+  }, [mapRef, loaded, initiative])
+
+  useEffect(()=>{
+    if(loaded&&isCreating){
+      const map = mapRef.current.getMap()
+      const center = Object.values(location)
+      const w = mapDimensions.width/2
+      const h = (mapDimensions.height - 350)/2
+      const offPoint = Object.values(map.unproject([w,h]))
+      const point = Object.values(map.getCenter())
+      const dist = distance(point, offPoint)
+      console.log(dist)
+      const newOffPoint = translate({
+        type:"FeatureCollection",
+        features:[
+          {
+            type: "Feature",
+            geometry:{
+              type: "Point",
+              coordinates: center
+            }
+          }
+        ]
+      }, dist, 180)
+      map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
+    }
+  }, [mapRef, loaded, isCreating])
 
   useEffect(()=>{
     if(selected) {

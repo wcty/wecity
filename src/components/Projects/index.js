@@ -92,7 +92,7 @@ export default ()=> {
     > 
       <ProjectFab isCreating={isCreating} setIsCreating={setIsCreating} active />
       <CreateProject isCreating={isCreating} setIsCreating={setIsCreating} />
-      {selectedProject&& <Project project={selectedProject} />}
+      {selectedProject&& <Project project={selectedProject} setProject={setSelectedProject} />}
       {!isCreating && <div id="wrapper">
         <Typography variant="h6" style={{
           margin:'2rem',
@@ -123,13 +123,17 @@ export default ()=> {
               // (distance([location.longitude, location.latitude], Object.values(project.coordinates)))<1 ? 
               return (
                 <Grid key={i} item xs={6} s={4}>
-                  <Paper className={classes.paper} >
+                  <Paper className={classes.paper} style={{cursor:'pointer'}}>
                     <div id="wrapper">
                       <section 
                         className={classes.img} 
                         alt="Cover of the project"
                         onClick={()=>{
-                          console.log('clicked on img')
+                          if(selectedProject&&(selectedProject.id==project.id)){
+                            setSelectedProject(null)
+                          }else{
+                            setSelectedProject(project)
+                          }
                         }}
                         style={{
                           backgroundImage: `url(${project.imageURL.m || addImage})`,

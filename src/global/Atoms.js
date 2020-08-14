@@ -58,7 +58,7 @@ export const initiativeBarAtom = atom({
 
 export const projectBarAtom = atom({
   key: 'projectBar',
-  default: true,
+  default: false,
 })
 
 export const resourceBarAtom = atom({

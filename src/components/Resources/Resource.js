@@ -1,12 +1,11 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, Typography, IconButton, Chip, List, ListItem, ListItemText, Button } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { creatingAtom, markerAtom , barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
-import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire';
+import { barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
+import { useFirestore, useUser } from 'reactfire';
 import { Close } from '@material-ui/icons'
-import distance from '@turf/distance'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,13 +64,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default ({ project, setProject })=> {
+export default ({ resource, setResource })=> {
   const classes = useStyles();
   const theme = useTheme();
-  const [marker, setMarker] = useRecoilState(markerAtom)
-  const [markers, setMarkers] = useRecoilState(markersAtom)
-  const [imageLoadedURL, setImageLoadedURL] = useState(null)
-  const projects = useFirestore().collection('markers')
+  const resources = useFirestore().collection('markers')
   const [location, setLocation] = useRecoilState(locationAtom)
   const map = useRecoilValue(mapAtom)
   const bar = useRecoilValue(barAtom)
@@ -100,94 +96,63 @@ export default ({ project, setProject })=> {
             aria-label="return"
             style={{position:"absolute", right:"1.5rem", top:"0.5rem"}}
             onClick={()=>{
-              setProject(null)
+              setResource(null)
             }}
           >
             <Close />
           </IconButton>
           <section 
             className={classes.img} 
-            alt="Cover of the project"
+            alt="Cover of the resource"
             onClick={()=>{
               console.log('clicked on img')
             }}
             style={{
-              backgroundImage: `url(${project.imageURL?project.imageURL.s: addImage})`,
+              backgroundImage: `url(${resource.imageURL?resource.imageURL.s: addImage})`,
               backgroundPosition: 'center',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
           }}>
           </section>
-            {project.category && (<Chip label={project.category} style={{marginLeft: '1rem', marginTop: '-5rem'}} />)}
+            {resource.category && (<Chip label={resource.category} style={{marginLeft: '1rem', marginTop: '-5rem'}} />)}
             <Typography variant="h6" style={{marginLeft:'1rem', marginTop:'0rem'}}>
-              {project.name? project.name: "Name is not set"}
+              {resource.shortDescription? resource.shortDescription: "Description is not set"}
             </Typography>
               <List>
-                {project.contractor&& (<ListItem>
+                {resource.description&& (<ListItem>
                   <ListItemText
-                    primary="Ім'я виконавця:"
-                    secondary={project.contractor}
+                    primary="Розгорнутий опис:"
+                    secondary={resource.description}
                   />
                 </ListItem>)}
-                {project.location&& (<ListItem>
+                {resource.condition&& (<ListItem>
                   <ListItemText
-                    primary="Місце виробництва:"
-                    secondary={project.location}
+                    primary="В якому стані:"
+                    secondary={resource.condition}
                   />
                 </ListItem>)}
-                {project.problem&& (<ListItem>
+                {resource.description&& (<ListItem>
                   <ListItemText
-                    primary="Яку проблему має вирішити:"
-                    secondary={project.problem}
+                    primary="На яких умовах можна отримати:"
+                    secondary={resource.description}
                   />
                 </ListItem>)}
-                {project.description&& (<ListItem>
+                {resource.compensation && (<ListItem>
                   <ListItemText
-                    primary="Опис проекту:"
-                    secondary={project.description}
+                    primary="Сума компенсації, якщо потрібна:"
+                    secondary={resource.compensation}
                   />
                 </ListItem>)}
-                {project.experience && (<ListItem>
+                {resource.usability && (<ListItem>
                   <ListItemText
-                    primary="Досвід виконавця:"
-                    secondary={project.experience}
+                    primary="Кому він може бути корисним:"
+                    secondary={resource.usability}
                   />
                 </ListItem>)}
-                {project.resource && (<ListItem>
+                {resource.exchange && (<ListItem>
                   <ListItemText
-                    primary="Необхідні ресурси (не грошові):"
-                    secondary={project.resource}
-                  />
-                </ListItem>)}
-                {project.volunteers && (<ListItem>
-                  <ListItemText
-                    primary="Необхідна кількість волонтерів:"
-                    secondary={project.volunteers}
-                  />
-                </ListItem>)}
-
-                {project.volunteersTask && (<ListItem>
-                  <ListItemText
-                    primary="Задачі волонтерів:"
-                    secondary={project.volunteersTask}
-                  />
-                </ListItem>)}
-                {project.price && (<ListItem>
-                  <ListItemText
-                    primary="Мінімальний необхідний бюджет:"
-                    secondary={project.price}
-                  />
-                </ListItem>)}
-                {project.budgetDescription && (<ListItem>
-                  <ListItemText
-                    primary="Які витрати покриває бюджет:"
-                    secondary={project.budgetDescription}
-                  />
-                </ListItem>)}
-                {project.timestamp && (<ListItem>
-                  <ListItemText
-                    primary="Додано:"
-                    secondary={project.timestamp.toDate().getDay()+"."+project.timestamp.toDate().getMonth()+"."+project.timestamp.toDate().getFullYear()}
+                    primary="На шо ви хотіли би його обміняти:"
+                    secondary={resource.exchange}
                   />
                 </ListItem>)}
               </List>
@@ -202,7 +167,7 @@ export default ({ project, setProject })=> {
                 console.log('button')
               }}
             >
-              Додати проект в ініціативу
+              Додати ресурс в ініціативу
             </Button>
           
           </Suspense>

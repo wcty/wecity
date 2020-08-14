@@ -1,72 +1,36 @@
-import React, { useState, useRef } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Fab, Collapse } from '@material-ui/core'
-import { Alert, AlertTitle } from '@material-ui/lab';
-import { useRecoilState, useRecoilValue } from 'recoil'
-import {  selectedAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
-import { AddLocation, MyLocation } from '@material-ui/icons'
-import useMeasure from "use-measure";
+import { Fab } from '@material-ui/core'
+import { Add } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
   createFab: {
-    position: 'absolute',
-    top: '1rem',
-    right: '1rem'
+    position: 'fixed',
+    bottom: '1rem',
+    right: '2rem',
   },
-  alert: {
-    position: 'absolute',
-    top: '1rem',
-    left: '1rem',
-    maxWidth: '60%'
-  }
 }))  
 
-export default ({ active, getMarker })=>{
+export default ({ active, getMarker, isCreating, setIsCreating })=>{
   const classes = useStyles()
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
-  const [map] = useRecoilState(mapAtom)
-  const [alert, setAlert] = useState(null)
-  const user = useRecoilValue(userAtom)
-  const fabRef = useRef()
-  const fab = useMeasure(fabRef)
-  const [selected, setSelected] = useRecoilState(selectedAtom)
 
-
-  return (
+  return !isCreating && (
     <>
-    { !isCreating && (
-      <>
         <Fab 
           onClick={()=>{
             if(active){
               setIsCreating(true)
-              setSelected(null)
-              
-            }else{
-              setAlert({description: "You need to login to create a marker"})
             }
           }}
-          ref={fabRef}
+          style={{
+            zIndex:200
+          }}
           className={classes.createFab} 
           raised="true" 
           aria-label="add"
         >
-          <AddLocation />
+          <Add />
         </Fab>
       </>
-    ) 
-
-    }
-    { alert && !user && (
-      <Collapse in={Boolean(alert)}>
-        <Alert severity="info" className={classes.alert} onClose={() => {setAlert(null)}}>
-          <AlertTitle>Info</AlertTitle>
-          {alert.description}
-        </Alert>
-      </Collapse>
-    )
-
-    }
-    </>
   )
 }

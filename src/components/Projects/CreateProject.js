@@ -123,8 +123,8 @@ const formSteps = [
 function CircularProgressWithLabel(props) {
 
   return (
-   <Box         
-     top={"100px"}
+  <Box         
+    top={"100px"}
     left={"50%"}
     style={{transform: "translate(-50%, -50%)"}}
     position="absolute"
@@ -251,12 +251,24 @@ export default ({ isCreating, setIsCreating })=> {
   const [fileName, setFileName] = useState(null)
   const [finished, setFinished] = useState(null)
   const [location, setLocation] = useRecoilState(locationAtom)
-
   const map = useRecoilValue(mapAtom)
+  const [valid, setValid] = useState(false)
 
-  useEffect(()=>{
-    console.log(location)
-  },[location])
+  useEffect(async()=>{
+    let bool = true
+    if(project){
+      formSteps[activeStep].forEach((d,i)=>{
+        if(d.type=='image'){
+          if(!(imageLoadedURL)) bool = false
+        }else if(d.type!='note'){
+          if(!(project[d.id]&&project[d.id].length>0)) bool = false
+        }
+      })
+      setValid(bool)
+    }
+    console.log(bool)
+  },  [activeStep, project, imageLoadedURL])
+
   useEffect(()=>{
     if(fileName){
       let i = 0
@@ -463,7 +475,7 @@ export default ({ isCreating, setIsCreating })=> {
         className={classes.MobileStepper}
         nextButton={
           activeStep === (maxSteps - 1) ? (
-            <Button  className={classes.button} variant="contained" size="small" onClick={async ()=>{    
+            <Button disabled={!valid} className={classes.button} variant="contained" size="small" onClick={async ()=>{    
 
               projectsCollection.add({
                 ...project,
@@ -490,7 +502,7 @@ export default ({ isCreating, setIsCreating })=> {
               Додати
             </Button>
           ):(
-            <Button size="small" className={classes.button} onClick={handleNext}>
+            <Button disabled={!valid} size="small" className={classes.button} onClick={handleNext}>
               Далі
               {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
             </Button>

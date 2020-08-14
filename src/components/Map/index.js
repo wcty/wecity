@@ -104,7 +104,7 @@ export default ()=>{
           </AuthCheck>
         </Suspense>
         <Suspense fallback={null}>
-          <Initiative />
+          <Initiative  mapRef={mapRef} loaded={loaded} />
         </Suspense>
         <LocateFab mapRef={mapRef} loaded={loaded} />
         <MapGL

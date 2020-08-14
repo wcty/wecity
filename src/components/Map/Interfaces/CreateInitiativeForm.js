@@ -18,6 +18,11 @@ import ErrorBoundary from 'global/ErrorBoundary'
 const formSteps = [
   [
     {
+      type: "note",
+      id: "notes",
+      label: "Рухайте мапу щоб навести відмітку ініціативи (червоний маркер) на необхідну локацію, а потім натисніть Далі.",
+    },
+    {
       type: "text",
       id: "name",
       label: "Назва вашої ініціативи",
@@ -37,14 +42,14 @@ const formSteps = [
       type: "text",
       id: "problem",
       label: "Яку проблему має вирішити ініціатива?",
-      rows: 3,
+      rows: 2,
       maxLength: 100
     },
     {
       type: "text",
       id: "outcome",
       label: "Опишіть очікувані результати:",
-      rows: 3,
+      rows: 1,
       maxLength: 100
     },
   ],
@@ -193,6 +198,22 @@ export default ({ getMarker })=> {
   const [finished, setFinished] = useState(null)
 
   const [selected, setSelected] = useRecoilState(selectedAtom)
+  const [valid, setValid] = useState(false)
+
+  useEffect(async()=>{
+    let bool = true
+    if(marker){
+      formSteps[activeStep].forEach((d,i)=>{
+        if(d.type=='image'){
+          if(!(imageLoadedURL)) bool = false
+        }else if(d.type!='note'){
+          if(!(marker[d.id]&&marker[d.id].length>0)) bool = false
+        }
+      })
+      setValid(bool)
+    }
+    console.log(bool)
+  },  [activeStep, marker, imageLoadedURL])
 
   useEffect(()=>{
     if(fileName){
@@ -254,7 +275,7 @@ export default ({ getMarker })=> {
   }, [isCreating])
 
   return isCreating && (
-    <form className={classes.root} noValidate autoComplete="off">
+    <form className={classes.root} autoComplete="off">
       <Paper elevation={1} className={classes.paper}>  
       {
         formSteps[activeStep].map(( input, i )=>{
@@ -267,6 +288,7 @@ export default ({ getMarker })=> {
                   label={input.label}
                   className={classes.text}
                   variant="outlined"
+                  required
                   multiline={input.rows? true: undefined}
                   rows={input.rows? input.rows: undefined}
                   inputProps={{
@@ -280,6 +302,24 @@ export default ({ getMarker })=> {
 
                 />
               )
+            case 'note':
+              return (
+                <Typography
+                  key={input.id}
+                  id={input.id} 
+                  className={classes.text}
+                  variant="body2"
+                  style={{
+                    textAlign:'center',
+                    marginTop:'2rem',
+                    paddingTop: '2rem',
+                    paddingBottom: '1rem'
+                  }}
+                >
+                  {input.label}
+                </Typography>
+              )
+              
             case 'image':
               return (
                 <div className={classes.img} key={input.id}>
@@ -303,6 +343,7 @@ export default ({ getMarker })=> {
                       className={classes.input}
                       id="contained-button-file"
                       multiple
+                      required
                       type="file"
                       onChange={(event)=>{
                         if(imageLoadedURL&&!finished){
@@ -378,8 +419,7 @@ export default ({ getMarker })=> {
         className={classes.MobileStepper}
         nextButton={
           activeStep === (maxSteps - 1) ? (
-            <Button  className={classes.button} variant="contained" size="small" onClick={async ()=>{    
-
+            <Button disabled={!valid} className={classes.button} variant="contained" size="small" onClick={async ()=>{    
               markersCollection.add({
                 ...marker,
                 timestamp: new Date(),
@@ -405,7 +445,7 @@ export default ({ getMarker })=> {
               Додати
             </Button>
           ):(
-            <Button size="small" className={classes.button} onClick={handleNext}>
+            <Button size="small" className={classes.button} onClick={handleNext} disabled={!valid}>
               Далі
               {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
             </Button>

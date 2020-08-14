@@ -107,7 +107,7 @@ export default ({ state, setState })=>{
               setResourceBar(false)
 
             }else if(val.id==='initiatives'){
-              //setSelected(null)
+              setSelected(null)
               setIsCreating(null)  
               setInitiativeBar(true)
               setProjectBar(false)

@@ -1,12 +1,9 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Divider, List, Typography, ListItem, ListItemText, Button } from '@material-ui/core';
-import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { initiativeBarAtom, barAtom, selectedAtom, creatingAtom } from 'global/Atoms'
-import { useStorage, useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
-import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
-import distance from '@turf/distance'
+import {  useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +36,6 @@ const useAddress = (coords)=>{
 
 export default ()=> {
   const classes = useStyles();
-  const theme = useTheme();
   const user = useUser()
   const bar = useRecoilValue(barAtom)
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
@@ -61,7 +57,14 @@ export default ()=> {
             borderRadius: '0',
             overflowY: 'scroll'
           }}
-        > 
+        >         
+        <Typography variant="h6" style={{
+          margin:'2rem',
+          marginBottom: '1rem',
+          textAlign: 'center'
+        }}>
+          Ініціативи до яких ви долучилися:
+        </Typography>
           <div id="wrapper">
           <List>
             
@@ -91,8 +94,8 @@ export default ()=> {
             textAlign: 'center'
           }}>
             Ви поки що не долучилися до жодної ініціативи! 
-            Перейдіть на мапу і долучіться до тої, що вам дійсно важлива,
-            або запропонуйте власну.
+            Перейдіть на мапу і долучіться до тої, що здається вам важливою,
+            або запропонуйте власну
           </Typography>
           }
           </List>
