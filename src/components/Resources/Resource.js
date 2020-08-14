@@ -104,28 +104,29 @@ export default ({ resource, setResource })=> {
           }}
         > 
           <div id="wrapper">
-          <IconButton 
-            aria-label="return"
-            style={{position:"absolute", right:"1.5rem", top:"0.5rem"}}
-            onClick={()=>{
-              setResource(null)
-            }}
-          >
-            <Close />
-          </IconButton>
+
           <section 
             className={classes.img} 
             alt="Cover of the resource"
             onClick={()=>{
-              console.log('clicked on img', resource.imageURL, resource.imageURL.l)
               setIsViewerOpen(true)
             }}
             style={{
+              position:'relative',
               backgroundImage: `url(${resource.imageURL?resource.imageURL.s: addImage})`,
               backgroundPosition: 'center',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
           }}>
+            <IconButton 
+              aria-label="return"
+              style={{position:"absolute", right:"1.5rem", top:"0.5rem"}}
+              onClick={()=>{
+                setResource(null)
+              }}
+            >
+              <Close />
+            </IconButton>
           </section>
             {resource.category && (<Chip label={resource.category} style={{marginLeft: '1rem', marginTop: '-5rem'}} />)}
             <Typography variant="h6" style={{marginLeft:'1rem', marginTop:'0rem'}}>
@@ -178,7 +179,7 @@ export default ({ resource, setResource })=> {
           </div>
           <Suspense fallback={null}>
           
-            <Button 
+            { user && <Button 
               elevation={15} 
               variant="contained" 
               style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 
@@ -187,7 +188,7 @@ export default ({ resource, setResource })=> {
               }}
             >
               Додати ресурс в ініціативу
-            </Button>
+            </Button>}
           
           </Suspense>
         </Paper>

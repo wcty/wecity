@@ -63,7 +63,6 @@ export default ()=> {
     .where("category", "==", currentFilter):
     useFirestore()
     .collection('projects')
-
   const projects = useFirestoreCollectionData(projectsRef)
   const categories = [
     "Всі категорії",
@@ -90,7 +89,7 @@ export default ()=> {
         overflowY: 'scroll'
       }}
     > 
-      <ProjectFab isCreating={isCreating} setIsCreating={setIsCreating} active />
+      {user && <ProjectFab isCreating={isCreating} setIsCreating={setIsCreating} active />}
       <CreateProject isCreating={isCreating} setIsCreating={setIsCreating} />
       {selectedProject&& <Project project={selectedProject} setProject={setSelectedProject} />}
       {!isCreating && <div id="wrapper">

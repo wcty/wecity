@@ -109,15 +109,7 @@ export default ({ project, setProject })=> {
           }}
         > 
           <div id="wrapper">
-          <IconButton 
-            aria-label="return"
-            style={{position:"absolute", right:"1.5rem", top:"0.5rem"}}
-            onClick={()=>{
-              setProject(null)
-            }}
-          >
-            <Close />
-          </IconButton>
+
           <section 
             className={classes.img} 
             alt="Cover of the project"
@@ -126,11 +118,21 @@ export default ({ project, setProject })=> {
               setIsViewerOpen(true)
             }}
             style={{
+              position:'relative',
               backgroundImage: `url(${project.imageURL?project.imageURL.s: addImage})`,
               backgroundPosition: 'center',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
-          }}>
+          }}>          
+            <IconButton 
+              aria-label="return"
+              style={{position:"absolute", display:'block', right:"1.5rem", top:"0.5rem"}}
+              onClick={()=>{
+                setProject(null)
+              }}
+            >
+              <Close />
+            </IconButton>
           </section>
             {project.category && (<Chip label={project.category} style={{marginLeft: '1rem', marginTop: '-5rem'}} />)}
             <Typography variant="h6" style={{marginLeft:'1rem', marginTop:'0rem'}}>
@@ -208,7 +210,7 @@ export default ({ project, setProject })=> {
           </div>
           <Suspense fallback={null}>
           
-            <Button 
+            {user&&<Button 
               elevation={15} 
               variant="contained" 
               style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 
@@ -217,7 +219,7 @@ export default ({ project, setProject })=> {
               }}
             >
               Додати проект в ініціативу
-            </Button>
+            </Button>}
           
           </Suspense>
         </Paper>

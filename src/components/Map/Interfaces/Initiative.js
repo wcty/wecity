@@ -1,11 +1,11 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Typography, Fab, Grow, Box, List, ListItem, ListItemText, Button } from '@material-ui/core';
+import { Paper, Typography, Fab, IconButton, Box, List, ListItem, ListItemText, Button } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { creatingAtom, markerAtom , barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
+import { creatingAtom, markerAtom , barAtom,  selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
 import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire';
-import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
+import { People, LocationOn, ExpandLess, Star, StarBorder, Close } from '@material-ui/icons'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
 import { render } from 'react-dom';
@@ -14,7 +14,7 @@ import ImageViewer from 'react-simple-image-viewer';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    zIndex: 999,
+    zIndex: 10,
     position: 'fixed',
     transitionDuration: '0.3s',
     [theme.breakpoints.up('sm')]: {
@@ -186,9 +186,11 @@ export default ({ mapRef, loaded })=> {
           }}
         > 
           <Suspense fallback={null}>
-            <Fab className={classes.favourites}
+{/*    
+          <Fab className={classes.favourites}
               style={{
                 transform: expanded?'translateY(-120%)':'translateY(-50%)',
+                zIndex:20
               }}
               onClick={()=>{
                 if(initiative.members.find(m=>m==user.uid)){
@@ -198,9 +200,9 @@ export default ({ mapRef, loaded })=> {
                 }
               }}
             >
-
               {initiative.members.find(m=>m==user.uid)?<Star /> : <StarBorder />}
-            </Fab>
+            </Fab> */}
+
           </Suspense>
           <div id="wrapper">
           <section 
@@ -208,13 +210,14 @@ export default ({ mapRef, loaded })=> {
             alt="Cover of the initiative"
             onClick={()=>{
               console.log('clicked on img')
-              if(expanded){
+              if(expanded&&selected){
                 setIsViewerOpen(true)
               }else{
                 setExpanded(true)
               }
             }}
             style={{
+              position:'relative',
               backgroundImage: `url(${initiative.imageURL?initiative.imageURL.s: addImage})`,
               backgroundPosition: 'center',
               backgroundSize: 'cover',
@@ -222,8 +225,18 @@ export default ({ mapRef, loaded })=> {
               borderTopLeftRadius: expanded?0:"5px",
               borderTopRightRadius: expanded?0:"5px"         
           }}>
+            <IconButton 
+              aria-label="return"
+              style={{position:"absolute", right:"1rem", top:"0.5rem", zIndex: 30}}
+              onClick={()=>{
+                setSelected(null)
+              }}
+            >
+              <Close />
+            </IconButton>
           </section>
-          <Box className={classes.info}             
+          <Box className={classes.info} 
+            style={{position:'relative'}}            
             onClick={()=>{
               console.log('clicked on card')
               setExpanded(!expanded)
@@ -249,6 +262,18 @@ export default ({ mapRef, loaded })=> {
             <Typography variant="h6">
               {initiative.name? initiative.name: "Name is not set"}
             </Typography>
+            <IconButton 
+              aria-label="return"
+              style={{
+                position:"absolute", right:"3rem", top:"0rem",
+                transitionDuration: '0.3s', transform: expanded?'rotate(180deg)':'rotate(0deg)'
+              }}
+              onClick={()=>{
+                setExpanded(!expanded)
+              }}
+            >
+              <ExpandLess />
+            </IconButton>
             {expanded && (<>
               <List>
                 {initiative.problem&& (<ListItem>

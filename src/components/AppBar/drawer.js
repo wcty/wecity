@@ -1,12 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import { SwipeableDrawer, Button, List, Divider, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { SwipeableDrawer, Button, Box, List, Divider, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { MapOutlined, LibraryBooksOutlined, ChatBubbleOutline, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined } from '@material-ui/icons';
 import { useAuth, useUser } from 'reactfire';
 import ErrorBoundary from 'global/ErrorBoundary'
 import { initiativeBarAtom, selectedAtom, creatingAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
 import { useRecoilState } from 'recoil'
+import FeedbackForm from './FeedbackForm'
 
 const useStyles = makeStyles({
   list: {
@@ -87,7 +88,25 @@ export default ({ state, setState })=>{
       }
     ]
 
+  const  [feedback, closeFeedback] = useState(false)
+
+  const Feedback = ({feedback, closeFeedback})=>{
+    return (<>
+      {feedback &&(
+      <Box style={{
+        backgroundColor:'white',
+        position: 'fixed',
+        flexGrow: 1,
+        top: 0, left: 0, bottom: 0, right: 0,
+        zIndex: 999,
+        overflowY: "auto",  
+      }}>
+        <FeedbackForm closeFeedback={closeFeedback} />
+      </Box>)}
+    </>)
+  }
   const list = (anchor) => (
+    
     <div
       className={clsx(classes.list, {
         [classes.fullList]: anchor === 'top' || anchor === 'bottom',
@@ -145,7 +164,7 @@ export default ({ state, setState })=>{
             if(val.id==='settings'){
 
             }else if(val.id==='feedback'){
-
+              closeFeedback(!feedback)
             }
           }}>
             <ListItemIcon>
@@ -161,7 +180,9 @@ export default ({ state, setState })=>{
 
   return (
     <div>
-      <>
+      <>  
+      
+      <Feedback feedback={feedback} closeFeedback={closeFeedback} />
         <ErrorBoundary>
           <SwipeableDrawer
             open={state}

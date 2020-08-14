@@ -88,7 +88,7 @@ export default ()=> {
         overflowY: 'scroll'
       }}
     > 
-      <ResourceFab isCreating={isCreating} setIsCreating={setIsCreating} active />
+      {user&&<ResourceFab isCreating={isCreating} setIsCreating={setIsCreating} active />}
       <CreateResource isCreating={isCreating} setIsCreating={setIsCreating} />
       {selectedresource&& <Resource resource={selectedresource} setResource={setSelectedresource} />}
       {!isCreating && <div id="wrapper">
@@ -134,7 +134,7 @@ export default ()=> {
                           }
                         }}
                         style={{
-                          backgroundImage: `url(${resource.imageURL.m || addImage})`,
+                          backgroundImage: `url(${resource.imageURL?resource.imageURL.m : addImage})`,
                           backgroundPosition: 'center',
                           backgroundSize: 'cover',
                           backgroundRepeat: 'no-repeat',

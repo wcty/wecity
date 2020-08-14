@@ -145,6 +145,7 @@ export default ({ mapRef, loaded, location })=>{
         layout={{
           'icon-image': 'pulsing-dot',
         }}
+        before='markers'
       />
     </>
   )
