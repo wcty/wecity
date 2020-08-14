@@ -7,6 +7,8 @@ import { creatingAtom, markerAtom , barAtom, markersAtom, selectedAtom, location
 import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire';
 import { Close } from '@material-ui/icons'
 import distance from '@turf/distance'
+import { render } from 'react-dom';
+import ImageViewer from 'react-simple-image-viewer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,9 +78,19 @@ export default ({ project, setProject })=> {
   const map = useRecoilValue(mapAtom)
   const bar = useRecoilValue(barAtom)
   const user = useUser()
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
 
 
   return (<>
+    {isViewerOpen && (
+      <ImageViewer
+        src={ [project.imageURL.l] }
+        currentIndex={ 0 }
+        onClose={ ()=>{ setIsViewerOpen(false) } }
+        zIndex={300}
+        style={{zIndex:300}}
+      />
+    )}
     { (
       <form className={classes.root} noValidate autoComplete="off"
         style={{
@@ -86,6 +98,7 @@ export default ({ project, setProject })=> {
           width: '100%',
           bottom: '0',
           right: '0',
+          visibility: isViewerOpen?'hidden':'visible'
         }} 
       >
         <Paper elevation={1} className={classes.paper} 
@@ -110,6 +123,7 @@ export default ({ project, setProject })=> {
             alt="Cover of the project"
             onClick={()=>{
               console.log('clicked on img')
+              setIsViewerOpen(true)
             }}
             style={{
               backgroundImage: `url(${project.imageURL?project.imageURL.s: addImage})`,

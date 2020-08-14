@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, Typography, IconButton, Chip, List, ListItem, ListItemText, Button } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
@@ -6,6 +6,8 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
 import { useFirestore, useUser } from 'reactfire';
 import { Close } from '@material-ui/icons'
+import { render } from 'react-dom';
+import ImageViewer from 'react-simple-image-viewer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,9 +74,18 @@ export default ({ resource, setResource })=> {
   const map = useRecoilValue(mapAtom)
   const bar = useRecoilValue(barAtom)
   const user = useUser()
-
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   return (<>
+    {isViewerOpen && (
+        <ImageViewer
+          src={ [resource.imageURL.l] }
+          currentIndex={ 0 }
+          onClose={ ()=>{ setIsViewerOpen(false) } }
+          zIndex={300}
+          style={{zIndex:300}}
+        />
+    )}
     { (
       <form className={classes.root} noValidate autoComplete="off"
         style={{
@@ -82,6 +93,7 @@ export default ({ resource, setResource })=> {
           width: '100%',
           bottom: '0',
           right: '0',
+          visibility: isViewerOpen?'hidden':'visible'
         }} 
       >
         <Paper elevation={1} className={classes.paper} 
@@ -105,7 +117,8 @@ export default ({ resource, setResource })=> {
             className={classes.img} 
             alt="Cover of the resource"
             onClick={()=>{
-              console.log('clicked on img')
+              console.log('clicked on img', resource.imageURL, resource.imageURL.l)
+              setIsViewerOpen(true)
             }}
             style={{
               backgroundImage: `url(${resource.imageURL?resource.imageURL.s: addImage})`,

@@ -8,6 +8,8 @@ import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactf
 import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
+import { render } from 'react-dom';
+import ImageViewer from 'react-simple-image-viewer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,10 +70,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default ({ mapRef, loaded })=> {
   const classes = useStyles();
-  const theme = useTheme();
   const [marker, setMarker] = useRecoilState(markerAtom)
-  const [markers, setMarkers] = useRecoilState(markersAtom)
-  const [imageLoadedURL, setImageLoadedURL] = useState(null)
   const initiatives = useFirestore().collection('markers')
   const [initiative, setInitiative] = useState(null)
   const [selected, setSelected] = useRecoilState(selectedAtom)
@@ -81,6 +80,8 @@ export default ({ mapRef, loaded })=> {
   const mapDimensions = useRecoilValue(mapAtom)
   const bar = useRecoilValue(barAtom)
   const user = useUser()
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+
 
   useEffect(()=>{
     setExpanded(false)
@@ -158,7 +159,16 @@ export default ({ mapRef, loaded })=> {
   }, [selected])
 
   return (<>
-    { selected && initiative && (
+    {isViewerOpen && (
+    <ImageViewer
+      src={ [initiative.imageURL.l] }
+      currentIndex={ 0 }
+      onClose={ ()=>{ setIsViewerOpen(false) } }
+      zIndex={300}
+      style={{zIndex:300}}
+    />
+    )}
+    { selected && initiative && !isViewerOpen && (
       <form className={classes.root} noValidate autoComplete="off"
         style={{
           height: expanded?`calc(100% - ${bar.height}px)`:"250px", 
@@ -198,6 +208,11 @@ export default ({ mapRef, loaded })=> {
             alt="Cover of the initiative"
             onClick={()=>{
               console.log('clicked on img')
+              if(expanded){
+                setIsViewerOpen(true)
+              }else{
+                setExpanded(true)
+              }
             }}
             style={{
               backgroundImage: `url(${initiative.imageURL?initiative.imageURL.s: addImage})`,

@@ -24,6 +24,7 @@
     "react": "0.0.0-experimental-3d0895557",
     "react-dom": "0.0.0-experimental-3d0895557",
     "react-scripts": "3.4.1",
+    "react-simple-image-viewer": "0.0.4",
     "reactfire": "^2.0.3",
     "recoil": "^0.0.10",
     "typescript": "^3.9.6",
