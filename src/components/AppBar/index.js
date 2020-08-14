@@ -1,17 +1,17 @@
 import React, { Suspense, useRef, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { AppBar, Toolbar, Paper, Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
+import { AppBar, Toolbar, Box, Paper, Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
 import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
 import firebase from 'firebase'
 import useMeasure from "use-measure";
 import { barAtom, userAtom } from 'global/Atoms'
 import Drawer from './drawer'
-import { useAuth, useUser } from 'reactfire';
+import { useAuth, useUser, useFirestore } from 'reactfire';
 import { useRecoilState } from 'recoil';
 import ErrorBoundary from 'global/ErrorBoundary'
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
-
+import UserForm from './UserForm'
 const Styles = makeStyles( theme => ({
   appbar: {
     zIndex: 10,
@@ -52,16 +52,63 @@ const LogIn = ()=>{
   const auth = useAuth()
   const user = useUser();
   const [current, setCurrent] = useRecoilState(userAtom)
+  const usersRef = useFirestore().collection('users')
+  const [newUser, setNewUser] = useState(false)
+  const [contactData, setContactData] = useState(false)
+
   useEffect(()=>{
-    setCurrent(JSON.parse(JSON.stringify(user)))
+    if(user){
+      const users = usersRef.doc(user.uid)
+      users.get()
+      .then((docSnapshot) => {
+        if (docSnapshot.exists) {
+          users.onSnapshot((doc) => {
+            console.log(doc)
+            // do stuff with the data
+          });
+        } else {
+          console.log('no data')
+          setNewUser(user.uid)
+          //users.set({...}) // create the document
+        }
+      });
+      setCurrent(JSON.parse(JSON.stringify(user)))
+    }
   }, [user] )
+
+  // useEffect(()=>{
+  //   if(contactData&&usersRef){
+  //     console.log(contactData, user.uid)
+  //     const users = usersRef.doc(user.uid)
+  //     if(users){
+  //       users.set(contactData) //
+  //     }
+  //   }
+  // },[contactData, usersRef])
+
   const provider = new firebase.auth.GoogleAuthProvider()
   const signInWithGoogle = () => {
     auth.signInWithRedirect(provider)
   };
 
-  return(
-          user?  
+  return (<>
+    {newUser &&(<Box style={{
+      // position: 'fixed',
+      // top:0,
+      // bottom:0,
+      // left:0,
+      // right:0,
+      backgroundColor:'white',
+      // textAlign: 'center'
+      position: 'fixed',
+      flexGrow: 1,
+      top: 0, left: 0, bottom: 0, right: 0,
+      zIndex: 999,
+      overflowY: "auto",  
+    }}>
+      <UserForm isCreating={newUser} setIsCreating={setNewUser} setContactData={setContactData}/>
+    </Box>)}
+    {user?  
             <div className={classes.userProfileContainer}>
 
               {/* <Typography className={classes.progress}  type="body1" component="p">
@@ -86,8 +133,8 @@ const LogIn = ()=>{
         <Button onClick={signInWithGoogle} dense="true" color="default" className={classes.button}>
           <AccountCircle  className={classes.progress} />
           Увійти
-        </Button>
-  )
+        </Button>}
+ </>)
 }
 
 const Bar = (props)=>{
