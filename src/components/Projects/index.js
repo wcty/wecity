@@ -9,6 +9,7 @@ import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/i
 import distance from '@turf/distance'
 import ProjectFab from './ProjectFab'
 import CreateProject from './CreateProject'
+import Project from './Project'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -91,6 +92,7 @@ export default ()=> {
     > 
       <ProjectFab isCreating={isCreating} setIsCreating={setIsCreating} active />
       <CreateProject isCreating={isCreating} setIsCreating={setIsCreating} />
+      {selectedProject&& <Project project={selectedProject} />}
       {!isCreating && <div id="wrapper">
         <Typography variant="h6" style={{
           margin:'2rem',
@@ -139,10 +141,12 @@ export default ()=> {
                       }}>
                       </section>
                       <div className={classes.info}             
-                        onClick={()=>{
-                          console.log('clicked on card')
-                          setSelectedProject(project.id)
-
+                        onClick={()=>{                          
+                          if(selectedProject&&(selectedProject.id==project.id)){
+                            setSelectedProject(null)
+                          }else{
+                            setSelectedProject(project)
+                          }
                       }}>
 
                         <Typography variant="h6">

@@ -9,7 +9,7 @@ import { locationAtom,viewAtom, creatingAtom, mapAtom, selectedAtom, initiativeB
 import MarkerActive from 'assets/images/markerActive.svg'
 import LocationIcon from './Layers/LocationIcon.js'
 
-import CreateInitiativeForm from './Forms/CreateInitiativeForm'
+import CreateInitiativeForm from './Interfaces/CreateInitiativeForm'
 import Markers from './Layers/Markers.js'
 import CreateFab from './Interfaces/CreateFab.js'
 import LocateFab from './Interfaces/LocateFab.js'

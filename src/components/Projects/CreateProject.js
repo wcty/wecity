@@ -263,7 +263,9 @@ export default ({ isCreating, setIsCreating })=> {
       WaitResize()
       function WaitResize(){
         console.log(fileName)
-        imageRef.child( fileName.replace('.JPG','_484x252.JPG') ).getDownloadURL().then(onResolve, onReject)
+        const extension = '.'+fileName.split('.').reverse()[0]
+
+        imageRef.child( fileName.replace(extension,'_484x252'+extension) ).getDownloadURL().then(onResolve, onReject)
         function onResolve(foundURL) {
             //stuff
             setThumbLoadedURL(foundURL)
@@ -297,11 +299,13 @@ export default ({ isCreating, setIsCreating })=> {
   }
   
   const DeleteImage = ()=>{
+    const extension = '.'+fileName.split('.').reverse()[0]
+
     ////1920x1080,851x315,484x252,180x180
-    imageRef.child(fileName.replace('.JPG','_180x180.JPG')).delete()
-    imageRef.child(fileName.replace('.JPG','_484x252.JPG')).delete()
-    imageRef.child(fileName.replace('.JPG','_851x315.JPG')).delete()
-    imageRef.child(fileName.replace('.JPG','_1920x1080.JPG')).delete()
+    imageRef.child(fileName.replace(extension,'_180x180'+extension)).delete()
+    imageRef.child(fileName.replace(extension,'_484x252'+extension)).delete()
+    imageRef.child(fileName.replace(extension,'_851x315'+extension)).delete()
+    imageRef.child(fileName.replace(extension,'_1920x1080'+extension)).delete()
   }
   useEffect(()=>{
     if(!isCreating){
@@ -425,11 +429,12 @@ export default ({ isCreating, setIsCreating })=> {
                             setProgress(null)
                             uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
                               console.log(downloadURL)
+                              const extension = '.'+downloadURL.split('?')[0].split('.').reverse()[0]
                               setImageLoadedURL({
-                                xs: downloadURL.replace('.JPG', '_180x180.JPG'),
-                                s: downloadURL.replace('.JPG', '_484x252.JPG'),
-                                m: downloadURL.replace('.JPG', '_851x315.JPG'),
-                                l: downloadURL.replace('.JPG', '_1920x1080.JPG'),
+                                xs: downloadURL.replace(extension, '_180x180'+extension),
+                                s: downloadURL.replace(extension, '_484x252'+extension),
+                                m: downloadURL.replace(extension, '_851x315'+extension),
+                                l: downloadURL.replace(extension, '_1920x1080'+extension),
                               })
                               console.log(imageLoadedURL, !progressState, !thumbLoadedURL)                    
 

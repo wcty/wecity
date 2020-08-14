@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Typography, Fab, Grow, List, ListItem, ListItemText, Button } from '@material-ui/core';
+import { Paper, Typography, Fab, Grow, Box, List, ListItem, ListItemText, Button } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { creatingAtom, markerAtom , barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
@@ -155,7 +155,7 @@ export default ({ initiativeID })=> {
               borderTopRightRadius: expanded?0:"5px"         
           }}>
           </section>
-          <div className={classes.info}             
+          <Box className={classes.info}             
             onClick={()=>{
               console.log('clicked on card')
               setExpanded(!expanded)
@@ -209,7 +209,7 @@ export default ({ initiativeID })=> {
                 </ListItem>)}
               </List>
             </>)}
-          </div>
+          </Box>
           <Suspense fallback={null}>
           {expanded && (
             initiative.members.find(m=>m==user.uid) ? <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography> :(
