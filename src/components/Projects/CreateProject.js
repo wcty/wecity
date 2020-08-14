@@ -1,75 +1,136 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
+import { Paper, FormControl, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import addImage from 'assets/images/addImage.png'
-import { useRecoilState } from 'recoil';
-import { creatingAtom, markerAtom , markersAtom, userAtom, selectedAtom } from 'global/Atoms'
-import { useStorage, useUser,useStorageDownloadURL } from 'reactfire';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { creatingAtom, userAtom, locationAtom, mapAtom } from 'global/Atoms'
+import { useStorage, useUser, useStorageDownloadURL } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
 import { useGeoFirestore } from 'global/Hooks'
 import * as firebase from 'firebase/app';
 import { getFeatures } from 'global/Misc'
 import ErrorBoundary from 'global/ErrorBoundary'
+import useMeasure from 'use-measure';
 
 //1920x1080,851x315,484x252,180x180
 
 const formSteps = [
   [
     {
-      type: "text",
-      id: "name",
-      label: "Назва вашої ініціативи",
-      maxLength: 40
-    }
-  ],
-  [
-    {
       type: "image", 
       id: "addImage",
       imgPath: addImage,
-      label: "+ Додайте титульне фото"
+      label: "+ Додайте титульну картинку"
+    },
+    {
+      type: "text",
+      id: "name",
+      label: "Назва вашого проекту",
+      maxLength: 40
+    },
+    {
+      type: "text",
+      id: "contractor",
+      label: "Ім'я виробника",
+      maxLength: 40
+    },
+    {
+      type: "text",
+      id: "location",
+      label: "Місце виробництва",
+      maxLength: 300
     }
   ],
   [
     {
-      type: "text",
-      id: "problem",
-      label: "Яку проблему має вирішити ініціатива?",
-      rows: 3,
-      maxLength: 100
+      type: "select",
+      id: "category",
+      label: "Оберіть категорію проекту",
+      options:[
+        "Озеленення",
+        "Громадські простори",
+        "Побутові",
+        "Відпочинок",
+        "Допомога",
+        "Мистецтво",
+        "Бізнес",
+        "Інше"
+      ]
     },
     {
       type: "text",
-      id: "outcome",
-      label: "Опишіть очікувані результати:",
+      id: "problem",
+      label: "Яку проблему він має вирішити?",
       rows: 3,
-      maxLength: 100
+      maxLength: 300
+    },
+    {
+      type: "text",
+      id: "description",
+      label: "Опишіть проект:",
+      rows: 8,
+      maxLength: 1000
     },
   ],
   [
     {
       type: "text",
-      id: "context",
-      label: "Передумови для реалізації:",
-      rows: 6,
-      maxLength: 100
+      id: "experience",
+      label: "Який маєте досвід для реалізації?",
+      rows: 8,
+      maxLength: 300
     },
-  ]
+    {
+      type: "text",
+      id: "resource",
+      label: "Які негрошові ресурси необхідні?",
+      rows: 8,
+      maxLength: 300
+    },
+  ],
+  [
+    {
+      type: "text",
+      id: "volunteers",
+      label: "Скільки волонтерів вам буде потрібно?",
+      maxLength: 3
+    },
+    {
+      type: "text",
+      id: "volunteersTask",
+      label: "Які задачі мають виконувати волонтери?",
+      rows: 4,
+      maxLength: 300
+    },
+    {
+      type: "text",
+      id: "price",
+      label: "Який мінімальний необхідний бюджет?",
+      maxLength: 10
+    },
+    {
+      type: "text",
+      id: "budgetDescription",
+      label: "Які витрати має покривати бюдет?",
+      rows: 4,
+      maxLength: 300
+    },
+  ],
 ];
 
 function CircularProgressWithLabel(props) {
 
   return (
    <Box         
-      top={"50%"}
-      left={"50%"}
-      style={{transform: "translate(-50%, -100%)"}}
-      position="absolute"
-      alignItems="center"
-      justifyContent="center" 
-    >
+     top={"100px"}
+    left={"50%"}
+    style={{transform: "translate(-50%, -50%)"}}
+    position="absolute"
+    alignItems="center"
+    justifyContent="center" 
+  >
       <CircularProgress variant="static" {...props} />
       <Box
         top={0}
@@ -92,9 +153,9 @@ function CircularProgressWithoutLabel(props) {
 
   return (
    <Box         
-      top={"50%"}
+      top={"100px"}
       left={"50%"}
-      style={{transform: "translate(-50%, -100%)"}}
+      style={{transform: "translate(-50%, -50%)"}}
       position="absolute"
       alignItems="center"
       justifyContent="center" 
@@ -117,34 +178,37 @@ function CircularProgressWithoutLabel(props) {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: 'calc( 100% - 2rem )',
+    width: '100%',
+    position: 'absolute',
     flexGrow: 1,
     zIndex: 999,
-    position: 'fixed',
-    bottom: "1rem",
-    right: "1rem",
-    maxHeight: 350,
+    minHeight: '100%',
+    // overflowY: "auto",
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
 		},
   },
   paper:{
-    borderRadius: "5px",
+    minHeight:'100%',
+    position: 'absolute',
+    [theme.breakpoints.up('sm')]: {
+      maxWidth: 400,
+		},
+    // position: 'relative',
   },
   img: {
     height: '200px',
     maxWidth: 400,
-    overflow: 'hidden',
     display: 'block',
     width: '100%',
     margin: "auto",
-    borderTopLeftRadius: "5px",
-    borderTopRightRadius: "5px",
     objectFit: 'cover'
   },
 
   MobileStepper:{
-    background: "none"
+    background: "none",
+    position:'absolute',
+    width:'calc(100% - 1rem)',
   },
 
   text:{
@@ -168,32 +232,31 @@ const useStyles = makeStyles((theme) => ({
   },
   
 }));
-const useCheckImage = async (url)=>{
-  console.log('use')
-}
 
-export default ({ getMarker })=> {
+export default ({ isCreating, setIsCreating })=> {
   const classes = useStyles();
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = formSteps.length;
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
-  const [marker, setMarker] = useRecoilState(markerAtom)
-  const [markers, setMarkers] = useRecoilState(markersAtom)
+  const [project, setProject] = useState(null)
   const [uuid, setUuid] = useState(uuidv1())
-  const imageRef = useStorage().ref().child('initiatives')
+  const imageRef = useStorage().ref().child('projects')
 
   const [imageLoadedURL, setImageLoadedURL] = useState(null)
   const [thumbLoadedURL, setThumbLoadedURL] = useState(null)
 
-  const markersCollection = useGeoFirestore().collection('markers')
+  const projectsCollection = useGeoFirestore().collection('projects')
   const user = useUser()
   const [progressState, setProgress] = useState(null)
   const [fileName, setFileName] = useState(null)
   const [finished, setFinished] = useState(null)
+  const [location, setLocation] = useRecoilState(locationAtom)
 
-  const [selected, setSelected] = useRecoilState(selectedAtom)
+  const map = useRecoilValue(mapAtom)
 
+  useEffect(()=>{
+    console.log(location)
+  },[location])
   useEffect(()=>{
     if(fileName){
       let i = 0
@@ -214,6 +277,7 @@ export default ({ getMarker })=> {
       }
     }
   }, [imageLoadedURL])
+
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -221,15 +285,17 @@ export default ({ getMarker })=> {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
   const Reset = ()=>{
     setFileName(null)
     setUuid(uuidv1())
     setImageLoadedURL(null)
     setThumbLoadedURL(null)
-    setMarker(null)
+    setProject(null)
     setActiveStep(0)
     setFinished(false)
   }
+  
   const DeleteImage = ()=>{
     ////1920x1080,851x315,484x252,180x180
     imageRef.child(fileName.replace('.JPG','_180x180.JPG')).delete()
@@ -251,8 +317,8 @@ export default ({ getMarker })=> {
   }, [isCreating])
 
   return isCreating && (
-    <form className={classes.root} noValidate autoComplete="off">
-      <Paper elevation={1} className={classes.paper}>  
+    <form className={classes.root} noValidate autoComplete="off"  >
+      {/* <Paper elevation={1} className={classes.paper} >   */}
       {
         formSteps[activeStep].map(( input, i )=>{
           switch (input.type){
@@ -270,12 +336,30 @@ export default ({ getMarker })=> {
                     maxLength: input.maxLength
                   }}
                   onChange={(e)=>{
-                    setMarker(Object.assign(marker?Object.assign({}, marker):{}, { [input.id]: e.target.value }))
+                    setProject(Object.assign(project?Object.assign({}, project):{}, { [input.id]: e.target.value }))
                   }}
-                  defaultValue={marker && marker[input.id]?marker[input.id]:""}
-                  helperText={`${marker && marker[input.id]?marker[input.id].length:0}/${input.maxLength}`}
-
+                  defaultValue={project && project[input.id]?project[input.id]:""}
+                  helperText={`${project && project[input.id]?project[input.id].length:0}/${input.maxLength}`}
                 />
+              )
+            case 'select':
+              return (
+                <FormControl variant="outlined" key={input.id} className={classes.formControl} 
+                  style={{width: 'calc(100% - 2rem)', marginLeft:'1rem', marginTop:'1rem'}}>
+                  <InputLabel id={input.id} key={input.id+'lbl'} >{input.label}</InputLabel>
+                  <Select
+                    key={input.id} 
+                    labelId={input.id}
+                    id={input.id}
+                    value={project && project[input.id]?project[input.id]:""}
+                    onChange={(e)=>{
+                      setProject(Object.assign(project?Object.assign({}, project):{}, { [input.id]: e.target.value }))
+                    }}
+                    label={input.label}
+                  >
+                    {input.options.map(opt=><MenuItem key={opt} value={opt}>{opt}</MenuItem>)}
+                  </Select>
+                </FormControl>
               )
             case 'image':
               return (
@@ -367,7 +451,8 @@ export default ({ getMarker })=> {
 
       <MobileStepper
         steps={maxSteps}
-        position="static"
+        position={map.height<600?"static":"bottom"}
+
         variant="text"
         activeStep={activeStep}
         className={classes.MobileStepper}
@@ -375,24 +460,24 @@ export default ({ getMarker })=> {
           activeStep === (maxSteps - 1) ? (
             <Button  className={classes.button} variant="contained" size="small" onClick={async ()=>{    
 
-              markersCollection.add({
-                ...marker,
+              projectsCollection.add({
+                ...project,
                 timestamp: new Date(),
                 imageURL: imageLoadedURL,
-                members: [user.uid],
-                coordinates: new firebase.firestore.GeoPoint(...getMarker().toArray())
+                contractors: [user.uid],
+                coordinates: new firebase.firestore.GeoPoint(location.longitude, location.latitude)
               }).then(function(docRef) {
                 console.log("Document written with ID: ", docRef.id);
                 docRef.update({id:docRef.id})
-                setSelected(docRef.id)
+                //setSelected(docRef.id)
               })
               .catch(function(error) {
                   console.error("Error adding document: ", error);
               });
 
-              const query = markersCollection.near({ center: new firebase.firestore.GeoPoint(...getMarker().toArray()), radius: 1000 });
+              const query = projectsCollection.near({ center: new firebase.firestore.GeoPoint(location.longitude, location.latitude), radius: 1000 });
               query.get().then((value) => {
-                setMarkers({type:"FeatureCollection", features: getFeatures(value) })
+                //setProjects({type:"FeatureCollection", features: getFeatures(value) })
                 setFinished(true)
                 setIsCreating(false)
               });
@@ -421,7 +506,7 @@ export default ({ getMarker })=> {
           )
         }
       />
-      </Paper>
+      {/* </Paper> */}
     </form>
   );
 }

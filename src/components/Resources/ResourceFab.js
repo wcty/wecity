@@ -43,7 +43,7 @@ export default ({ active, getMarker })=>{
               setSelected(null)
               
             }else{
-              setAlert({description: "Ви маєте увійти щоб створити ініціативу, проект або ресурс"})
+              setAlert({description: "You need to login to create a marker"})
             }
           }}
           ref={fabRef}

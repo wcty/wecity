@@ -1,8 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, Suspense } from 'react'
 // import * as serviceWorker from '../serviceWorker';
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Snackbar, Button } from '@material-ui/core'
 import AppBar from './AppBar'
+import Initiatives from './Initiatives'
+import Projects from './Projects'
+import Resources from './Resources'
+
 import Map from './Map'
 import { barAtom, mapAtom } from 'global/Atoms'
 import { RecoilRoot, useRecoilState } from 'recoil'
@@ -11,6 +15,8 @@ import { theme } from 'global/Theme'
 import { firebaseConfig } from 'config'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { FirebaseAppProvider } from 'reactfire'
+import { useRecoilValue } from 'recoil'
+import { initiativeBarAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
 
 const useStyles = makeStyles(theme => ({
 
@@ -51,7 +57,10 @@ const Layout = ()=>{
   
   const [showReload, setShowReload] = useState(false);
   const [waitingWorker, setWaitingWorker] = useState(null);
-  
+  const initiativeBar = useRecoilValue(initiativeBarAtom)
+  const projectBar = useRecoilValue(projectBarAtom)
+  const resourceBar = useRecoilValue(resourceBarAtom)
+
   const onSWUpdate = (registration) => {
     setShowReload(true);
     setWaitingWorker(registration.waiting);
@@ -91,6 +100,12 @@ const Layout = ()=>{
         }
       />
       <AppBar />
+      <Suspense fallback={null}>
+       {initiativeBar && <Initiatives />}
+       {projectBar && <Projects />}
+       {resourceBar && <Resources />}
+
+      </Suspense>
       <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>
         <Map />
       </Box>

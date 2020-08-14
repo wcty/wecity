@@ -29,7 +29,7 @@ const formSteps = [
       type: "image", 
       id: "addImage",
       imgPath: addImage,
-      label: "+ Додайте титульне фото"
+      label: "+ Додайте титульну картинку"
     }
   ],
   [

@@ -79,13 +79,13 @@ const LogIn = ()=>{
                 color="default" 
                 className={classes.button}
               >
-                Logout
+                Вийти
               </Button>
             </div>
           :
         <Button onClick={signInWithGoogle} dense="true" color="default" className={classes.button}>
           <AccountCircle  className={classes.progress} />
-          Login
+          Увійти
         </Button>
   )
 }
@@ -119,7 +119,7 @@ const Bar = (props)=>{
         </Typography> */}
         <Suspense fallback={            
             <div className={classes.progressLoaderContainer}>
-              <CircularProgress size={24} color="default" className={classes.progress} />
+              <CircularProgress size={24}  className={classes.progress} />
               <Typography className={classes.progressText} type="button" component="p">
                 Loading
               </Typography>

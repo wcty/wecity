@@ -17,6 +17,7 @@ export default () =>{
     if (event.features.length > 0) {
       const nextClickedStateId = event.features[0].properties.id;
       if ( !selected || ( selected !== nextClickedStateId )) {
+        console.log(event.features[0].properties.id)
         setSelected(event.features[0].properties.id);
       }
     }

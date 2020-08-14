@@ -50,3 +50,18 @@ export const userAtom = atom({
   key: 'user',
   default: null,
 });
+
+export const initiativeBarAtom = atom({
+  key: 'initiativeBar',
+  default: false,
+})
+
+export const projectBarAtom = atom({
+  key: 'projectBar',
+  default: true,
+})
+
+export const resourceBarAtom = atom({
+  key: 'resourceBar',
+  default: false,
+})

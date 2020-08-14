@@ -1,17 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, Typography, Fab, Grow, List, ListItem, ListItemText, Button } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { creatingAtom, markerAtom , barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
-import { useStorage, useStorageDownloadURL, useFirestore } from 'reactfire';
-import { v1 as uuidv1 } from 'uuid';
-import { useGeoFirestore } from 'global/Hooks'
-import * as firebase from 'firebase/app';
-import { getFeatures } from 'global/Misc';
+import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire';
 import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
 import distance from '@turf/distance'
-import {prefix} from 'global/Theme'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     minHeight: "250px",
     width: "100%",
-    overflow: expanded?'auto':'hidden'
+    overflowX: "hidden"
   },
   img: {
     height: '160px',
@@ -36,8 +31,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'block',
     width: '100%',
     margin: "auto",
-    borderTopLeftRadius: "5px",
-    borderTopRightRadius: "5px",
     verticalAlign: 'middle',
     objectFit: 'cover'
   },
@@ -86,10 +79,8 @@ export default ({ initiativeID })=> {
   const [expanded, setExpanded] = useState(false)
   const map = useRecoilValue(mapAtom)
   const bar = useRecoilValue(barAtom)
+  const user = useUser()
 
-  useEffect(()=>{
-    console.log(map, bar)
-  },[map])
   useEffect(()=>{
     setExpanded(false)
   },[selected])
@@ -118,24 +109,36 @@ export default ({ initiativeID })=> {
       <form className={classes.root} noValidate autoComplete="off"
         style={{
           height: expanded?`calc(100% - ${bar.height}px)`:"250px", 
-          maxHeight: expanded?`calc(100% - ${bar.height}px)`:"250px",
           width: expanded?'100%':'calc( 100% - 2rem )',
           bottom: expanded?'0':"1rem",
           right: expanded?'0':"1rem",
+          willChange: 'height, width, bottom, right'
         }} 
       >
         <Paper elevation={1} className={classes.paper} 
-          style={{cursor: 'pointer', borderRadius: expanded?'0':"5px" }}
+          style={{
+            cursor: 'pointer', 
+            borderRadius: expanded?'0':"5px",
+            overflowY: expanded?'scroll':'hidden' 
+          }}
         > 
-          <Fab className={classes.favourites}
-            style={{
-              transform: expanded?'translateY(-120%)':'translateY(-50%)',
-            }}
-            onClick={()=>{
-              console.log('clicked on fab')
-            }}>
-            <StarBorder />
-          </Fab>
+          <Suspense fallback={null}>
+            <Fab className={classes.favourites}
+              style={{
+                transform: expanded?'translateY(-120%)':'translateY(-50%)',
+              }}
+              onClick={()=>{
+                if(initiative.members.find(m=>m==user.uid)){
+                  console.log("You are a member already")
+                }else{
+                  console.log('clicked on fab')
+                }
+              }}
+            >
+
+              {initiative.members.find(m=>m==user.uid)?<Star /> : <StarBorder />}
+            </Fab>
+          </Suspense>
           <div id="wrapper">
           <section 
             className={classes.img} 
@@ -144,10 +147,12 @@ export default ({ initiativeID })=> {
               console.log('clicked on img')
             }}
             style={{
-              backgroundImage: `url(${initiative.imageURL || addImage})`,
+              backgroundImage: `url(${initiative.imageURL?initiative.imageURL.s: addImage})`,
               backgroundPosition: 'center',
               backgroundSize: 'cover',
-              backgroundRepeat: 'no-repeat'
+              backgroundRepeat: 'no-repeat',
+              borderTopLeftRadius: expanded?0:"5px",
+              borderTopRightRadius: expanded?0:"5px"         
           }}>
           </section>
           <div className={classes.info}             
@@ -160,10 +165,10 @@ export default ({ initiativeID })=> {
               {initiative.coordinates ? (
                 <> {
                   (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<1 ? 
-                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +"m from me":
+                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +"м від мене":
                   ((distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<10 ? 
-                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +"km from me":
-                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +"km from me")
+                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +"км від мене":
+                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +"км від мене")
                 } 
                 </>
               ): <> Distance is unknown </>}
@@ -205,13 +210,21 @@ export default ({ initiativeID })=> {
               </List>
             </>)}
           </div>
-          {expanded && (<Button elevation={15} variant="contained" size="small" 
-            style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 
-                onClick={
+          <Suspense fallback={null}>
+          {expanded && (
+            initiative.members.find(m=>m==user.uid) ? <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography> :(
+            <Button 
+              elevation={15} 
+              variant="contained" 
+              style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 
+              onClick={()=>{
                 console.log('button')
-              }>
-                Приєднатися
-          </Button>)}
+              }}
+            >
+              Приєднатися
+            </Button>)
+          )}
+          </Suspense>
           </div>
         </Paper>
     </form>

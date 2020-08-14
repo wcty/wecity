@@ -5,7 +5,7 @@ import MapGL from '@urbica/react-map-gl'
 import { mapboxConfig } from 'config'
 import { AuthCheck, SuspenseWithPerf } from 'reactfire';
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { locationAtom,viewAtom, creatingAtom, mapAtom, selectedAtom } from 'global/Atoms'
+import { locationAtom,viewAtom, creatingAtom, mapAtom, selectedAtom, initiativeBarAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
 import MarkerActive from 'assets/images/markerActive.svg'
 import LocationIcon from './Layers/LocationIcon.js'
 
@@ -46,8 +46,8 @@ const NewMarkerDialog = (props)=>{
   const classes = useStyles()
 
   return <> 
+    <CreateInitiativeForm {...props} />
     { isCreating && (<>
-      <CreateInitiativeForm {...props} />
       <img alt="React Firebase" src={MarkerActive} className={classes.marker} width={42} height={42} />
     </>)}
   </>
@@ -64,6 +64,9 @@ export default ()=>{
   const [loaded, setLoaded] = useState(false)
   const [selected, setSelected] = useRecoilState(selectedAtom)
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
+  const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
+  const [projectBar, setProjectBar] = useRecoilState(projectBarAtom)
+  const [resourceBar, setResourceBar] = useRecoilState(resourceBarAtom)
 
   useEffect(()=>{
       if ("geolocation" in navigator) {
@@ -115,6 +118,9 @@ export default ()=>{
           onClick={()=>{
             setSelected(null)
             setIsCreating(null)
+            setInitiativeBar(false)
+            setProjectBar(false)
+            setResourceBar(false)
           }}
         >
           <SuspenseWithPerf fallback={

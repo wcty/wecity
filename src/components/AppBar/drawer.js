@@ -1,18 +1,12 @@
-/* eslint-disable */
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import { SwipeableDrawer, Button, List, Divider, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { MapOutlined, LibraryBooksOutlined, ChatBubbleOutline, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined } from '@material-ui/icons';
 import { useAuth, useUser } from 'reactfire';
 import ErrorBoundary from 'global/ErrorBoundary'
+import { initiativeBarAtom, selectedAtom, creatingAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
+import { useRecoilState } from 'recoil'
 
 const useStyles = makeStyles({
   list: {
@@ -33,15 +27,65 @@ export default ({ state, setState })=>{
     }
     setState(open);
   };
+  const [resourceBar, setResourceBar] = useRecoilState(resourceBarAtom)
+  const [projectBar, setProjectBar] = useRecoilState(projectBarAtom)
+  const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
+  const [selected, setSelected] = useRecoilState(selectedAtom)
+  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
+
 
   const user = useUser();
   const menuTop = user?
-    ['New initiatives', 'My initiatives', 'Bookmarked', 'Project library', 'My projects']:
-    ['City initiatives', 'Project library']
+    [
+      {
+        id:'map',
+        text:'Мапа'
+      }, 
+      {
+        id:'initiatives',
+        text: 'Ініціативи'
+      },
+      {
+        id: 'projects',
+        text: 'Проекти'
+      },
+      {
+        id: 'resources',
+        text: 'Ресурси'
+      }
+    ]:
+    [      
+      {
+        id:'map',
+        text:'Мапа'
+      }, 
+      {
+        id: 'projects',
+        text: 'Проекти'
+      },
+      {
+        id: 'resources',
+        text: 'Ресурси'
+      }
+    ]
 
   const menuBottom = user?
-    ['Settings', 'Contact us']:
-    ['Contact us']
+    [
+      {
+        id: 'settings',
+        text:'Налаштування'
+      }, 
+      {
+        id: 'feedback',
+        text:'Зворотній зв\'язок'
+      }
+    ]:
+    [
+      {
+        id: 'feedback',
+        text:'Зворотній зв\'язок'
+      }
+    ]
 
   const list = (anchor) => (
     <div
@@ -49,23 +93,66 @@ export default ({ state, setState })=>{
         [classes.fullList]: anchor === 'top' || anchor === 'bottom',
       })}
       role="Menu of the map"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
+      onClick={toggleDrawer(false)}
+      onKeyDown={toggleDrawer(false)}
     >
       <List>
-        {menuTop.map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
+        {menuTop.map((val, index) => (
+          <ListItem button key={val.id} onClick={()=>{
+            if(val.id==='map'){
+              setSelected(null)
+              setIsCreating(null)  
+              setInitiativeBar(false)
+              setProjectBar(false)
+              setResourceBar(false)
+
+            }else if(val.id==='initiatives'){
+              //setSelected(null)
+              setIsCreating(null)  
+              setInitiativeBar(true)
+              setProjectBar(false)
+              setResourceBar(false)
+
+            }else if(val.id==='projects'){
+              setSelected(null)
+              setIsCreating(null)  
+              setInitiativeBar(false)
+              setProjectBar(true)
+              setResourceBar(false)
+
+            }else if(val.id==='resources'){
+              setSelected(null)
+              setIsCreating(null)  
+              setInitiativeBar(false)
+              setProjectBar(false)
+              setResourceBar(true)
+            }
+          }}>
+            <ListItemIcon>
+              {val.id==='map' && <MapOutlined /> }
+              {val.id==='initiatives' && <PeopleOutline /> }
+              {val.id==='projects' && <LibraryBooksOutlined /> }
+              {val.id==='resources' && <BuildOutlined /> }
+            </ListItemIcon>
+            <ListItemText primary={val.text} />
           </ListItem>
         ))}
       </List>
       <Divider />
       <List>
-        {menuBottom.map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
+        {menuBottom.map((val, index) => (
+          <ListItem button key={val.id} onClick={()=>{
+            if(val.id==='settings'){
+
+            }else if(val.id==='feedback'){
+
+            }
+          }}>
+            <ListItemIcon>
+              {val.id==='settings' && <SettingsApplicationsOutlined /> }
+              {val.id==='feedback' && <FeedbackOutlined /> }
+            </ListItemIcon>
+            <ListItemText primary={val.text} />
           </ListItem>
         ))}
       </List>

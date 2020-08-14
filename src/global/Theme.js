@@ -4,9 +4,9 @@ import { grey, amber} from '@material-ui/core/colors'
 export const theme = createMuiTheme({
   palette: {
     primary: {
-      light: grey[0],
-      main: grey[100],
-      dark: grey[200],
+      light: grey[300],
+      main: grey[200],
+      dark: grey[100],
       contrastText: '#fff',
     },
     secondary: {
