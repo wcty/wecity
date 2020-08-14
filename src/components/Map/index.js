@@ -109,7 +109,8 @@ export default ()=>{
         <LocateFab mapRef={mapRef} loaded={loaded} />
         <MapGL
           style={{  width: '100%', height: '100%', border:"none", outline: "none" }}
-          mapStyle="mapbox://styles/switch9/ckahu5spr0amr1ik3n1fg0fvt"
+          //mapStyle="mapbox://styles/switch9/ckahu5spr0amr1ik3n1fg0fvt"
+          mapStyle='mapbox://styles/mapbox/satellite-v9'
           accessToken={mapboxConfig.accessToken}
           onViewportChange={setViewport}
           onLoad={()=>{setLoaded(true)}}
