@@ -40,6 +40,13 @@ const formSteps = [
   [
     {
       type: "text",
+      id: "location",
+      label: "Розташування:",
+      rows: 2,
+      maxLength: 100
+    },
+    {
+      type: "text",
       id: "condition",
       label: "В якому він стані:",
       rows: 6,
@@ -67,7 +74,7 @@ const formSteps = [
         "Інше"
       ]
     },
-    {
+        {
       type: "text",
       id: "compensation",
       label: "Сума компенсації, якщо потрібна:",
@@ -77,14 +84,14 @@ const formSteps = [
       type: "text",
       id: "usability",
       label: "Кому він може бути корисним:",
-      rows: 3,
+      rows: 4,
       maxLength: 300
     },
     {
       type: "text",
       id: "exchange",
       label: "На шо ви хотіли би його обміняти:",
-      rows: 3,
+      rows: 4,
       maxLength: 300
     },
 

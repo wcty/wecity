@@ -155,7 +155,7 @@ export default ()=> {
                           {resource.shortDescription? resource.shortDescription: "Description is not set"}
                         </Typography>
                         <Typography variant="body">
-                          {resource.usability? resource.usability: "Usability is not set"}
+                          {resource.location? resource.location: "Location is not set"}
                         </Typography>
                       </div>
                   </div>

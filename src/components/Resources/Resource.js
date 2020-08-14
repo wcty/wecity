@@ -119,6 +119,12 @@ export default ({ resource, setResource })=> {
               {resource.shortDescription? resource.shortDescription: "Description is not set"}
             </Typography>
               <List>
+                {resource.location&& (<ListItem>
+                  <ListItemText
+                    primary="Розташування:"
+                    secondary={resource.location}
+                  />
+                </ListItem>)}
                 {resource.description&& (<ListItem>
                   <ListItemText
                     primary="Розгорнутий опис:"
