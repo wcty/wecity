@@ -1,9 +1,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Divider, List, Typography, ListItem, ListItemText, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { Paper, Divider, List, Typography, ListItem, ListItemText, FormControl, InputLabel, Select, MenuItem, Grid } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { initiativeBarAtom, barAtom, selectedAtom, creatingAtom } from 'global/Atoms'
+import { projectBarAtom, barAtom, selectedAtom, creatingAtom } from 'global/Atoms'
 import { useStorage, useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
 import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
 import distance from '@turf/distance'
@@ -21,7 +21,29 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
 		},
-  }
+  },
+  info:{
+    padding: theme.spacing(2),
+    //height:'100%',
+    width: '100%'
+  },
+  img: {
+    height: '160px',
+    maxWidth: 400,
+    overflow: 'hidden',
+    display: 'block',
+    width: '100%',
+    margin: "auto",
+    verticalAlign: 'middle',
+    objectFit: 'cover'
+  },
+  paper:{
+    height: "100%",
+    minHeight: "250px",
+    width: "100%",
+    overflowX: "hidden",
+    transitionDuration: '0.3s'
+  },
 }));
 
 export default ()=> {
@@ -29,18 +51,19 @@ export default ()=> {
   const theme = useTheme();
   const user = useUser()
   const bar = useRecoilValue(barAtom)
-  const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
+  const [projectBar, setprojectBar] = useRecoilState(projectBarAtom)
   const [selected, setSelected] = useRecoilState(selectedAtom)
   const [isCreating, setIsCreating] = useState(false)
   const [currentFilter, setCurrentFilter] = useState(null)
-  const initiativesRef = currentFilter?
+  const [selectedProject, setSelectedProject] = useState(null)
+  const projectsRef = currentFilter?
     useFirestore()
     .collection('projects')
     .where("category", "==", currentFilter):
     useFirestore()
     .collection('projects')
 
-  const initiatives = useFirestoreCollectionData(initiativesRef)
+  const projects = useFirestoreCollectionData(projectsRef)
   const categories = [
     "Всі категорії",
     "Озеленення",
@@ -53,8 +76,8 @@ export default ()=> {
     "Інше"
   ]
   useEffect(()=>{
-    console.log(initiatives)
-  },[initiatives])
+    console.log(projects)
+  },[projects])
   return (<>
     <Paper elevation={1} className={classes.root} 
       style={{
@@ -91,29 +114,51 @@ export default ()=> {
           </Select>
         </FormControl>
         <List>
-          {initiatives[0] ? 
-          (<>
-          {initiatives.map((initiative, i)=>{
-              // (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<1 ? 
+          {projects[0] ? 
+          (<><Grid container spacing={1} style={{padding:'1rem'}}>
+          {projects.map((project, i)=>{
+            console.log(project)
+              // (distance([location.longitude, location.latitude], Object.values(project.coordinates)))<1 ? 
               return (
-                <div key={i}>
-                  <ListItem button onClick={()=>{
-                    console.log(initiative)
-                    setSelected(initiative.id)
-                    setIsCreating(null)  
-                    setInitiativeBar(false)
-                  }}>
-                    <img src={initiative.imageURL.xs} key={i+'img'} width="120px" height="120px" style={{paddingLeft: '2rem', padding: '1rem', objectFit:'cover'}}/>
-                    <ListItemText key={i+'lit'}
-                      primary={initiative.name}
-                      secondary={initiative.contractor}
-                    />
-                  </ListItem>
-                  <Divider light style={{width:'100%', display:"block"}}/>
-                </div>
+                <Grid key={i} item xs={6} s={4}>
+                  <Paper className={classes.paper} >
+                    <div id="wrapper">
+                      <section 
+                        className={classes.img} 
+                        alt="Cover of the project"
+                        onClick={()=>{
+                          console.log('clicked on img')
+                        }}
+                        style={{
+                          backgroundImage: `url(${project.imageURL.m || addImage})`,
+                          backgroundPosition: 'center',
+                          backgroundSize: 'cover',
+                          backgroundRepeat: 'no-repeat',
+                          borderTopLeftRadius: "5px",
+                          borderTopRightRadius: "5px"         
+                      }}>
+                      </section>
+                      <div className={classes.info}             
+                        onClick={()=>{
+                          console.log('clicked on card')
+                          setSelectedProject(project.id)
+
+                      }}>
+
+                        <Typography variant="h6">
+                          {project.name? project.name: "Name is not set"}
+                        </Typography>
+                        <Typography variant="body">
+                          {project.contractor? project.contractor: "Contractor is not set"}
+                        </Typography>
+                      </div>
+                  </div>
+                  </Paper>
+                </Grid>
               )
-            }) 
-          }</>):
+          })}
+          </Grid>
+          </>):
           <Typography style={{
             margin: '2rem',
             textAlign: 'center'
