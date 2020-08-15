@@ -316,7 +316,7 @@ export default ({ mapRef, loaded })=> {
           </Box>
           <Suspense fallback={null}>
           {expanded && (
-            initiative.members.find(m=>m==user.uid) ? <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography> :(
+            initiative.members.find(m=>m==user?user.uid:null) ? <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography> :(
             <Button 
               elevation={15} 
               variant="contained" 
