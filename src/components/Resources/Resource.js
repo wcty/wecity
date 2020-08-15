@@ -77,7 +77,16 @@ export default ({ resource, setResource })=> {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   return (<>
-    {isViewerOpen && (
+    {isViewerOpen && (<>
+        <IconButton 
+          aria-label="return"
+          style={{position:"absolute", zIndex: 1000, right:"1.5rem", top:"0.5rem"}}
+          onClick={()=>{
+            setIsViewerOpen(false)
+          }}
+        >
+          <Close  color="primary" />
+        </IconButton>
         <ImageViewer
           src={ [resource.imageURL.l] }
           currentIndex={ 0 }
@@ -85,6 +94,7 @@ export default ({ resource, setResource })=> {
           zIndex={300}
           style={{zIndex:300}}
         />
+        </>
     )}
     { (
       <form className={classes.root} noValidate autoComplete="off"
@@ -125,7 +135,7 @@ export default ({ resource, setResource })=> {
                 setResource(null)
               }}
             >
-              <Close />
+              <Close  color="primary" />
             </IconButton>
           </section>
             {resource.category && (<Chip label={resource.category} style={{marginLeft: '1rem', marginTop: '-5rem'}} />)}

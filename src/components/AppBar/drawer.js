@@ -40,33 +40,33 @@ export default ({ state, setState })=>{
     [
       {
         id:'map',
-        text:'Мапа'
+        text:'Мапа ініціатив'
       }, 
       {
         id:'initiatives',
-        text: 'Ініціативи'
+        text: 'Мої ініціативи'
       },
       {
         id: 'projects',
-        text: 'Проекти'
+        text: 'Проектні пропозиції'
       },
       {
         id: 'resources',
-        text: 'Ресурси'
+        text: 'Локальні ресурси'
       }
     ]:
     [      
       {
         id:'map',
-        text:'Мапа'
+        text:'Мапа ініціатив'
       }, 
       {
         id: 'projects',
-        text: 'Проекти'
+        text: 'Проектні пропозиції'
       },
       {
         id: 'resources',
-        text: 'Ресурси'
+        text: 'Локальні ресурси'
       }
     ]
 

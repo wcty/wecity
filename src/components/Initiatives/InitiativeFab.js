@@ -3,14 +3,13 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Fab, Collapse } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useRecoilState, useRecoilValue } from 'recoil'
-import {  selectedAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
+import {  selectedAtom, initiativeBarAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
 import { AddLocation, MyLocation } from '@material-ui/icons'
 import useMeasure from "use-measure";
 
 const useStyles = makeStyles(theme => ({
-  createFab: {
+  InitiativeFab: {
     position: 'absolute',
-    top: '1rem',
     right: '1rem'
   },
   alert: {
@@ -30,6 +29,7 @@ export default ({ active, getMarker })=>{
   const fabRef = useRef()
   const fab = useMeasure(fabRef)
   const [selected, setSelected] = useRecoilState(selectedAtom)
+  const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
 
 
   return (
@@ -41,13 +41,18 @@ export default ({ active, getMarker })=>{
             if(active){
               setIsCreating(true)
               setSelected(null)
-              
+              setInitiativeBar(false)
             }else{
               setAlert({description: "Ви маєте увійти щоб створити ініціативу, проект або ресурс"})
             }
           }}
           ref={fabRef}
-          className={classes.createFab} 
+          className={classes.InitiativeFab} 
+          style={{
+            top: initiativeBar?'unset':'1rem',
+            bottom: initiativeBar?'1rem':'unset',
+
+          }}
           raised="true" 
           aria-label="add"
         >

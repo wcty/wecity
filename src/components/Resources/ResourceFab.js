@@ -4,10 +4,10 @@ import { Fab } from '@material-ui/core'
 import { Add } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
-  createFab: {
+  CreateInitiative: {
     position: 'fixed',
     bottom: '1rem',
-    right: '2rem',
+    right: '1rem',
   },
 }))  
 
@@ -25,7 +25,7 @@ export default ({ active, getMarker, isCreating, setIsCreating })=>{
           style={{
             zIndex:200
           }}
-          className={classes.createFab} 
+          className={classes.CreateInitiative} 
           raised="true" 
           aria-label="add"
         >

@@ -83,6 +83,16 @@ export default ({ project, setProject })=> {
 
   return (<>
     {isViewerOpen && (
+      <>
+        <IconButton 
+          aria-label="return"
+          style={{position:"absolute", zIndex: 1000, right:"1.5rem", top:"0.5rem"}}
+          onClick={()=>{
+            setIsViewerOpen(false)
+          }}
+        >
+          <Close  color="primary" />
+        </IconButton>
       <ImageViewer
         src={ [project.imageURL.l] }
         currentIndex={ 0 }
@@ -90,6 +100,8 @@ export default ({ project, setProject })=> {
         zIndex={300}
         style={{zIndex:300}}
       />
+
+      </>
     )}
     { (
       <form className={classes.root} noValidate autoComplete="off"
@@ -131,7 +143,7 @@ export default ({ project, setProject })=> {
                 setProject(null)
               }}
             >
-              <Close />
+              <Close color="primary"/>
             </IconButton>
           </section>
             {project.category && (<Chip label={project.category} style={{marginLeft: '1rem', marginTop: '-5rem'}} />)}

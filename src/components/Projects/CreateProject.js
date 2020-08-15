@@ -33,7 +33,7 @@ const formSteps = [
     {
       type: "text",
       id: "contractor",
-      label: "Ім'я виробника",
+      label: "Ім'я виконавця",
       maxLength: 40
     },
     {

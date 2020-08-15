@@ -9,11 +9,13 @@ import { locationAtom,viewAtom, creatingAtom, mapAtom, selectedAtom, initiativeB
 import MarkerActive from 'assets/images/markerActive.svg'
 import LocationIcon from './Layers/LocationIcon.js'
 
-import CreateInitiativeForm from './Interfaces/CreateInitiativeForm'
-import Markers from './Layers/Markers.js'
-import CreateFab from './Interfaces/CreateFab.js'
+import CreateInitiativeForm from 'components/Initiatives/CreateInitiativeForm'
+import InitiativeFab from 'components/Initiatives/InitiativeFab.js'
+import Initiative from 'components/Initiatives/Initiative.js'
+import Initiatives from 'components/Initiatives'
+
 import LocateFab from './Interfaces/LocateFab.js'
-import Initiative from './Interfaces/Initiative.js'
+import Markers from './Layers/Markers.js'
 
 
 const useStyles = makeStyles(theme => ({
@@ -90,13 +92,16 @@ export default ()=>{
 
   return (
       <>
+        <Suspense fallback={null}>
+          {initiativeBar && <Initiatives mapRef={mapRef} />}
+        </Suspense>
         <Suspense fallback={
-          <CreateFab active={false} />
+          <InitiativeFab active={false} />
         }>
           <AuthCheck fallback={
-            <CreateFab active={false} />   
+            <InitiativeFab active={false} />   
           }>
-            <CreateFab active={true} getMarker={()=>{
+            <InitiativeFab active={true} getMarker={()=>{
               const w = mapDimensions.width/2
               const h = (mapDimensions.height - 350)/2
               return mapRef.current.getMap().unproject ([w,h])

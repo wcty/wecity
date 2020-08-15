@@ -160,6 +160,16 @@ export default ({ mapRef, loaded })=> {
 
   return (<>
     {isViewerOpen && (
+      <>
+    <IconButton 
+      aria-label="return"
+      style={{position:"absolute", zIndex: 1000, right:"1.5rem", top:"0.5rem"}}
+      onClick={()=>{
+        setIsViewerOpen(false)
+      }}
+    >
+      <Close  color="primary" />
+    </IconButton>
     <ImageViewer
       src={ [initiative.imageURL.l] }
       currentIndex={ 0 }
@@ -167,6 +177,7 @@ export default ({ mapRef, loaded })=> {
       zIndex={300}
       style={{zIndex:300}}
     />
+    </>
     )}
     { selected && initiative && !isViewerOpen && (
       <form className={classes.root} noValidate autoComplete="off"
@@ -232,7 +243,7 @@ export default ({ mapRef, loaded })=> {
                 setSelected(null)
               }}
             >
-              <Close />
+              <Close  color="primary" />
             </IconButton>
           </section>
           <Box className={classes.info} 

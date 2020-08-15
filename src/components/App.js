@@ -101,10 +101,8 @@ const Layout = ()=>{
       />
       <AppBar />
       <Suspense fallback={null}>
-       {initiativeBar && <Initiatives />}
        {projectBar && <Projects />}
        {resourceBar && <Resources />}
-
       </Suspense>
       <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>
         <Map />

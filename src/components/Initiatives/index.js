@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Divider, List, Typography, ListItem, ListItemText, Button } from '@material-ui/core';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { initiativeBarAtom, barAtom, selectedAtom, creatingAtom } from 'global/Atoms'
+import { initiativeBarAtom, barAtom, mapAtom, selectedAtom, creatingAtom } from 'global/Atoms'
 import {  useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
-
+import InitiativeFab from 'components/Initiatives/InitiativeFab'
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -34,13 +34,14 @@ const useAddress = (coords)=>{
   return address
 }
 
-export default ()=> {
+export default ({ mapRef })=> {
   const classes = useStyles();
   const user = useUser()
   const bar = useRecoilValue(barAtom)
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
   const [selected, setSelected] = useRecoilState(selectedAtom)
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
+  const mapDimensions = useRecoilValue(mapAtom)
 
   const initiativesRef = useFirestore()
     .collection('markers')
@@ -99,7 +100,11 @@ export default ()=> {
           </Typography>
           }
           </List>
-
+          <InitiativeFab active={true} getMarker={()=>{
+              const w = mapDimensions.width/2
+              const h = (mapDimensions.height - 350)/2
+              return mapRef.current.getMap().unproject ([w,h])
+            }}/>
           </div>
         </Paper>
       </>)
