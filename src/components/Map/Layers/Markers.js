@@ -68,7 +68,7 @@ export default () =>{
               ["linear"],
               ['zoom'],
                 9, 0.2,
-                15, 1
+                16, 1.35
             ],
           'text-allow-overlap': true,
           'icon-ignore-placement': true,

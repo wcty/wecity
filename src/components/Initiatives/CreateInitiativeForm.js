@@ -43,14 +43,14 @@ const formSteps = [
       id: "problem",
       label: "Яку проблему має вирішити ініціатива?",
       rows: 2,
-      maxLength: 100
+      maxLength: 300
     },
     {
       type: "text",
       id: "outcome",
       label: "Опишіть очікувані результати:",
       rows: 1,
-      maxLength: 100
+      maxLength: 300
     },
   ],
   [
@@ -59,7 +59,7 @@ const formSteps = [
       id: "context",
       label: "Передумови для реалізації:",
       rows: 6,
-      maxLength: 100
+      maxLength: 300
     },
   ]
 ];
