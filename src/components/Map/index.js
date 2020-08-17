@@ -16,6 +16,8 @@ import Initiatives from 'components/Initiatives'
 
 import LocateFab from './Interfaces/LocateFab.js'
 import Markers from './Layers/Markers.js'
+import Satellite from './Layers/Satellite.js'
+import LayersFab from './Interfaces/LayersFab.js'
 
 
 const useStyles = makeStyles(theme => ({
@@ -69,6 +71,7 @@ export default ()=>{
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
   const [projectBar, setProjectBar] = useRecoilState(projectBarAtom)
   const [resourceBar, setResourceBar] = useRecoilState(resourceBarAtom)
+  const [satellite, setSatellite] = useState(false)
 
   useEffect(()=>{
       if ("geolocation" in navigator) {
@@ -112,10 +115,11 @@ export default ()=>{
           <Initiative  mapRef={mapRef} loaded={loaded} />
         </Suspense>
         <LocateFab mapRef={mapRef} loaded={loaded} />
+        <LayersFab satellite={satellite} setSatellite={setSatellite} />
         <MapGL
           style={{  width: '100%', height: '100%', border:"none", outline: "none" }}
-          //mapStyle="mapbox://styles/switch9/ckahu5spr0amr1ik3n1fg0fvt"
-          mapStyle='mapbox://styles/mapbox/satellite-v9'
+          mapStyle="mapbox://styles/switch9/ckahu5spr0amr1ik3n1fg0fvt"
+          //mapStyle='mapbox://styles/mapbox/satellite-v9'
           accessToken={mapboxConfig.accessToken}
           onViewportChange={setViewport}
           onLoad={()=>{setLoaded(true)}}
@@ -129,6 +133,7 @@ export default ()=>{
             setResourceBar(false)
           }}
         >
+          {satellite && <Satellite />}
           <SuspenseWithPerf fallback={
             <div className={classes.overlay}>
               <CircularProgress />

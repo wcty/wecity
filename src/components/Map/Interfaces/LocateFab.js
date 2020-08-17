@@ -8,7 +8,7 @@ import { MyLocation } from '@material-ui/icons'
 const useStyles = makeStyles(theme => ({
   locateFab: {
     position: 'absolute',
-    top: '6rem',
+    top: '5.5rem',
     right: '1rem'
   }
 }))  
@@ -42,6 +42,7 @@ export default ({ active, getMarker, mapRef, loaded })=>{
           }}
           className={classes.locateFab} 
           raised="true" 
+          size="small"
           aria-label="add"
         >
           <MyLocation />

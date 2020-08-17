@@ -109,7 +109,8 @@ export default ({ mapRef, loaded })=> {
           }
         ]
       }, dist, 180)
-      map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
+      console.log(newOffPoint.features[0].geometry.coordinates)
+      newOffPoint.features[0].geometry.coordinates && map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
     }
   }, [mapRef, loaded, initiative])
 
@@ -157,6 +158,10 @@ export default ({ mapRef, loaded })=> {
       setMarker(null)
     }
   }, [selected])
+
+  useEffect(()=>{
+    initiative&& user&&console.log(initiative.members, user.uid)
+  },[initiative, user])
 
   return (<>
     {isViewerOpen && (
@@ -316,7 +321,40 @@ export default ({ mapRef, loaded })=> {
           </Box>
           <Suspense fallback={null}>
           {expanded && (
-            initiative.members.find(m=>m==user?user.uid:null) ? <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography> :(
+            initiative.members.find(m=>m==(user?user.uid:null)) ? (
+              initiative.members.length<2 ? 
+                (<>
+                  <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви щойно створили цю ініціативу!</Typography>
+                  <Button 
+                    elevation={15} 
+                    variant="contained" 
+                    color="secondary"
+                    style={{
+                      zIndex: 200, 
+                      marginLeft:"1rem",
+                      marginBottom:"1rem", 
+                      color:'white',
+                      //backgroundColor:'grey'
+                    }} 
+                    onClick={()=>{
+                      initiatives.doc(initiative.id).delete().then(function() {
+                        console.log("Document successfully deleted!");
+                        setSelected(null)
+                        // const query = markersCollection.near({ center: new firebase.firestore.GeoPoint(...getMarker().toArray()), radius: 1000 });
+                        // query.get().then((value) => {
+                        //   setMarkers({type:"FeatureCollection", features: getFeatures(value) })
+                        // })
+                      }).catch(function(error) {
+                          console.error("Error removing document: ", error);
+                      });
+                    }}
+                  >
+                    Видалити
+                  </Button>
+                </>):
+                <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography>
+            )
+            :(
             <Button 
               elevation={15} 
               variant="contained" 
