@@ -189,9 +189,21 @@ export default ({ feedback, closeFeedback })=> {
           nextButton={
             activeStep === (maxSteps - 1) ? (
               <Button disabled={!valid} className={classes.button} variant="contained" size="small" onClick={async ()=>{    
-                //setContactData({...resource, id:isCreating})
+
                 if(feedbackRef) {
-                  feedbackRef.add({...resource })
+                  const message = {
+                    to: ['hi@weee.city'],
+                    message: {
+                      subject: `Зворотній зв'язок від ${resource.name}`,
+                      text: `
+                        Ім'я: ${resource.name}.
+                        Повідомлення: ${resource.reachout}.
+                        Як зі мною зв'язатися: ${resource.contact}.
+                      `
+                    }
+                  }
+
+                  feedbackRef.add(message)
                     .then(function() {
                         console.log("Document successfully written!");
                     })

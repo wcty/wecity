@@ -164,6 +164,11 @@ export default ({ state, setState })=>{
             if(val.id==='settings'){
 
             }else if(val.id==='feedback'){
+              setSelected(null)
+              setIsCreating(null)  
+              setInitiativeBar(false)
+              setProjectBar(false)
+              setResourceBar(false)
               closeFeedback(!feedback)
             }
           }}>

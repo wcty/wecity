@@ -87,7 +87,7 @@ export default ({ mapRef, loaded })=> {
     setExpanded(false)
   },[selected])
 
-  useEffect(()=>{
+  useEffect(async()=>{
     if(loaded&&initiative){
       const map = mapRef.current.getMap()
       const center = Object.values(initiative.coordinates)
@@ -113,7 +113,7 @@ export default ({ mapRef, loaded })=> {
     }
   }, [mapRef, loaded, initiative])
 
-  useEffect(()=>{
+  useEffect(async()=>{
     if(loaded&&isCreating){
       const map = mapRef.current.getMap()
       const center = Object.values(location)
