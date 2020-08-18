@@ -47,6 +47,12 @@ export default ({ mapRef })=> {
     .collection('markers')
     .where('members', 'array-contains', user.uid)
   const initiatives = useFirestoreCollectionData(initiativesRef)
+  
+  const getMarker = ()=>{
+    const w = mapDimensions.width/2
+    const h = (mapDimensions.height - 350)/2
+    return mapRef.current.getMap().unproject ([w,h])
+  }
 
   return (<>
         <Paper elevation={1} className={classes.root} 
@@ -100,11 +106,7 @@ export default ({ mapRef })=> {
           </Typography>
           }
           </List>
-          <InitiativeFab active={true} getMarker={()=>{
-              const w = mapDimensions.width/2
-              const h = (mapDimensions.height - 350)/2
-              return mapRef.current.getMap().unproject ([w,h])
-            }}/>
+          <InitiativeFab active={true} getMarker={getMarker}/>
           </div>
         </Paper>
       </>)

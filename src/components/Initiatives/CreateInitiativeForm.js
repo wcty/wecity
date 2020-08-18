@@ -6,7 +6,7 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState } from 'recoil';
 import { creatingAtom, markerAtom , markersAtom, userAtom, selectedAtom } from 'global/Atoms'
-import { useStorage, useUser,useStorageDownloadURL } from 'reactfire';
+import { useStorage, useUser, useStorageDownloadURL } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
 import { useGeoFirestore } from 'global/Hooks'
 import * as firebase from 'firebase/app';

@@ -3,13 +3,16 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, Typography, Fab, IconButton, Box, List, ListItem, ListItemText, Button } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { creatingAtom, markerAtom , barAtom,  selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
+import { creatingAtom, markerAtom , markersAtom, barAtom,  selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
 import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire';
 import { People, LocationOn, ExpandLess, Star, StarBorder, Close } from '@material-ui/icons'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
 import { render } from 'react-dom';
 import ImageViewer from 'react-simple-image-viewer';
+import { useGeoFirestore } from 'global/Hooks'
+import { getFeatures } from 'global/Misc'
+import firebase from 'firebase'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default ({ mapRef, loaded })=> {
+export default ({ mapRef, loaded, getMarker })=> {
   const classes = useStyles();
   const [marker, setMarker] = useRecoilState(markerAtom)
   const initiatives = useFirestore().collection('markers')
@@ -81,7 +84,9 @@ export default ({ mapRef, loaded })=> {
   const bar = useRecoilValue(barAtom)
   const user = useUser()
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-
+  const markersCollection = useGeoFirestore().collection('markers')
+  const [markers, setMarkers] = useRecoilState(markersAtom)
+  const images = useStorage().ref().child('initiatives')
 
   useEffect(()=>{
     setExpanded(false)
@@ -337,16 +342,27 @@ export default ({ mapRef, loaded })=> {
                       //backgroundColor:'grey'
                     }} 
                     onClick={()=>{
-                      initiatives.doc(initiative.id).delete().then(function() {
-                        console.log("Document successfully deleted!");
-                        setSelected(null)
-                        // const query = markersCollection.near({ center: new firebase.firestore.GeoPoint(...getMarker().toArray()), radius: 1000 });
-                        // query.get().then((value) => {
-                        //   setMarkers({type:"FeatureCollection", features: getFeatures(value) })
-                        // })
-                      }).catch(function(error) {
-                          console.error("Error removing document: ", error);
-                      });
+                      if(initiative.id){
+                        initiatives.doc(initiative.id).delete().then(function() {
+                          console.log("Document successfully deleted!",initiative);                          
+                            setMarkers({type:"FeatureCollection", features: markers.features.filter(m=>m.id!=initiative.id) })
+                            Object.values(initiative.imageURL).forEach((url)=>{
+                              const fileName = url.split('?')[0].split('initiatives%').reverse()[0]
+                              console.log(url, fileName)
+                              images.child(fileName).delete().then(function() {
+                                // File deleted successfully
+                                console.log('deleted')
+                              }).catch(function(error) {
+                                // Uh-oh, an error occurred!
+                              });
+
+                            })
+                            setSelected(null)
+
+                        }).catch(function(error) {
+                            console.error("Error removing document: ", error);
+                        });
+                      }else{console.log(initiative)}
                     }}
                   >
                     Видалити

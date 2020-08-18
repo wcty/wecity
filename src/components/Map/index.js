@@ -72,7 +72,11 @@ export default ()=>{
   const [projectBar, setProjectBar] = useRecoilState(projectBarAtom)
   const [resourceBar, setResourceBar] = useRecoilState(resourceBarAtom)
   const [satellite, setSatellite] = useState(false)
-
+  const getMarker = ()=>{
+    const w = mapDimensions.width/2
+    const h = (mapDimensions.height - 350)/2
+    return mapRef.current.getMap().unproject ([w,h])
+  }
   useEffect(()=>{
       if ("geolocation" in navigator) {
         navigator.geolocation.watchPosition(function(position) {
@@ -104,15 +108,11 @@ export default ()=>{
           <AuthCheck fallback={
             <InitiativeFab active={false} />   
           }>
-            <InitiativeFab active={true} getMarker={()=>{
-              const w = mapDimensions.width/2
-              const h = (mapDimensions.height - 350)/2
-              return mapRef.current.getMap().unproject ([w,h])
-            }}/>
+            <InitiativeFab active={true} getMarker={getMarker}/>
           </AuthCheck>
         </Suspense>
         <Suspense fallback={null}>
-          <Initiative  mapRef={mapRef} loaded={loaded} />
+          <Initiative  mapRef={mapRef} loaded={loaded} getMarker={getMarker} />
         </Suspense>
         <LocateFab mapRef={mapRef} loaded={loaded} />
         <LayersFab satellite={satellite} setSatellite={setSatellite} />
@@ -140,11 +140,7 @@ export default ()=>{
             </div>
           } traceId={'load-markers'}>
             <Markers />
-            <NewMarkerDialog getMarker={()=>{
-              const w = mapDimensions.width/2
-              const h = (mapDimensions.height - 350)/2
-              return mapRef.current.getMap().unproject ([w,h])
-            }}/>
+            <NewMarkerDialog getMarker={getMarker}/>
             <LocationIcon 
               loaded={loaded} 
               mapRef={mapRef.current} 
