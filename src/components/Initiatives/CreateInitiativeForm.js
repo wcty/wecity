@@ -173,6 +173,7 @@ const useStyles = makeStyles((theme) => ({
   },
   
 }));
+
 const useCheckImage = async (url)=>{
   console.log('use')
 }
@@ -243,6 +244,7 @@ export default ({ getMarker })=> {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
   const Reset = ()=>{
     setFileName(null)
     setUuid(uuidv1())
@@ -252,6 +254,7 @@ export default ({ getMarker })=> {
     setActiveStep(0)
     setFinished(false)
   }
+
   const DeleteImage = ()=>{
     ////1920x1080,851x315,484x252,180x180
     const extension = '.'+fileName.split('.').reverse()[0]
@@ -261,6 +264,7 @@ export default ({ getMarker })=> {
     imageRef.child(fileName.replace(extension,'_851x315'+extension)).delete()
     imageRef.child(fileName.replace(extension,'_1920x1080'+extension)).delete()
   }
+
   useEffect(()=>{
     if(!isCreating){
       if(imageLoadedURL&&!finished){

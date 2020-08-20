@@ -1,16 +1,17 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Typography, Fab, IconButton, Box, List, ListItem, ListItemText, Button } from '@material-ui/core';
+import React, { useState, useEffect, Suspense } from 'react'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import { Paper, Typography, Fab, IconButton, Box, List, ListItem, ListItemText, Button } from '@material-ui/core'
 import addImage from 'assets/images/addImage.png'
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { creatingAtom, markerAtom , markersAtom, barAtom,  selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
-import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire';
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { creatingAtom, markerAtom, joiningAtom, markersAtom, barAtom,  selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
+import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire'
 import { People, LocationOn, ExpandLess, Star, StarBorder, Close } from '@material-ui/icons'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
-import { render } from 'react-dom';
-import ImageViewer from 'react-simple-image-viewer';
+import { render } from 'react-dom'
+import ImageViewer from 'react-simple-image-viewer'
 import { useGeoFirestore } from 'global/Hooks'
+import JoinInitiative from './JoinInitiative'
 import { getFeatures } from 'global/Misc'
 import firebase from 'firebase'
 
@@ -86,6 +87,7 @@ export default ({ mapRef, loaded, getMarker })=> {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const markersCollection = useGeoFirestore().collection('markers')
   const [markers, setMarkers] = useRecoilState(markersAtom)
+  const [joining, setJoining] = useRecoilState(joiningAtom)
   const images = useStorage().ref().child('initiatives')
 
   useEffect(()=>{
@@ -119,16 +121,15 @@ export default ({ mapRef, loaded, getMarker })=> {
     }
   }, [mapRef, loaded, initiative])
 
-  useEffect(async()=>{
-    if(loaded&&isCreating){
+  useEffect(()=>{
+    if(loaded&&isCreating&&location){
       const map = mapRef.current.getMap()
-      const center = Object.values(location)
       const w = mapDimensions.width/2
       const h = (mapDimensions.height - 350)/2
       const offPoint = Object.values(map.unproject([w,h]))
       const point = Object.values(map.getCenter())
       const dist = distance(point, offPoint)
-      console.log(dist)
+      const center = [location.longitude, location.latitude]
       const newOffPoint = translate({
         type:"FeatureCollection",
         features:[
@@ -150,7 +151,9 @@ export default ({ mapRef, loaded, getMarker })=> {
       const initiativeRef = initiatives.doc(selected)
       const initiative = initiativeRef.get().then((doc)=>{
         if (doc.exists){
+          console.log(document)
           const data = doc.data()
+          //data.id = doc.id
           delete data.g
           console.log("Document data:", data);
           setInitiative(data);
@@ -206,26 +209,18 @@ export default ({ mapRef, loaded, getMarker })=> {
             overflowY: expanded?'scroll':'hidden' 
           }}
         > 
-          <Suspense fallback={null}>
-{/*    
-          <Fab className={classes.favourites}
-              style={{
-                transform: expanded?'translateY(-120%)':'translateY(-50%)',
-                zIndex:20
-              }}
-              onClick={()=>{
-                if(initiative.members.find(m=>m==user.uid)){
-                  console.log("You are a member already")
-                }else{
-                  console.log('clicked on fab')
-                }
-              }}
-            >
-              {initiative.members.find(m=>m==user.uid)?<Star /> : <StarBorder />}
-            </Fab> */}
-
-          </Suspense>
           <div id="wrapper">
+          <IconButton 
+            aria-label="return"
+            style={{position:"absolute", right:"1rem", top:"0.5rem", zIndex: 30}}
+            onClick={()=>{
+              setSelected(null)
+            }}
+          >
+            <Close  color="primary" />
+          </IconButton>
+
+          {/* Header Image */}
           <section 
             className={classes.img} 
             alt="Cover of the initiative"
@@ -246,37 +241,28 @@ export default ({ mapRef, loaded, getMarker })=> {
               borderTopLeftRadius: expanded?0:"5px",
               borderTopRightRadius: expanded?0:"5px"         
           }}>
-            <IconButton 
-              aria-label="return"
-              style={{position:"absolute", right:"1rem", top:"0.5rem", zIndex: 30}}
-              onClick={()=>{
-                setSelected(null)
-              }}
-            >
-              <Close  color="primary" />
-            </IconButton>
           </section>
+
+          {/* Actual Initiative */}
           <Box className={classes.info} 
             style={{position:'relative'}}            
             onClick={()=>{
               console.log('clicked on card')
               setExpanded(!expanded)
             }}>
+            {location && initiative.coordinates && (
             <span className={classes.span}>
               <LocationOn style={{fontSize: 'large'}} />
-              {initiative.coordinates ? (
-                <> {
-                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<1 ? 
-                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +"м від мене":
-                  ((distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<10 ? 
-                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +"км від мене":
-                  (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +"км від мене")
-                } 
-                </>
-              ): <> Distance is unknown </>}
-            </span>
+              {
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<1 ? 
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +"м від мене":
+                ((distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<10 ? 
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +"км від мене":
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +"км від мене")
+              } 
+            </span>)}
             <span style={{float:'right'}}> <ExpandLess /></span>
-            <span style={{marginLeft: "2rem"}}>
+            <span style={{marginLeft: location?"2rem":undefined}}>
               <People style={{fontSize: 'large'}} /> 
               {initiative.members?initiative.members.length:0}
             </span>
@@ -295,11 +281,13 @@ export default ({ mapRef, loaded, getMarker })=> {
             >
               <ExpandLess />
             </IconButton>
+
+            {/* Expanded view additions*/}
             {expanded && (<>
-              <List>
+              <List style={{paddingRight:'0.5rem', paddingLeft: '0.5rem'}}>
                 {initiative.problem&& (<ListItem>
                   <ListItemText
-                    primary="Проблематика"
+                    primary="Проблема або ідея:"
                     secondary={initiative.problem}
                   />
                 </ListItem>)}
@@ -324,9 +312,13 @@ export default ({ mapRef, loaded, getMarker })=> {
               </List>
             </>)}
           </Box>
+         
+          {/* Buttons Delete & Join */}
           <Suspense fallback={null}>
           {expanded && (
             initiative.members.find(m=>m==(user?user.uid:null)) ? (
+
+              //Delete Initiative Button
               initiative.members.length<2 ? 
                 (<>
                   <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви щойно створили цю ініціативу!</Typography>
@@ -341,23 +333,29 @@ export default ({ mapRef, loaded, getMarker })=> {
                       color:'white',
                       //backgroundColor:'grey'
                     }} 
-                    onClick={()=>{
+                    onClick={async ()=>{
+                      console.log(initiative.id)
                       if(initiative.id){
                         initiatives.doc(initiative.id).delete().then(function() {
-                          console.log("Document successfully deleted!",initiative);                          
-                            setMarkers({type:"FeatureCollection", features: markers.features.filter(m=>m.id!=initiative.id) })
-                            Object.values(initiative.imageURL).forEach((url)=>{
-                              const fileName = url.split('?')[0].split('initiatives%').reverse()[0]
-                              console.log(url, fileName)
-                              images.child(fileName).delete().then(function() {
-                                // File deleted successfully
-                                console.log('deleted')
-                              }).catch(function(error) {
-                                // Uh-oh, an error occurred!
-                              });
+                          console.log("Document successfully deleted!", initiative, markers); 
 
-                            })
-                            setSelected(null)
+                          Object.values(initiative.imageURL).forEach((url)=>{
+                            const fileName = url.split('?')[0].split('initiatives%2F').reverse()[0]
+                            console.log(url, fileName)
+                            images.child(fileName).delete().then(function() {
+                              // File deleted successfully
+                              console.log('deleted')
+                            }).catch(function(error) {
+
+                              console.log('error', error)
+                              // Uh-oh, an error occurred! 
+                              //2F9bf775f0-e2dc-11ea-b526-a1336af6d30a_180x180.jpg
+                            });
+
+                          })
+                          setSelected(null)
+                          console.log(markers)
+                          setMarkers({type:"FeatureCollection", features: markers.features.filter(f=>f.properties.id!=initiative.id) })
 
                         }).catch(function(error) {
                             console.error("Error removing document: ", error);
@@ -369,20 +367,24 @@ export default ({ mapRef, loaded, getMarker })=> {
                   </Button>
                 </>):
                 <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography>
-            )
-            :(
+            ):
+            
+            //Joining Initiative Button
+            (
             <Button 
               elevation={15} 
               variant="contained" 
               style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 
               onClick={()=>{
                 console.log('button')
+                setJoining(true)
               }}
             >
               Приєднатися
             </Button>)
           )}
           </Suspense>
+          
           </div>
         </Paper>
     </form>

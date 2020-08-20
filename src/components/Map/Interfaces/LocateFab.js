@@ -23,7 +23,7 @@ export default ({ active, getMarker, mapRef, loaded })=>{
   const [location, setLocation] = useRecoilState(locationAtom)
 
   useEffect(()=>{
-    if(loaded){
+    if(loaded&&location){
       const map = mapRef.current.getMap()
       map.jumpTo({center: [location.longitude, location.latitude], zoom: 16});
     }
@@ -44,6 +44,7 @@ export default ({ active, getMarker, mapRef, loaded })=>{
           raised="true" 
           size="small"
           aria-label="add"
+          disabled={!location}
         >
           <MyLocation />
         </Fab>

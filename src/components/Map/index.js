@@ -8,6 +8,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { locationAtom,viewAtom, creatingAtom, mapAtom, selectedAtom, initiativeBarAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
 import MarkerActive from 'assets/images/markerActive.svg'
 import LocationIcon from './Layers/LocationIcon.js'
+import LoadIcons from './Layers/LoadIcons.js'
 
 import CreateInitiativeForm from 'components/Initiatives/CreateInitiativeForm'
 import InitiativeFab from 'components/Initiatives/InitiativeFab.js'
@@ -85,8 +86,10 @@ export default ()=>{
             latitude: position.coords.latitude,
             zoom: viewport.zoom
           }
-          setLocation(updateLocation);
+          setLocation(position.coords.longitude?updateLocation:false);
         })
+      }else{
+        setLocation(false);
       }
   }, [navigator, navigator.geolocation])
 
@@ -124,6 +127,7 @@ export default ()=>{
           onViewportChange={setViewport}
           onLoad={()=>{setLoaded(true)}}
           ref={mapRef}
+          hash={true}
           {...viewport}
           onClick={()=>{
             setSelected(null)
@@ -139,12 +143,18 @@ export default ()=>{
               <CircularProgress />
             </div>
           } traceId={'load-markers'}>
+            <LoadIcons 
+              loaded={loaded} 
+              mapRef={mapRef.current} 
+              location={location} />
             <Markers />
             <NewMarkerDialog getMarker={getMarker}/>
+            { location &&
             <LocationIcon 
               loaded={loaded} 
               mapRef={mapRef.current} 
-              location={location}/>
+              location={location} />
+            }
           </SuspenseWithPerf>
         </MapGL>
       </>

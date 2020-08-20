@@ -2,10 +2,7 @@ import { atom } from 'recoil';
 
 export const locationAtom = atom({
   key: 'location', 
-  default: {
-    latitude: 50.4501,
-    longitude: 30.5234,
-  }, 
+  default: null, 
 });
 
 export const viewAtom = atom({
@@ -63,5 +60,10 @@ export const projectBarAtom = atom({
 
 export const resourceBarAtom = atom({
   key: 'resourceBar',
+  default: false,
+})
+
+export const joiningAtom = atom({
+  key: 'joining',
   default: false,
 })

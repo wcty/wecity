@@ -67,7 +67,7 @@ const formSteps = [
 function CircularProgressWithLabel(props) {
 
   return (
-   <Box         
+   <Box
       top={"50%"}
       left={"50%"}
       style={{transform: "translate(-50%, -100%)"}}
