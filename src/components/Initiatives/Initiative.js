@@ -271,7 +271,7 @@ export default ({ mapRef, loaded, getMarker })=> {
             <span style={{float:'right'}}> <ExpandLess /></span>
             <span style={{marginLeft: location?"2rem":undefined}}>
               <People style={{fontSize: 'large'}} /> 
-              {initiative.members?initiative.members.length:0}
+              {initiative.members?Object.keys(initiative.members).length:0}
             </span>
             <Typography variant="h6">
               {initiative.name? initiative.name: "Name is not set"}
@@ -300,10 +300,10 @@ export default ({ mapRef, loaded, getMarker })=> {
               isFilling={expanded} 
               formGetter={()=>joinForm(initiative)} 
               backButton={(activeStep, setActiveStep, maxSteps, valid)=>
-                initiative.members.find(m=>m==(user?user.uid:null)) ? (
+                initiative.members[user?user.uid:null] ? (
 
                   //Delete Initiative Button
-                  initiative.members.length<2 ? 
+                  Object.keys(initiative.members).length<2 ? 
                     (<>
                       {/* <Typography style={{marginLeft:'1rem', marginBottom:'1rem'}}>Ви щойно створили цю ініціативу!</Typography> */}
                       <Button 
@@ -376,7 +376,7 @@ export default ({ mapRef, loaded, getMarker })=> {
                   )
               }
               nextButton={(activeStep, setActiveStep, maxSteps, valid)=>
-                  !initiative.members.find(m=>m==(user?user.uid:null)) && (
+                  !initiative.members[user?user.uid:null] && (
                     activeStep === (maxSteps - 1) ? (
                       <Button 
                         size="small" 
