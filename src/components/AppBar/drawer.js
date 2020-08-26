@@ -105,8 +105,8 @@ export default ({ state, setState })=>{
       </Box>)}
     </>)
   }
+
   const list = (anchor) => (
-    
     <div
       className={clsx(classes.list, {
         [classes.fullList]: anchor === 'top' || anchor === 'bottom',
@@ -186,7 +186,6 @@ export default ({ state, setState })=>{
   return (
     <div>
       <>  
-      
       <Feedback feedback={feedback} closeFeedback={closeFeedback} />
         <ErrorBoundary>
           <SwipeableDrawer

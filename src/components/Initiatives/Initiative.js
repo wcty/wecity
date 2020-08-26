@@ -1,11 +1,11 @@
-import React, { useState, useEffect, Suspense } from 'react'
+import React, { useState, useRef, useEffect, Suspense } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { Paper, Typography, Fab, IconButton, Box, List, ListItem, ListItemText, Button } from '@material-ui/core'
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { creatingAtom, markerAtom, joiningAtom, markersAtom, barAtom,  selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
 import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire'
-import { People, LocationOn, ExpandLess, Star, StarBorder, Close } from '@material-ui/icons'
+import { People, LocationOn, ExpandLess, KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
 import { render } from 'react-dom'
@@ -14,22 +14,23 @@ import { useGeoFirestore } from 'global/Hooks'
 import JoinInitiative from './JoinInitiative'
 import { getFeatures } from 'global/Misc'
 import firebase from 'firebase'
+import useMeasure from 'use-measure'
+import FormExpanded from 'global/FormExpanded'
+import joinForm from 'global/forms/joinForm'
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
+  paper:{
+    // height: "100%",
+    minHeight: "250px",
+    // width: "100%",
+    overflowX: "hidden",
+    // flexGrow: 1,
     zIndex: 10,
     position: 'fixed',
     transitionDuration: '0.3s',
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
 		},
-  },
-  paper:{
-    height: "100%",
-    minHeight: "250px",
-    width: "100%",
-    overflowX: "hidden"
   },
   img: {
     height: '160px',
@@ -69,6 +70,16 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     backgroundColor: 'white',
     transitionDuration: '0.3s'
+  },
+  backButton:{
+    zIndex: 200, 
+    margin:"0.5rem", 
+    color:'white',
+  },
+  nextButton:{
+    zIndex: 200, 
+    margin:"0.5rem", 
+    color:'white',
   }
 }));
 
@@ -89,10 +100,7 @@ export default ({ mapRef, loaded, getMarker })=> {
   const [markers, setMarkers] = useRecoilState(markersAtom)
   const [joining, setJoining] = useRecoilState(joiningAtom)
   const images = useStorage().ref().child('initiatives')
-
-  useEffect(()=>{
-    setExpanded(false)
-  },[selected])
+  const theme = useTheme()
 
   useEffect(async()=>{
     if(loaded&&initiative){
@@ -103,7 +111,6 @@ export default ({ mapRef, loaded, getMarker })=> {
       const offPoint = Object.values(map.unproject([w,h]))
       const point = Object.values(map.getCenter())
       const dist = distance(point, offPoint)
-      console.log(dist)
       const newOffPoint = translate({
         type:"FeatureCollection",
         features:[
@@ -122,7 +129,7 @@ export default ({ mapRef, loaded, getMarker })=> {
   }, [mapRef, loaded, initiative])
 
   useEffect(()=>{
-    if(loaded&&isCreating&&location){
+    if( loaded && isCreating && location ){
       const map = mapRef.current.getMap()
       const w = mapDimensions.width/2
       const h = (mapDimensions.height - 350)/2
@@ -168,7 +175,7 @@ export default ({ mapRef, loaded, getMarker })=> {
   }, [selected])
 
   useEffect(()=>{
-    initiative&& user&&console.log(initiative.members, user.uid)
+    initiative && user && console.log(initiative.members, user.uid)
   },[initiative, user])
 
   return (<>
@@ -193,28 +200,28 @@ export default ({ mapRef, loaded, getMarker })=> {
     </>
     )}
     { selected && initiative && !isViewerOpen && (
-      <form className={classes.root} noValidate autoComplete="off"
-        style={{
-          height: expanded?`calc(100% - ${bar.height}px)`:"250px", 
-          width: expanded?'100%':'calc( 100% - 2rem )',
-          bottom: expanded?'0':"1rem",
-          right: expanded?'0':"1rem",
-          willChange: 'height, width, bottom, right'
-        }} 
-      >
-        <Paper elevation={1} className={classes.paper} 
+        <Paper 
+          className={classes.paper} 
           style={{
+            transition: 'all 0.3s',
             cursor: 'pointer', 
             borderRadius: expanded?'0':"5px",
-            overflowY: expanded?'scroll':'hidden' 
+            overflowY: expanded?'scroll':'hidden',
+            minHeight: expanded?`calc(100% - ${bar.height}px)`:'250px',
+            maxHeight: expanded?`calc(100% - ${bar.height}px)`:'400px',
+            width: expanded?'100%':'calc( 100% - 2rem )',
+            bottom: expanded?'0':"1rem",
+            right: expanded?'0':"1rem",
+            willChange: 'height, min-height, width, bottom, right'  
           }}
-        > 
+        >
           <div id="wrapper">
           <IconButton 
             aria-label="return"
             style={{position:"absolute", right:"1rem", top:"0.5rem", zIndex: 30}}
             onClick={()=>{
               setSelected(null)
+              setExpanded(false)
             }}
           >
             <Close  color="primary" />
@@ -283,111 +290,135 @@ export default ({ mapRef, loaded, getMarker })=> {
             </IconButton>
 
             {/* Expanded view additions*/}
-            {expanded && (<>
-              <List style={{paddingRight:'0.5rem', paddingLeft: '0.5rem'}}>
-                {initiative.problem&& (<ListItem>
-                  <ListItemText
-                    primary="Проблема або ідея:"
-                    secondary={initiative.problem}
-                  />
-                </ListItem>)}
-                {initiative.outcome&& (<ListItem>
-                  <ListItemText
-                    primary="Мета:"
-                    secondary={initiative.outcome}
-                  />
-                </ListItem>)}
-                {initiative.context && (<ListItem>
-                  <ListItemText
-                    primary="Передумови:"
-                    secondary={initiative.context}
-                  />
-                </ListItem>)}
-                {initiative.timestamp && (<ListItem>
-                  <ListItemText
-                    primary="Додано:"
-                    secondary={initiative.timestamp.toDate().getDay()+"."+initiative.timestamp.toDate().getMonth()+"."+initiative.timestamp.toDate().getFullYear()}
-                  />
-                </ListItem>)}
-              </List>
-            </>)}
+
           </Box>
-         
+
           {/* Buttons Delete & Join */}
           <Suspense fallback={null}>
-          {expanded && (
-            initiative.members.find(m=>m==(user?user.uid:null)) ? (
+          {expanded &&
+            <FormExpanded 
+              isFilling={expanded} 
+              formGetter={()=>joinForm(initiative)} 
+              backButton={(activeStep, setActiveStep, maxSteps, valid)=>
+                initiative.members.find(m=>m==(user?user.uid:null)) ? (
 
-              //Delete Initiative Button
-              initiative.members.length<2 ? 
-                (<>
-                  <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви щойно створили цю ініціативу!</Typography>
-                  <Button 
-                    elevation={15} 
-                    variant="contained" 
-                    color="secondary"
-                    style={{
-                      zIndex: 200, 
-                      marginLeft:"1rem",
-                      marginBottom:"1rem", 
-                      color:'white',
-                      //backgroundColor:'grey'
-                    }} 
-                    onClick={async ()=>{
-                      console.log(initiative.id)
-                      if(initiative.id){
-                        initiatives.doc(initiative.id).delete().then(function() {
-                          console.log("Document successfully deleted!", initiative, markers); 
-
-                          Object.values(initiative.imageURL).forEach((url)=>{
-                            const fileName = url.split('?')[0].split('initiatives%2F').reverse()[0]
-                            console.log(url, fileName)
-                            images.child(fileName).delete().then(function() {
-                              // File deleted successfully
-                              console.log('deleted')
+                  //Delete Initiative Button
+                  initiative.members.length<2 ? 
+                    (<>
+                      {/* <Typography style={{marginLeft:'1rem', marginBottom:'1rem'}}>Ви щойно створили цю ініціативу!</Typography> */}
+                      <Button 
+                        elevation={15} 
+                        variant="contained" 
+                        color="secondary"
+                        size="small"
+                        className={classes.backButton}
+                        onClick={async ()=>{
+                          console.log(initiative.id)
+                          if(initiative.id){
+                            initiatives.doc(initiative.id).delete().then(function() {
+                              Object.values(initiative.imageURL).forEach((url)=>{
+                                const fileName = url.split('?')[0].split('initiatives%2F').reverse()[0]
+                                images.child(fileName).delete().then(function() {
+                                }).catch(function(error) {
+                                  console.log('Errored at image deletion', error)
+                                });
+                              })
+                              setSelected(null)
+                              setMarkers({type:"FeatureCollection", features: markers.features.filter(f=>f.properties.id!=initiative.id) })
                             }).catch(function(error) {
-
-                              console.log('error', error)
-                              // Uh-oh, an error occurred! 
-                              //2F9bf775f0-e2dc-11ea-b526-a1336af6d30a_180x180.jpg
+                                console.error("Error removing document: ", error);
                             });
-
-                          })
+                          }else{console.log(initiative)}
+                        }}
+                      >
+                        Видалити
+                      </Button>
+                    </>):
+                    (<>
+                      {/* <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography> */}
+                      <Button 
+                        elevation={15} 
+                        variant="contained" 
+                        //color="secondary"
+                        size="small"
+                        className={classes.backButton}
+                        onClick={async ()=>{
+                          console.log(initiative.id, "Покинути")
+                        }}
+                      >
+                        Покинути
+                      </Button>
+                    </>)
+                  ):(
+                    activeStep === (0) ? (
+                      //Закрити Initiative Button
+                      <Button 
+                        elevation={15} 
+                        variant="contained" 
+                        size="small"
+                        // color="secondary"
+                        className={classes.backButton}
+                        onClick={async ()=>{
+                          console.log(initiative.id, "Закрити")
                           setSelected(null)
-                          console.log(markers)
-                          setMarkers({type:"FeatureCollection", features: markers.features.filter(f=>f.properties.id!=initiative.id) })
+                          setInitiative(null)
+                        }}
+                      >
+                        Закрити
+                      </Button>
+                    ):(
+                      <Button size="small" className={classes.button} onClick={()=>setActiveStep(p=>p-1)} >
+                        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                        Назад
+                      </Button>
+                    )
 
-                        }).catch(function(error) {
-                            console.error("Error removing document: ", error);
-                        });
-                      }else{console.log(initiative)}
-                    }}
-                  >
-                    Видалити
-                  </Button>
-                </>):
-                <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography>
-            ):
-            
-            //Joining Initiative Button
-            (
-            <Button 
-              elevation={15} 
-              variant="contained" 
-              style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 
-              onClick={()=>{
-                console.log('button')
-                setJoining(true)
-              }}
-            >
-              Приєднатися
-            </Button>)
-          )}
+                  )
+              }
+              nextButton={(activeStep, setActiveStep, maxSteps, valid)=>
+                  !initiative.members.find(m=>m==(user?user.uid:null)) && (
+                    activeStep === (maxSteps - 1) ? (
+                      <Button 
+                        size="small" 
+                        disabled={!valid} 
+                        className={classes.nextButton}
+                        variant="contained"  
+                        color="secondary"
+                        onClick={async ()=>{    
+                          console.log('Приєднатися')
+                      }}>
+                        Приєднатися
+                      </Button>
+                    ):(
+                      activeStep===0 ? (
+                        <Button 
+                          elevation={15} 
+                          size="small" 
+                          variant="contained"
+                          color="secondary" 
+                          className={classes.nextButton}
+                          onClick={()=>{
+                            console.log('button')
+                            //setJoining(true)
+                            setActiveStep(p=>p+1)
+                          }}
+                        >
+                          Приєднатися
+                        </Button>
+                      ):(
+                        <Button disabled={!valid} size="small" className={classes.button} onClick={()=>setActiveStep(p=>p+1)}>
+                          Далі
+                          {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                        </Button>
+                      )
+                    )
+                  )
+              }
+            />}
           </Suspense>
           
           </div>
         </Paper>
-    </form>
     )
   }</>)
 }

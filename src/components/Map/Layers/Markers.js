@@ -74,11 +74,11 @@ export default () =>{
           'icon-ignore-placement': true,
           'text-ignore-placement': true,
           'symbol-spacing': 1,
-          'text-field': ['get', 'name'],
+          'text-field': ['case', ['==', ['get', 'id'], selected], ['get', 'name'], ''],
           'text-anchor': 'top',
           'text-font': ["Montserrat SemiBold"],
           'text-size': 13,
-          'text-padding': 12,
+          'text-padding': 0,
           'text-offset': [0, 0]
         }}
         onClick={onClick}
