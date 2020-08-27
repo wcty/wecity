@@ -292,14 +292,6 @@ export default ({ isCreating, setIsCreating })=> {
     }
   }, [imageLoadedURL])
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
   const Reset = ()=>{
     setFileName(null)
     setUuid(uuidv1())
@@ -502,7 +494,7 @@ export default ({ isCreating, setIsCreating })=> {
               Додати
             </Button>
           ):(
-            <Button disabled={!valid} size="small" className={classes.button} onClick={handleNext}>
+            <Button disabled={!valid} size="small" className={classes.button} onClick={()=>setActiveStep((prevActiveStep) => prevActiveStep + 1)}>
               Далі
               {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
             </Button>
@@ -516,7 +508,7 @@ export default ({ isCreating, setIsCreating })=> {
               Відмінити
             </Button>
           ):(
-            <Button size="small" className={classes.button} onClick={handleBack} >
+            <Button size="small" className={classes.button} onClick={()=>setActiveStep((prevActiveStep) => prevActiveStep - 1)} >
               {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
               Назад
             </Button>

@@ -427,7 +427,7 @@ export default ({ getMarker })=> {
                 ...marker,
                 timestamp: new Date(),
                 imageURL: imageLoadedURL,
-                members: {[user.uid]:{role: "Initiator"}},
+                members: {ids:[user.uid], [user.uid]:{role: "Initiator"}},
                 coordinates: new firebase.firestore.GeoPoint(...getMarker().toArray())
               }).then(function(docRef) {
                 console.log("Document written with ID: ", docRef.id);

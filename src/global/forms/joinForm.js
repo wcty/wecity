@@ -1,5 +1,6 @@
 import React from 'react' 
 import { List, ListItem, ListItemText, makeStyles } from '@material-ui/core'
+import addImage from 'assets/images/addImage.png'
 
 const useStyles = makeStyles(theme=>({
   item:{
@@ -12,55 +13,30 @@ export default (initiative)=>{
   const classes = useStyles()
   
   return [
-  [
+
+  [    
     {
-      type: "elements",
-      id: "elements",
-      elements: <List key='elements' disablePadding style={{marginLeft: '1rem'}}>
-        {initiative.problem&& (<ListItem className={classes.item} disableGutters>
-          <ListItemText
-            primary="Проблема або ідея:"
-            secondary={initiative.problem}
-          />
-        </ListItem>)}
-        {initiative.outcome&& (<ListItem className={classes.item} disableGutters>
-          <ListItemText
-            primary="Мета:"
-            secondary={initiative.outcome}
-          />
-        </ListItem>)}
-        {initiative.context && (<ListItem className={classes.item} disableGutters>
-          <ListItemText
-            primary="Передумови:"
-            secondary={initiative.context}
-          />
-        </ListItem>)}
-        {initiative.timestamp && (<ListItem className={classes.item} disableGutters>
-          <ListItemText
-            primary="Додано:"
-            secondary={initiative.timestamp.toDate().getDay()+"."+initiative.timestamp.toDate().getMonth()+"."+initiative.timestamp.toDate().getFullYear()}
-          />
-        </ListItem>)}
-      </List>
-    }
-  ],
-  [
+      type: "image", 
+      id: "addImage",
+      imgPath: addImage,
+      label: "+ Додайте титульну картинку"
+    },
     {
       type: "text",
       id: "name",
-      label: "Назва вашого проекту",
+      label: "Назва вашої пропозиції",
       maxLength: 40
     },
     {
       type: "text",
       id: "contractor",
-      label: "Ім'я виконавця",
+      label: "Виконавець",
       maxLength: 40
     },
     {
       type: "text",
       id: "location",
-      label: "Місце виробництва",
+      label: "Локація",
       maxLength: 300
     }
   ],
@@ -134,7 +110,7 @@ export default (initiative)=>{
     {
       type: "text",
       id: "budgetDescription",
-      label: "Які витрати має покривати бюдет?",
+      label: "Які витрати має покривати бюджет?",
       rows: 4,
       maxLength: 300
     },

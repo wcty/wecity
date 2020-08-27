@@ -10,6 +10,7 @@ export const getFeatures = (value) => {
       },
       properties: {
         id: v.id,
+        coordinates,
         ...properties
       }
     }

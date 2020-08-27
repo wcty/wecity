@@ -5,7 +5,7 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { creatingAtom, userAtom, locationAtom, mapAtom } from 'global/Atoms'
+import * as Atoms from 'global/Atoms'
 import { useStorage, useUser, useStorageDownloadURL } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
 import { useGeoFirestore } from 'global/Hooks'
@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
-export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton })=> {
+export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, directory })=> {
   const formSteps = formGetter()
   const classes = useStyles();
   const theme = useTheme();
@@ -135,18 +135,18 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton })
   const maxSteps = formSteps.length;
   const [project, setProject] = useState(null)
   const [uuid, setUuid] = useState(uuidv1())
-  const imageRef = useStorage().ref().child('projects')
+  const imageRef = useStorage().ref().child(directory)
 
   const [imageLoadedURL, setImageLoadedURL] = useState(null)
   const [thumbLoadedURL, setThumbLoadedURL] = useState(null)
 
-  const projectsCollection = useGeoFirestore().collection('projects')
+  const projectsCollection = useGeoFirestore().collection(directory)
   const user = useUser()
   const [progressState, setProgress] = useState(null)
   const [fileName, setFileName] = useState(null)
   const [finished, setFinished] = useState(null)
-  const [location, setLocation] = useRecoilState(locationAtom)
-  const map = useRecoilValue(mapAtom)
+  const [location, setLocation] = useRecoilState(Atoms.locationAtom)
+  const map = useRecoilValue(Atoms.mapAtom)
   const [valid, setValid] = useState(false)
 
   useEffect(async()=>{
@@ -367,8 +367,8 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton })
         variant='none'
         activeStep={activeStep}
         className={classes.MobileStepper}
-        nextButton={ nextButton&&nextButton(activeStep, setActiveStep, maxSteps, valid) }
-        backButton={ backButton&&backButton(activeStep, setActiveStep, maxSteps, valid) }
+        nextButton={ nextButton&&nextButton(activeStep, setActiveStep, maxSteps, valid, imageLoadedURL, project) }
+        backButton={ backButton&&backButton(activeStep, setActiveStep, maxSteps, valid, imageLoadedURL, project) }
       />
     </form>
 }

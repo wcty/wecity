@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect, Suspense } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Paper, Typography, Fab, IconButton, Box, List, ListItem, ListItemText, Button } from '@material-ui/core'
+import { Paper, Typography, Fab, Card, CardActionArea, CardMedia, CardContent, CardActions, IconButton, Box, List, ListItem, ListItemText, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, TextField, InputAdornment, Checkbox } from '@material-ui/core'
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { creatingAtom, markerAtom, joiningAtom, markersAtom, barAtom,  selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
+import * as Atoms from 'global/Atoms'
 import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire'
 import { People, LocationOn, ExpandLess, KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons'
 import distance from '@turf/distance'
@@ -11,12 +11,12 @@ import translate from '@turf/transform-translate'
 import { render } from 'react-dom'
 import ImageViewer from 'react-simple-image-viewer'
 import { useGeoFirestore } from 'global/Hooks'
-import JoinInitiative from './JoinInitiative'
 import { getFeatures } from 'global/Misc'
 import firebase from 'firebase'
 import useMeasure from 'use-measure'
 import FormExpanded from 'global/FormExpanded'
 import joinForm from 'global/forms/joinForm'
+import CreateNewProject from './CreateNewProject'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -59,10 +59,11 @@ const useStyles = makeStyles((theme) => ({
   input: {
     display: 'none',
   },
-  info:{
+  info: {
     padding: theme.spacing(2),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
     //height:'100%',
-    width: '100%'
   },
   favourites:{
     position: 'absolute',
@@ -80,25 +81,243 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 200, 
     margin:"0.5rem", 
     color:'white',
+  },
+  selectButton: {
+    width: 'calc( 50% - 0.75rem )',
+    height: '4rem',
+    color: 'black',
+    marginRight: '0.5rem',
+    marginTop: '0.5rem'
+  },
+  selectGroup:{
+    marginTop: '1rem',
+    transitionDuration: '0.3s',
+    
+    //transition: 'width 2s'
   }
 }));
 
+function MediaCard({ image, name, volunteers, price }) {
+  const classes = useStyles();
+
+  return (
+    <Card className={{maxWidth: 345, marginTop: '1rem'}}>
+      <CardActionArea>
+        <CardMedia
+          style={{height: 140}}
+          image={image}
+          title="Contemplative Reptile"
+        />
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2">
+            {name}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Для реалізаціїї потрібно {volunteers} волонтерів та {price} грн.
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+      <CardActions>
+        <Button size="small" variant="contained" color="primary" style={{color: "black"}}>
+          Видалити
+        </Button>
+      </CardActions>
+    </Card>
+  );
+}
+
+function SelectRole() {
+  const [value, setValue] = useState({type:'donate'});
+  const [periodic, setPeriodic] = useState(false);
+  const [sum, setSum] = useState(200);
+  const [job, setJob] = useState(2)
+  // const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
+  const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
+
+  const classes = useStyles()
+  const handleChange = (event) => {
+    setValue({type: event.target.value});
+  };
+  useEffect(()=>console.log(selectType),[selectType])
+
+  return (<>
+    <FormControl component="fieldset" style={{display: (!selectType || selectType.object ) ? 'block': 'none'}}>
+      <Typography variant="subtitle2">Приєднатися до ініціативи</Typography>
+      <RadioGroup aria-label="gender" name="gender1" value={value.type} onChange={handleChange}>
+        <Box id='donate' className={classes.selectGroup}>
+          <FormControlLabel value="donate" control={<Radio />} label="Я готова/ий пожертвувати гроші" />
+          {value.type=="donate" && <><TextField 
+            key='donate'
+            id='donate'
+            label='Сума'
+            InputProps={{
+              endAdornment:<InputAdornment position="end">грн</InputAdornment>
+            }}
+            className={classes.text}
+            variant="outlined"
+            onChange={(e)=>{
+              setSum(e.target.value)
+              console.log(e.target.value)
+            }}
+            defaultValue={sum}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={periodic} onChange={(e)=>setPeriodic(!periodic)} name="periodic" />}
+            label="Щомісячний платіж?"
+            style={{marginLeft: '0.5rem'}}
+          /></>}
+        </Box>
+        <Box id='volunteer'className={classes.selectGroup} >
+          <FormControlLabel value="volunteer" control={<Radio />} label="Я готова/ий бути волонтером" />
+          {value.type=="volunteer" && <TextField 
+            key='volunteer'
+            id='volunteer'
+            label='Яку роботу ви можете виконувати?'
+            className={classes.text}
+            variant="outlined"
+            onChange={(e)=>{
+              setJob(e.target.value)
+              console.log(e.target.value)
+            }}
+            variant="outlined"
+            multiline={true}
+            rows={2}
+            inputProps={{
+              maxLength: 200
+            }}
+          />}
+        </Box>
+        <Box id='project' className={classes.selectGroup}>
+          <FormControlLabel value="project" control={<Radio />} label="Я готова/ий запропонувати проектне рішення" />
+          {value.type=="project" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}}>
+            {!selectType && <>
+              <Button 
+                size="small" 
+                variant="outlined"  
+                className={classes.selectButton}
+                onClick={async ()=>{    
+                  console.log('selectProject')
+                  setSelectType({type: 'selectProject'})
+              }}>
+                Обрати з бібліотеки
+              </Button>
+              <Button 
+                size="small" 
+                variant="outlined" 
+                className={classes.selectButton}
+                onClick={async ()=>{    
+                  console.log('newProject')
+                  setSelectType({type: 'newProject'})
+              }}>
+                Створити нове
+              </Button>
+            </>}
+            {selectType && selectType.object && <>
+              {/* <section 
+                className={classes.img} 
+                alt="Cover of the initiative"
+                onClick={()=>{
+                  setSelectType({type: 'selectProject'})
+                }}
+                style={{
+                  position:'relative',
+                  backgroundImage: `url(${selectType.object.imageURL?selectType.object.imageURL.s: addImage})`,
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
+                  borderRadius: "5px",
+                  width: '100%',
+                  height: '8rem',
+                  margin: 'auto',
+                  textAlign: 'center',
+                  color: "White",
+                  fontWeight: "bold"
+              }}>
+                {selectType.object.name}<br/>
+                Необхідний бюджет: {selectType.object.name}<br/>
+                Необхідно волонтерів: {selectType.object.name}
+              </section> */}
+              <MediaCard 
+                image={selectType.object.imageURL?selectType.object.imageURL.s: addImage} 
+                name={selectType.object.name} 
+                volunteers={selectType.object.volunteers} 
+                price={selectType.object.price} 
+              />
+            </>}
+          </div>}
+        </Box>
+        <Box id='resource' className={classes.selectGroup}>
+          <FormControlLabel value="resource" control={<Radio />} label="Я готова/ий надати матеріали або послуги" />
+          {value.type=="resource" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}} >
+            <Button 
+              size="small" 
+              variant="outlined"  
+              className={classes.selectButton}
+              onClick={async ()=>{    
+                console.log('selectResource')
+                setSelectType({type: 'selectResource'})
+
+            }}>
+              Обрати з бібліотеки
+            </Button>
+            <Button 
+              size="small" 
+              variant="outlined"  
+              className={classes.selectButton}
+              onClick={async ()=>{    
+                console.log('newResource')
+                setSelectType({type: 'newResource'})
+            }}>
+              Створити новий/у
+            </Button>
+          </div>}
+        </Box>
+      </RadioGroup>
+      <Button 
+        size="small" 
+        variant="contained"  
+        color="secondary"
+        style={{marginTop: '1rem'}}
+        onClick={async ()=>{    
+          console.log('Приєднатися')
+          //setJoining(true)
+      }}>
+        Приєднатися
+      </Button>
+    </FormControl>
+    {selectType && !selectType.object && <>
+      {selectType.type=="selectProject" && !selectType.object && <>
+        <CreateNewProject />
+      </>}
+      {selectType.type=="newProject" && !selectType.object && <>
+        <CreateNewProject />
+      </>}
+      {selectType.type=="selectResource" && !selectType.object && <>
+        <CreateNewProject />
+      </>}
+      {selectType.type=="newResource" && !selectType.object && <>
+        <CreateNewProject />
+      </>} 
+    </>}
+  </>);
+}
+
 export default ({ mapRef, loaded, getMarker })=> {
   const classes = useStyles();
-  const [marker, setMarker] = useRecoilState(markerAtom)
+  const [marker, setMarker] = useRecoilState(Atoms.markerAtom)
   const initiatives = useFirestore().collection('markers')
-  const [initiative, setInitiative] = useState(null)
-  const [selected, setSelected] = useRecoilState(selectedAtom)
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
-  const [location, setLocation] = useRecoilState(locationAtom)
-  const [expanded, setExpanded] = useState(false)
-  const mapDimensions = useRecoilValue(mapAtom)
-  const bar = useRecoilValue(barAtom)
+  const [initiative, setInitiative] = useRecoilState(Atoms.initiative)
+  const [selected, setSelected] = useRecoilState(Atoms.selectedAtom)
+  const [isCreating, setIsCreating] = useRecoilState(Atoms.creatingAtom)
+  const [location, setLocation] = useRecoilState(Atoms.locationAtom)
+  const [expanded, setExpanded] = useRecoilState(Atoms.expanded)
+  const mapDimensions = useRecoilValue(Atoms.mapAtom)
+  const bar = useRecoilValue(Atoms.barAtom)
   const user = useUser()
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const markersCollection = useGeoFirestore().collection('markers')
-  const [markers, setMarkers] = useRecoilState(markersAtom)
-  const [joining, setJoining] = useRecoilState(joiningAtom)
+  const [markers, setMarkers] = useRecoilState(Atoms.markersAtom)
+  const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const images = useStorage().ref().child('initiatives')
   const theme = useTheme()
 
@@ -153,24 +372,27 @@ export default ({ mapRef, loaded, getMarker })=> {
     }
   }, [mapRef, loaded, isCreating])
 
-  useEffect(()=>{
+  useEffect(async()=>{
     if(selected) {
-      const initiativeRef = initiatives.doc(selected)
-      const initiative = initiativeRef.get().then((doc)=>{
-        if (doc.exists){
-          console.log(document)
-          const data = doc.data()
-          //data.id = doc.id
-          delete data.g
-          console.log("Document data:", data);
-          setInitiative(data);
-        }else{
-          //console.log("No such document!");
-          setInitiative(null);
-        }
-      })
+      setExpanded(false)
+      setInitiative(markers.features.find(f=>f.properties.id==selected?selected:null).properties)
+      // const initiativeRef = initiatives.doc(selected)
+      // const initiative = initiativeRef.get().then((doc)=>{
+      //   if (doc.exists){
+      //     console.log(document)
+      //     const data = doc.data()
+      //     //data.id = doc.id
+      //     delete data.g
+      //     console.log("Document data:", data);
+      //     setInitiative(data);
+      //   }else{
+      //     //console.log("No such document!");
+      //     setInitiative(null);
+      //   }
+      // })
       setIsCreating(false)
       setMarker(null)
+      setJoining(false)
     }
   }, [selected])
 
@@ -222,6 +444,7 @@ export default ({ mapRef, loaded, getMarker })=> {
             onClick={()=>{
               setSelected(null)
               setExpanded(false)
+              setJoining(false)
             }}
           >
             <Close  color="primary" />
@@ -252,7 +475,7 @@ export default ({ mapRef, loaded, getMarker })=> {
 
           {/* Actual Initiative */}
           <Box className={classes.info} 
-            style={{position:'relative'}}            
+            style={{position:'relative'}}
             onClick={()=>{
               console.log('clicked on card')
               setExpanded(!expanded)
@@ -268,10 +491,10 @@ export default ({ mapRef, loaded, getMarker })=> {
                 (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +"км від мене")
               } 
             </span>)}
-            <span style={{float:'right'}}> <ExpandLess /></span>
+            {/* <span style={{float:'right'}}> <ExpandLess /></span> */}
             <span style={{marginLeft: location?"2rem":undefined}}>
               <People style={{fontSize: 'large'}} /> 
-              {initiative.members?Object.keys(initiative.members).length:0}
+              {initiative.members?initiative.members.ids.length:0}
             </span>
             <Typography variant="h6">
               {initiative.name? initiative.name: "Name is not set"}
@@ -279,7 +502,7 @@ export default ({ mapRef, loaded, getMarker })=> {
             <IconButton 
               aria-label="return"
               style={{
-                position:"absolute", right:"3rem", top:"0rem",
+                position:"absolute", right:'2rem', top:"0rem",
                 transitionDuration: '0.3s', transform: expanded?'rotate(180deg)':'rotate(0deg)'
               }}
               onClick={()=>{
@@ -293,129 +516,52 @@ export default ({ mapRef, loaded, getMarker })=> {
 
           </Box>
 
-          {/* Buttons Delete & Join */}
-          <Suspense fallback={null}>
-          {expanded &&
-            <FormExpanded 
-              isFilling={expanded} 
-              formGetter={()=>joinForm(initiative)} 
-              backButton={(activeStep, setActiveStep, maxSteps, valid)=>
-                initiative.members[user?user.uid:null] ? (
+          {/* Content */}
+          
+            { expanded && !joining && <Box style={{padding: '2rem', paddingTop: 0}}><List key='elements' disablePadding>
+              {initiative.problem&& (<ListItem className={classes.item} disableGutters>
+                <ListItemText
+                  primary="Проблема або ідея:"
+                  secondary={initiative.problem}
+                />
+              </ListItem>)}
+              {initiative.outcome&& (<ListItem className={classes.item} disableGutters>
+                <ListItemText
+                  primary="Мета:"
+                  secondary={initiative.outcome}
+                />
+              </ListItem>)}
+              {initiative.context && (<ListItem className={classes.item} disableGutters>
+                <ListItemText
+                  primary="Передумови:"
+                  secondary={initiative.context}
+                />
+              </ListItem>)}
+              {initiative.timestamp && (<ListItem className={classes.item} disableGutters>
+                <ListItemText
+                  primary="Додано:"
+                  secondary={initiative.timestamp.toDate().getDay()+"."+initiative.timestamp.toDate().getMonth()+"."+initiative.timestamp.toDate().getFullYear()}
+                />
+              </ListItem>)}
+            </List>
+            <Button 
+              size="small" 
+              variant="contained"  
+              color="secondary"
+              style={{marginTop: '1rem'}}
+              onClick={async ()=>{    
+                console.log('Приєднатися')
+                setJoining(true)
+            }}>
+              Приєднатися
+            </Button>
+            </Box> }
 
-                  //Delete Initiative Button
-                  Object.keys(initiative.members).length<2 ? 
-                    (<>
-                      {/* <Typography style={{marginLeft:'1rem', marginBottom:'1rem'}}>Ви щойно створили цю ініціативу!</Typography> */}
-                      <Button 
-                        elevation={15} 
-                        variant="contained" 
-                        color="secondary"
-                        size="small"
-                        className={classes.backButton}
-                        onClick={async ()=>{
-                          console.log(initiative.id)
-                          if(initiative.id){
-                            initiatives.doc(initiative.id).delete().then(function() {
-                              Object.values(initiative.imageURL).forEach((url)=>{
-                                const fileName = url.split('?')[0].split('initiatives%2F').reverse()[0]
-                                images.child(fileName).delete().then(function() {
-                                }).catch(function(error) {
-                                  console.log('Errored at image deletion', error)
-                                });
-                              })
-                              setSelected(null)
-                              setMarkers({type:"FeatureCollection", features: markers.features.filter(f=>f.properties.id!=initiative.id) })
-                            }).catch(function(error) {
-                                console.error("Error removing document: ", error);
-                            });
-                          }else{console.log(initiative)}
-                        }}
-                      >
-                        Видалити
-                      </Button>
-                    </>):
-                    (<>
-                      {/* <Typography style={{marginLeft:'2rem', marginBottom:'2rem'}}>Ви вже долучилися до цієї ініціативи!</Typography> */}
-                      <Button 
-                        elevation={15} 
-                        variant="contained" 
-                        //color="secondary"
-                        size="small"
-                        className={classes.backButton}
-                        onClick={async ()=>{
-                          console.log(initiative.id, "Покинути")
-                        }}
-                      >
-                        Покинути
-                      </Button>
-                    </>)
-                  ):(
-                    activeStep === (0) ? (
-                      //Закрити Initiative Button
-                      <Button 
-                        elevation={15} 
-                        variant="contained" 
-                        size="small"
-                        // color="secondary"
-                        className={classes.backButton}
-                        onClick={async ()=>{
-                          console.log(initiative.id, "Закрити")
-                          setSelected(null)
-                          setInitiative(null)
-                        }}
-                      >
-                        Закрити
-                      </Button>
-                    ):(
-                      <Button size="small" className={classes.button} onClick={()=>setActiveStep(p=>p-1)} >
-                        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                        Назад
-                      </Button>
-                    )
-
-                  )
-              }
-              nextButton={(activeStep, setActiveStep, maxSteps, valid)=>
-                  !initiative.members[user?user.uid:null] && (
-                    activeStep === (maxSteps - 1) ? (
-                      <Button 
-                        size="small" 
-                        disabled={!valid} 
-                        className={classes.nextButton}
-                        variant="contained"  
-                        color="secondary"
-                        onClick={async ()=>{    
-                          console.log('Приєднатися')
-                      }}>
-                        Приєднатися
-                      </Button>
-                    ):(
-                      activeStep===0 ? (
-                        <Button 
-                          elevation={15} 
-                          size="small" 
-                          variant="contained"
-                          color="secondary" 
-                          className={classes.nextButton}
-                          onClick={()=>{
-                            console.log('button')
-                            //setJoining(true)
-                            setActiveStep(p=>p+1)
-                          }}
-                        >
-                          Приєднатися
-                        </Button>
-                      ):(
-                        <Button disabled={!valid} size="small" className={classes.button} onClick={()=>setActiveStep(p=>p+1)}>
-                          Далі
-                          {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-                        </Button>
-                      )
-                    )
-                  )
-              }
-            />}
-          </Suspense>
+            <Suspense fallback={null}>
+            { expanded && joining && <Box style={{padding: '2rem', paddingTop:0}}>
+              <SelectRole />
+            </Box>}
+            </Suspense>
           
           </div>
         </Paper>

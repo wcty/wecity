@@ -67,3 +67,18 @@ export const joiningAtom = atom({
   key: 'joining',
   default: false,
 })
+
+export const expanded = atom({
+  key: 'expanded',
+  default: false,
+})
+
+export const initiative = atom({
+  key: 'initiative',
+  default: false,
+})
+
+export const selectType = atom({
+  key: 'selectType',
+  default: null,
+})
