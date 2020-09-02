@@ -154,7 +154,7 @@ export default ()=> {
                         <Typography variant="h6">
                           {resource.shortDescription? resource.shortDescription: "Description is not set"}
                         </Typography>
-                        <Typography variant="body">
+                        <Typography variant="body2">
                           {resource.location? resource.location: "Location is not set"}
                         </Typography>
                       </div>

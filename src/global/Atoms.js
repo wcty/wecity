@@ -82,3 +82,8 @@ export const selectType = atom({
   key: 'selectType',
   default: null,
 })
+
+export const selectedProject = atom({
+  key: 'selectedProject',
+  default: null,
+})

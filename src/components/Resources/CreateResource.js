@@ -66,12 +66,12 @@ const formSteps = [
       id: "category",
       label: "Оберіть категорію ресурсу:",
       options:[
-        "Одяг",
-        "Будівельні матеріали",
-        "Прикраси",
-        "Фурнітура",
-        "Транспорт",
-        "Інше"
+        {name:'cloth', label: "Одяг"},
+        {name:'materials', label: "Будівельні матеріали"},
+        {name:'decor', label: "Прикраси"},
+        {name:'furniture', label: "Фурнітура"},
+        {name:'logistics', label: "Транспорт"},
+        {name:'other', label: "Інше"}
       ]
     },
         {

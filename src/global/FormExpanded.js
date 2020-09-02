@@ -96,18 +96,20 @@ const useStyles = makeStyles((theme) => ({
     display: 'block',
     width: '100%',
     margin: "auto",
-    objectFit: 'cover'
+    objectFit: 'cover',
+    marginTop: '1rem'
   },
 
   MobileStepper:{
     background: "none",
     position:'absolute',
-    width:'calc(100% - 1rem)',
+    width:'100%',
+    padding: 0
   },
 
   text:{
-    width: "calc( 100% - 2rem )",
-    margin: "1rem",
+    width: "100%",
+    marginTop: "1rem",
     marginBottom: 0,
     position: "relative"
   },
@@ -127,7 +129,7 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
-export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, directory })=> {
+export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, directory, variant })=> {
   const formSteps = formGetter()
   const classes = useStyles();
   const theme = useTheme();
@@ -256,7 +258,7 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
             case 'select':
               return (
                 <FormControl variant="outlined" key={input.id} className={classes.formControl} 
-                  style={{width: 'calc(100% - 2rem)', marginLeft:'1rem', marginTop:'1rem'}}>
+                  style={{width: '100%', marginTop:'1rem'}}>
                   <InputLabel id={input.id} key={input.id+'lbl'} >{input.label}</InputLabel>
                   <Select
                     key={input.id} 
@@ -268,7 +270,7 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
                     }}
                     label={input.label}
                   >
-                    {input.options.map(opt=><MenuItem key={opt} value={opt}>{opt}</MenuItem>)}
+                    {input.options.map(opt=><MenuItem key={opt.name} value={opt.name}>{opt.label}</MenuItem>)}
                   </Select>
                 </FormControl>
               )
@@ -364,7 +366,7 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
       <MobileStepper
         steps={maxSteps}
         position="static"
-        variant='none'
+        variant={variant?variant:'none'}
         activeStep={activeStep}
         className={classes.MobileStepper}
         nextButton={ nextButton&&nextButton(activeStep, setActiveStep, maxSteps, valid, imageLoadedURL, project) }

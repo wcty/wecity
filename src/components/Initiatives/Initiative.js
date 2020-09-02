@@ -11,12 +11,14 @@ import translate from '@turf/transform-translate'
 import { render } from 'react-dom'
 import ImageViewer from 'react-simple-image-viewer'
 import { useGeoFirestore } from 'global/Hooks'
-import { getFeatures } from 'global/Misc'
+import { getFeatures, DeleteObject } from 'global/Misc'
 import firebase from 'firebase'
 import useMeasure from 'use-measure'
 import FormExpanded from 'global/FormExpanded'
-import joinForm from 'global/forms/joinForm'
-import CreateNewProject from './CreateNewProject'
+import createProjectForm from 'global/forms/createProjectForm'
+import CreateProject from 'components/Projects/CreateProject'
+import ProjectLibrary from 'components/Projects/ProjectLibrary'
+import BackFab from 'components/Projects/BackFab'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -97,29 +99,39 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function MediaCard({ image, name, volunteers, price }) {
-  const classes = useStyles();
+function MediaCard({ directory }) {
+  const objects = useFirestore().collection(directory)
+  const images = useStorage().ref().child(directory)
+  const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
 
   return (
-    <Card className={{maxWidth: 345, marginTop: '1rem'}}>
+    <Card style={{marginTop: '1rem'}}>
       <CardActionArea>
         <CardMedia
           style={{height: 140}}
-          image={image}
-          title="Contemplative Reptile"
+          image={selectType.object.imageURL.s}
+          title={selectType.object.rendername}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            {name}
+            {selectType.object.rendername}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            Для реалізаціїї потрібно {volunteers} волонтерів та {price} грн.
+            Для реалізаціїї потрібно {selectType.object.volunteers} волонтерів та {selectType.object.price} грн.
           </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" variant="contained" color="primary" style={{color: "black"}}>
-          Видалити
+        <Button size="small" variant="contained" color="primary" style={{color: "black"}} 
+          onClick={()=>{
+            if(selectType.type=='newProject'){
+              DeleteObject(selectType.object, objects, images, 'projects', ()=>setSelectType(null))
+            }else if(selectType.type=='selectProject'){
+              setSelectType(null)
+            }
+          }}
+        >
+          {selectType.type=='newProject'?'Видалити':'Очистити'}
         </Button>
       </CardActions>
     </Card>
@@ -133,6 +145,7 @@ function SelectRole() {
   const [job, setJob] = useState(2)
   // const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
+  const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
 
   const classes = useStyles()
   const handleChange = (event) => {
@@ -213,36 +226,7 @@ function SelectRole() {
               </Button>
             </>}
             {selectType && selectType.object && <>
-              {/* <section 
-                className={classes.img} 
-                alt="Cover of the initiative"
-                onClick={()=>{
-                  setSelectType({type: 'selectProject'})
-                }}
-                style={{
-                  position:'relative',
-                  backgroundImage: `url(${selectType.object.imageURL?selectType.object.imageURL.s: addImage})`,
-                  backgroundPosition: 'center',
-                  backgroundSize: 'cover',
-                  backgroundRepeat: 'no-repeat',
-                  borderRadius: "5px",
-                  width: '100%',
-                  height: '8rem',
-                  margin: 'auto',
-                  textAlign: 'center',
-                  color: "White",
-                  fontWeight: "bold"
-              }}>
-                {selectType.object.name}<br/>
-                Необхідний бюджет: {selectType.object.name}<br/>
-                Необхідно волонтерів: {selectType.object.name}
-              </section> */}
-              <MediaCard 
-                image={selectType.object.imageURL?selectType.object.imageURL.s: addImage} 
-                name={selectType.object.name} 
-                volunteers={selectType.object.volunteers} 
-                price={selectType.object.price} 
-              />
+              <MediaCard directory={"projects"} />
             </>}
           </div>}
         </Box>
@@ -276,8 +260,18 @@ function SelectRole() {
       <Button 
         size="small" 
         variant="contained"  
+        color="primary"
+        style={{marginTop: '1rem', color: 'black'}}
+        onClick={async ()=>{    
+          setJoining(false)
+      }}>
+        Назад
+      </Button>
+      <Button 
+        size="small" 
+        variant="contained"  
         color="secondary"
-        style={{marginTop: '1rem'}}
+        style={{marginTop: '1rem', float: 'right'}}
         onClick={async ()=>{    
           console.log('Приєднатися')
           //setJoining(true)
@@ -287,16 +281,22 @@ function SelectRole() {
     </FormControl>
     {selectType && !selectType.object && <>
       {selectType.type=="selectProject" && !selectType.object && <>
-        <CreateNewProject />
+        <ProjectLibrary onlyMine 
+          select={(project)=>setSelectType({type: "selectProject", object: project })} 
+        />
+        <BackFab back={()=>setSelectType(null)}/>
       </>}
       {selectType.type=="newProject" && !selectType.object && <>
-        <CreateNewProject />
+        <CreateProject 
+          submit={(docRef, doc)=>setSelectType({type: "newProject", object: {...doc.data(), id: docRef.id} })} 
+          cancel={()=>setSelectType(null)}
+        />
       </>}
       {selectType.type=="selectResource" && !selectType.object && <>
-        <CreateNewProject />
+        <CreateProject />
       </>}
       {selectType.type=="newResource" && !selectType.object && <>
-        <CreateNewProject />
+        <CreateProject />
       </>} 
     </>}
   </>);
@@ -375,21 +375,9 @@ export default ({ mapRef, loaded, getMarker })=> {
   useEffect(async()=>{
     if(selected) {
       setExpanded(false)
+      console.log(markers.features)
+
       setInitiative(markers.features.find(f=>f.properties.id==selected?selected:null).properties)
-      // const initiativeRef = initiatives.doc(selected)
-      // const initiative = initiativeRef.get().then((doc)=>{
-      //   if (doc.exists){
-      //     console.log(document)
-      //     const data = doc.data()
-      //     //data.id = doc.id
-      //     delete data.g
-      //     console.log("Document data:", data);
-      //     setInitiative(data);
-      //   }else{
-      //     //console.log("No such document!");
-      //     setInitiative(null);
-      //   }
-      // })
       setIsCreating(false)
       setMarker(null)
       setJoining(false)
@@ -544,7 +532,7 @@ export default ({ mapRef, loaded, getMarker })=> {
                 />
               </ListItem>)}
             </List>
-            <Button 
+            { !initiative.members[user.uid] && <Button 
               size="small" 
               variant="contained"  
               color="secondary"
@@ -554,7 +542,16 @@ export default ({ mapRef, loaded, getMarker })=> {
                 setJoining(true)
             }}>
               Приєднатися
-            </Button>
+            </Button>}
+            { initiative.members[user.uid] && initiative.members.ids.length<2 && <Button 
+              size="small" 
+              variant="contained"  
+              color="secondary"
+              style={{marginTop: '1rem'}}//
+              onClick={()=>DeleteObject(initiative, initiatives, images, 'markers', ()=>{setMarkers({type: "FeatureCollection", features: markers.features.filter(m=>m.properties.id!==initiative.id)}); setInitiative(null);})}
+            >
+              Видалити
+            </Button>}
             </Box> }
 
             <Suspense fallback={null}>

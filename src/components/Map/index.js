@@ -10,7 +10,7 @@ import MarkerActive from 'assets/images/markerActive.svg'
 import LocationIcon from './Layers/LocationIcon.js'
 import LoadIcons from './Layers/LoadIcons.js'
 
-import CreateInitiativeForm from 'components/Initiatives/CreateInitiativeForm'
+import CreateInitiative from 'components/Initiatives/CreateInitiative'
 import InitiativeFab from 'components/Initiatives/InitiativeFab.js'
 import Initiative from 'components/Initiatives/Initiative.js'
 import Initiatives from 'components/Initiatives'
@@ -51,7 +51,7 @@ const NewMarkerDialog = (props)=>{
   const classes = useStyles()
 
   return <> 
-    <CreateInitiativeForm {...props} />
+    <CreateInitiative {...props} />
     { isCreating && (<>
       <img alt="React Firebase" src={MarkerActive} className={classes.marker} width={42} height={42} />
     </>)}

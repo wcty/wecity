@@ -1,6 +1,7 @@
 import React from 'react' 
 import { List, ListItem, ListItemText, makeStyles } from '@material-ui/core'
 import addImage from 'assets/images/addImage.png'
+import { categories } from './projectCategories'
 
 const useStyles = makeStyles(theme=>({
   item:{
@@ -45,16 +46,7 @@ export default (initiative)=>{
       type: "select",
       id: "category",
       label: "Оберіть категорію проекту",
-      options:[
-        "Озеленення",
-        "Громадські простори",
-        "Побутові",
-        "Відпочинок",
-        "Допомога",
-        "Мистецтво",
-        "Бізнес",
-        "Інше"
-      ]
+      options: categories
     },
     {
       type: "text",

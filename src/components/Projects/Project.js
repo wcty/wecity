@@ -5,10 +5,11 @@ import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { creatingAtom, markerAtom , barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
 import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire';
-import { Close } from '@material-ui/icons'
+import { Close, ArrowBack } from '@material-ui/icons'
 import distance from '@turf/distance'
 import { render } from 'react-dom';
 import ImageViewer from 'react-simple-image-viewer';
+import { categories } from 'global/forms/projectCategories'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,18 +70,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default ({ project, setProject })=> {
   const classes = useStyles();
-  const theme = useTheme();
-  const [marker, setMarker] = useRecoilState(markerAtom)
-  const [markers, setMarkers] = useRecoilState(markersAtom)
-  const [imageLoadedURL, setImageLoadedURL] = useState(null)
-  const projects = useFirestore().collection('markers')
-  const [location, setLocation] = useRecoilState(locationAtom)
-  const map = useRecoilValue(mapAtom)
   const bar = useRecoilValue(barAtom)
   const user = useUser()
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-
-
+  const directory='projects'
+  const objects = useFirestore().collection(directory)
+  const images = useStorage().ref().child(directory)
   return (<>
     {isViewerOpen && (
       <>
@@ -143,10 +138,10 @@ export default ({ project, setProject })=> {
                 setProject(null)
               }}
             >
-              <Close color="primary"/>
+              <ArrowBack color="primary"/>
             </IconButton>
           </section>
-            {project.category && (<Chip label={project.category} style={{marginLeft: '1rem', marginTop: '-5rem'}} />)}
+            {project.category && (<Chip label={categories.find(c=>c.name==project.category).label} style={{marginLeft: '1rem', marginTop: '-5rem', zIndex: 9, position: 'relative'}} />)}
             <Typography variant="h6" style={{marginLeft:'1rem', marginTop:'0rem'}}>
               {project.name? project.name: "Name is not set"}
             </Typography>
@@ -225,12 +220,40 @@ export default ({ project, setProject })=> {
             {user&&<Button 
               elevation={15} 
               variant="contained" 
+              size="small"
               style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 
               onClick={()=>{
                 console.log('button')
               }}
             >
               Додати проект в ініціативу
+            </Button>}
+            {project.contractors && project.contractors.find(c=>c==user.uid) &&<Button 
+              elevation={15} 
+              variant="contained" 
+              size="small"
+              color="secondary"
+              style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem"}} 
+              onClick={async ()=>{
+                const object = project
+                console.log(object.id)
+                if(object.id){
+                  objects.doc(object.id).delete().then(function() {
+                    Object.values(object.imageURL).forEach((url)=>{
+                      const fileName = url.split('?')[0].split(directory+'%2F').reverse()[0]
+                      images.child(fileName).delete().then(function() {
+                      }).catch(function(error) {
+                        console.log('Errored at image deletion', error)
+                      });
+                    })
+                    setProject(null)
+                  }).catch(function(error) {
+                      console.error("Error removing document: ", error);
+                  });
+                }else{console.log(object)}
+              }}
+            >
+              Видалити
             </Button>}
           
           </Suspense>
