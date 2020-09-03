@@ -1,22 +1,25 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react'
+import React, { useEffect, useRef, Suspense } from 'react'
 // import * as serviceWorker from '../serviceWorker';
 import { makeStyles } from '@material-ui/core/styles'
-import { Box, Snackbar, Button } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 import AppBar from './AppBar'
-import Initiatives from './Initiatives'
 import Projects from './Projects'
 import Resources from './Resources'
-
 import Map from './Map'
 import { barAtom, mapAtom } from 'global/Atoms'
-import { RecoilRoot, useRecoilState } from 'recoil'
+import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 import useMeasure from "use-measure";
 import { theme } from 'global/Theme'
 import { firebaseConfig } from 'config'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { FirebaseAppProvider } from 'reactfire'
 import { useRecoilValue } from 'recoil'
-import { initiativeBarAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
+import { projectBarAtom, resourceBarAtom } from 'global/Atoms'
+import moment from 'moment'
+// import(`moment/locale/${navigator.language.toLocaleLowerCase().split('-')[0]}`).then(()=>{
+//   console.log('loaded local ', navigator.language.toLocaleLowerCase())
+//   moment().locale(navigator.language.toLocaleLowerCase().split('-')[0])
+// })
 
 const useStyles = makeStyles(theme => ({
 
@@ -50,33 +53,12 @@ const useStyles = makeStyles(theme => ({
 
 const Layout = ()=>{
   const classes = useStyles()
-  const [barDimensions, setBarDimensions] = useRecoilState(barAtom)
+  const [barDimensions] = useRecoilState(barAtom)
   const mapRef = useRef()
   const mapMeasure = useMeasure(mapRef)
-  const [mapDimensions, setMapDimensions] = useRecoilState(mapAtom)
-  
-  const [showReload, setShowReload] = useState(false);
-  const [waitingWorker, setWaitingWorker] = useState(null);
-  const initiativeBar = useRecoilValue(initiativeBarAtom)
+  const setMapDimensions = useSetRecoilState(mapAtom)
   const projectBar = useRecoilValue(projectBarAtom)
   const resourceBar = useRecoilValue(resourceBarAtom)
-
-  const onSWUpdate = (registration) => {
-    setShowReload(true);
-    setWaitingWorker(registration.waiting);
-    console.log('SWUpdate')
-  };
-
-  const reloadPage = () => {
-    if(waitingWorker) waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-    setShowReload(false);
-    window.location.reload(true);
-    console.log('reloadPage')
-  };
-  
-  useEffect(() => {
-    //serviceWorker.register({ onUpdate: onSWUpdate });
-  }, []);
 
   useEffect(()=>{
     setMapDimensions(mapMeasure)
@@ -84,21 +66,6 @@ const Layout = ()=>{
 
   return (
     <Box className={classes.root}>
-      <Snackbar
-        open={showReload}
-        message="A new version is available!"
-        onClick={reloadPage}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        action={
-          <Button
-            color="inherit"
-            size="small"
-            onClick={reloadPage}
-          >
-            Reload
-          </Button>
-        }
-      />
       <AppBar />
       <Suspense fallback={null}>
        {projectBar && <Projects />}

@@ -2,9 +2,9 @@ import React, { useState, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Fab, Collapse } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {  selectedAtom, initiativeBarAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
-import { AddLocation, MyLocation } from '@material-ui/icons'
+import { AddLocation } from '@material-ui/icons'
 import useMeasure from "use-measure";
 
 const useStyles = makeStyles(theme => ({
@@ -23,12 +23,10 @@ const useStyles = makeStyles(theme => ({
 export default ({ active, getMarker })=>{
   const classes = useStyles()
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
-  const [map] = useRecoilState(mapAtom)
   const [alert, setAlert] = useState(null)
   const user = useRecoilValue(userAtom)
   const fabRef = useRef()
-  const fab = useMeasure(fabRef)
-  const [selected, setSelected] = useRecoilState(selectedAtom)
+  const setSelected = useSetRecoilState(selectedAtom)
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
 
 

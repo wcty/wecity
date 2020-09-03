@@ -12,7 +12,7 @@ const formSteps = [
     {
       type: "text",
       id: "name",
-      label: "Як ваше ім'я:",
+      label: "Ваше ім'я:",
       maxLength: 50
     },
     {

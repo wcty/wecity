@@ -423,6 +423,7 @@ export default ({ getMarker })=> {
         nextButton={
           activeStep === (maxSteps - 1) ? (
             <Button disabled={!valid} className={classes.button} variant="contained" size="small" onClick={async ()=>{    
+              
               markersCollection.add({
                 ...marker,
                 timestamp: new Date(),

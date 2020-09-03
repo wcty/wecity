@@ -19,6 +19,7 @@ import createProjectForm from 'global/forms/createProjectForm'
 import CreateProject from 'components/Projects/CreateProject'
 import ProjectLibrary from 'components/Projects/ProjectLibrary'
 import BackFab from 'components/Projects/BackFab'
+import moment from 'moment'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -384,10 +385,6 @@ export default ({ mapRef, loaded, getMarker })=> {
     }
   }, [selected])
 
-  useEffect(()=>{
-    initiative && user && console.log(initiative.members, user.uid)
-  },[initiative, user])
-
   return (<>
     {isViewerOpen && (
       <>
@@ -528,11 +525,11 @@ export default ({ mapRef, loaded, getMarker })=> {
               {initiative.timestamp && (<ListItem className={classes.item} disableGutters>
                 <ListItemText
                   primary="Додано:"
-                  secondary={initiative.timestamp.toDate().getDay()+"."+initiative.timestamp.toDate().getMonth()+"."+initiative.timestamp.toDate().getFullYear()}
+                  secondary={moment(initiative.timestamp.toDate()).format('DD.MM.YYYY')}
                 />
               </ListItem>)}
             </List>
-            { !initiative.members[user.uid] && <Button 
+            { user && !initiative.members[user.uid] && <Button 
               size="small" 
               variant="contained"  
               color="secondary"
@@ -543,7 +540,7 @@ export default ({ mapRef, loaded, getMarker })=> {
             }}>
               Приєднатися
             </Button>}
-            { initiative.members[user.uid] && initiative.members.ids.length<2 && <Button 
+            { user && initiative.members[user.uid] && initiative.members.ids.length<2 && <Button 
               size="small" 
               variant="contained"  
               color="secondary"
