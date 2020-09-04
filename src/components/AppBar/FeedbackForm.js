@@ -3,6 +3,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, FormControl, IconButton, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons';
 import { useUser, useFirestore } from 'reactfire';
+import { Redirect } from 'react-router-dom'
 
 //1920x1080,851x315,484x252,180x180
 
@@ -72,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
-export default ({ feedback, closeFeedback })=> {
+export default ()=> {
   const classes = useStyles();
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
@@ -83,6 +84,7 @@ export default ({ feedback, closeFeedback })=> {
 
   const [finished, setFinished] = useState(null)
   const [valid, setValid] = useState(false)
+  const [redirect, setRedirect] = useState(null)
 
   useEffect(async()=>{
     let bool = true
@@ -109,13 +111,14 @@ export default ({ feedback, closeFeedback })=> {
   const feedbackRef = useFirestore().collection('feedback')
   const user = useUser()
 
-  return (
+  return (<>
+    {redirect && <Redirect to={redirect}/> }
     <form className={classes.root} noValidate autoComplete="off" style={{textAlign:'start', padding:'1rem', margin:'auto'}} >
       <Paper elevation={1} className={classes.paper} style={{paddingTop:'2rem', paddingBottom:'1rem', position:'relative'}} >  
         <Typography variant="h6" style={{textAlign:'start', margin:'1rem'}}>
           🖐Вітаємо шановний відвідувачу!
         </Typography>
-        <Typography variant="body1" style={{textAlign:'start', margin:'1.2rem'}}>
+        <Typography variant="body1" component="div" style={{textAlign:'start', margin:'1.2rem'}}>
           <p>- За будь яких питань пишіть нам на пошту hi@weee.city.</p>
           <p>- Якщо ви зареєстровані на нашому сайті ви також можете залишити свої запитання чи пропозиції у формі зворотнього зв'язку.</p>
         </Typography>
@@ -124,7 +127,7 @@ export default ({ feedback, closeFeedback })=> {
         aria-label="return"
         style={{position:"absolute", display:'block', right:"1.5rem", bottom:"0.5rem"}}
         onClick={()=>{
-          closeFeedback(false)
+          setRedirect('/')
         }}
       >
         <Close />
@@ -211,7 +214,7 @@ export default ({ feedback, closeFeedback })=> {
                         console.error("Error writing document: ", error);
                     });
                   }
-                closeFeedback(false)
+                  setRedirect('/')
               }}>
                 Надіслати
               </Button>
@@ -225,7 +228,7 @@ export default ({ feedback, closeFeedback })=> {
           backButton={
             activeStep === 0 ? (
               <Button className={classes.button} variant="contained" size="small" onClick={()=>{
-                closeFeedback(false)
+                setRedirect('/')
               }} >
                 Не надсилати
               </Button>
@@ -240,5 +243,6 @@ export default ({ feedback, closeFeedback })=> {
         </>}
       </Paper>
     </form>
+    </>
   );
 }

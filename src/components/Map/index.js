@@ -19,6 +19,7 @@ import LocateFab from './Interfaces/LocateFab.js'
 import Markers from './Layers/Markers.js'
 import Satellite from './Layers/Satellite.js'
 import LayersFab from './Interfaces/LayersFab.js'
+import { Redirect } from 'react-router-dom'
 
 
 const useStyles = makeStyles(theme => ({
@@ -73,11 +74,14 @@ export default ()=>{
   const [projectBar, setProjectBar] = useRecoilState(projectBarAtom)
   const [resourceBar, setResourceBar] = useRecoilState(resourceBarAtom)
   const [satellite, setSatellite] = useState(false)
+  const [redirect, setRedirect] = useState(null)
+
   const getMarker = ()=>{
     const w = mapDimensions.width/2
     const h = (mapDimensions.height - 350)/2
     return mapRef.current.getMap().unproject ([w,h])
   }
+
   useEffect(()=>{
       if ("geolocation" in navigator) {
         navigator.geolocation.watchPosition(function(position) {
@@ -102,6 +106,7 @@ export default ()=>{
 
   return (
       <>
+        {redirect && <Redirect to={redirect} />}
         <Suspense fallback={null}>
           {initiativeBar && <Initiatives mapRef={mapRef} />}
         </Suspense>
@@ -127,14 +132,10 @@ export default ()=>{
           onViewportChange={setViewport}
           onLoad={()=>{setLoaded(true)}}
           ref={mapRef}
-          hash={true}
+          //hash={true}
           {...viewport}
           onClick={()=>{
-            setSelected(null)
-            setIsCreating(null)
-            setInitiativeBar(false)
-            setProjectBar(false)
-            setResourceBar(false)
+            setRedirect('/')
           }}
         >
           {satellite && <Satellite />}

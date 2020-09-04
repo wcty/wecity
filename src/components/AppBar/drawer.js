@@ -8,6 +8,7 @@ import ErrorBoundary from 'global/ErrorBoundary'
 import { initiativeBarAtom, selectedAtom, creatingAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
 import { useRecoilState } from 'recoil'
 import FeedbackForm from './FeedbackForm'
+import { Redirect, Route } from 'react-router-dom';
 
 const useStyles = makeStyles({
   list: {
@@ -33,7 +34,7 @@ export default ({ state, setState })=>{
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
   const [selected, setSelected] = useRecoilState(selectedAtom)
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
-
+  const [redirect, setRedirect] = useState(null)
 
   const user = useUser();
   const menuTop = user?
@@ -88,118 +89,77 @@ export default ({ state, setState })=>{
       }
     ]
 
-  const  [feedback, closeFeedback] = useState(false)
+  const list = (anchor) => {
+    return (
+      <div
+        className={clsx(classes.list, {
+          [classes.fullList]: anchor === 'top' || anchor === 'bottom',
+        })}
+        role="Menu of the map"
+        onClick={toggleDrawer(false)}
+        onKeyDown={toggleDrawer(false)}
+      >
+        <List>
+          {menuTop.map((val, index) => (
+            <ListItem button key={val.id} onClick={()=>{
+              if(val.id==='map'){
+                setRedirect('/')
+              }else if(val.id==='initiatives'){
+                setRedirect('/initiatives')
+              }else if(val.id==='projects'){
+                setRedirect('/projects')
+              }else if(val.id==='resources'){
+                setRedirect('/resources')
+              }
+            }}>
+              <ListItemIcon>
+                {val.id==='map' && <MapOutlined /> }
+                {val.id==='initiatives' && <PeopleOutline /> }
+                {val.id==='projects' && <LibraryBooksOutlined /> }
+                {val.id==='resources' && <BuildOutlined /> }
+              </ListItemIcon>
+              <ListItemText primary={val.text} />
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {menuBottom.map((val, index) => (
+            <ListItem button key={val.id} onClick={()=>{
+              if(val.id==='settings'){
 
-  const Feedback = ({feedback, closeFeedback})=>{
-    return (<>
-      {feedback &&(
-      <Box style={{
-        backgroundColor:'white',
-        position: 'fixed',
-        flexGrow: 1,
-        top: 0, left: 0, bottom: 0, right: 0,
-        zIndex: 999,
-        overflowY: "auto",  
-      }}>
-        <FeedbackForm closeFeedback={closeFeedback} />
-      </Box>)}
-    </>)
-  }
-
-  const list = (anchor) => (
-    <div
-      className={clsx(classes.list, {
-        [classes.fullList]: anchor === 'top' || anchor === 'bottom',
-      })}
-      role="Menu of the map"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
-    >
-      <List>
-        {menuTop.map((val, index) => (
-          <ListItem button key={val.id} onClick={()=>{
-            if(val.id==='map'){
-              setSelected(null)
-              setIsCreating(null)  
-              setInitiativeBar(false)
-              setProjectBar(false)
-              setResourceBar(false)
-
-            }else if(val.id==='initiatives'){
-              setSelected(null)
-              setIsCreating(null)  
-              setInitiativeBar(true)
-              setProjectBar(false)
-              setResourceBar(false)
-
-            }else if(val.id==='projects'){
-              setSelected(null)
-              setIsCreating(null)  
-              setInitiativeBar(false)
-              setProjectBar(true)
-              setResourceBar(false)
-
-            }else if(val.id==='resources'){
-              setSelected(null)
-              setIsCreating(null)  
-              setInitiativeBar(false)
-              setProjectBar(false)
-              setResourceBar(true)
-            }
-          }}>
-            <ListItemIcon>
-              {val.id==='map' && <MapOutlined /> }
-              {val.id==='initiatives' && <PeopleOutline /> }
-              {val.id==='projects' && <LibraryBooksOutlined /> }
-              {val.id==='resources' && <BuildOutlined /> }
-            </ListItemIcon>
-            <ListItemText primary={val.text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {menuBottom.map((val, index) => (
-          <ListItem button key={val.id} onClick={()=>{
-            if(val.id==='settings'){
-
-            }else if(val.id==='feedback'){
-              setSelected(null)
-              setIsCreating(null)  
-              setInitiativeBar(false)
-              setProjectBar(false)
-              setResourceBar(false)
-              closeFeedback(!feedback)
-            }
-          }}>
-            <ListItemIcon>
-              {val.id==='settings' && <SettingsApplicationsOutlined /> }
-              {val.id==='feedback' && <FeedbackOutlined /> }
-            </ListItemIcon>
-            <ListItemText primary={val.text} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
+              }else if(val.id==='feedback'){
+                setRedirect('/feedback')
+                console.log('feedback')
+              }
+            }}>
+              <ListItemIcon>
+                {val.id==='settings' && <SettingsApplicationsOutlined /> }
+                {val.id==='feedback' && <FeedbackOutlined /> }
+              </ListItemIcon>
+              <ListItemText primary={val.text} />
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    )
+  };
 
   return (
-    <div>
-      <>  
-      <Feedback feedback={feedback} closeFeedback={closeFeedback} />
-        <ErrorBoundary>
-          <SwipeableDrawer
-            open={state}
-            onClose={toggleDrawer(false)}
-            onOpen={toggleDrawer(true)}
-            disableBackdropTransition={true}//!iOS} 
-            disableDiscovery={iOS}
-            //backdropelement="test"
-          >
-            {list('left')}
-          </SwipeableDrawer>
-        </ErrorBoundary>
-      </>
-    </div>
+    //<div>
+    <>          
+        {redirect && <Redirect to={redirect} />}
+        <SwipeableDrawer
+          open={state}
+          onClose={toggleDrawer(false)}
+          onOpen={toggleDrawer(true)}
+          disableBackdropTransition={true}//!iOS} 
+          disableDiscovery={iOS}
+          //backdropelement="test"
+        >
+          {list('left')}
+        </SwipeableDrawer>
+    </>
+    //</div>
   );
 }

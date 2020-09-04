@@ -23,6 +23,7 @@
     "raf": "^3.4.1",
     "react": "0.0.0-experimental-3d0895557",
     "react-dom": "0.0.0-experimental-3d0895557",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "react-simple-image-viewer": "0.0.4",
     "reactfire": "^2.0.3",

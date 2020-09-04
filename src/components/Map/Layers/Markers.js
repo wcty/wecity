@@ -5,20 +5,21 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { locationAtom, markersAtom, viewAtom, selectedAtom } from 'global/Atoms'
 import { useGeoFirestore } from 'global/Hooks'
 import { getFeatures } from 'global/Misc'
+import { Redirect } from 'react-router-dom';
 
 export default () =>{
   const GeoFirestore = useGeoFirestore() 
   const [markers, setMarkers] = useRecoilState(markersAtom)
   const [selected, setSelected] = useRecoilState(selectedAtom)
-
+  const [redirect, setRedirect] = useState(null)
   const view = useRecoilValue(viewAtom)
 
   const onClick = (event) => {
     if (event.features.length > 0) {
       const nextClickedStateId = event.features[0].properties.id;
       if ( !selected || ( selected !== nextClickedStateId )) {
-        console.log(event.features[0].properties.id)
         setSelected(event.features[0].properties.id);
+        setRedirect(`/initiative/${event.features[0].properties.id}`)
       }
     }
   };
@@ -34,7 +35,8 @@ export default () =>{
   }, [GeoFirestore])
   
   return (
-    <>
+    <>  
+      {redirect && <Redirect to={redirect}/>}
       <Source
         id='markers'
         type='geojson'
@@ -82,6 +84,9 @@ export default () =>{
           'text-offset': [0, 0]
         }}
         onClick={onClick}
+        onEnter={()=>{document.body.style.cursor="pointer"}}
+        onLeave={()=>{document.body.style.cursor=""}}
+
       />
     </>
   )

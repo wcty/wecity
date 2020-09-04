@@ -303,7 +303,7 @@ function SelectRole() {
   </>);
 }
 
-export default ({ mapRef, loaded, getMarker })=> {
+export default ({ mapRef, loaded })=> {
   const classes = useStyles();
   const [marker, setMarker] = useRecoilState(Atoms.markerAtom)
   const initiatives = useFirestore().collection('markers')

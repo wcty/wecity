@@ -15,11 +15,8 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import { FirebaseAppProvider } from 'reactfire'
 import { useRecoilValue } from 'recoil'
 import { projectBarAtom, resourceBarAtom } from 'global/Atoms'
-import moment from 'moment'
-// import(`moment/locale/${navigator.language.toLocaleLowerCase().split('-')[0]}`).then(()=>{
-//   console.log('loaded local ', navigator.language.toLocaleLowerCase())
-//   moment().locale(navigator.language.toLocaleLowerCase().split('-')[0])
-// })
+import FeedbackForm from './AppBar/FeedbackForm'
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
 
@@ -51,6 +48,21 @@ const useStyles = makeStyles(theme => ({
   }  
 }))
 
+const Feedback = ()=>{
+  return (<>
+    <Box style={{
+        backgroundColor:'white',
+        position: 'fixed',
+        flexGrow: 1,
+        top: 0, left: 0, bottom: 0, right: 0,
+        zIndex: 999,
+        overflowY: "auto",  
+      }}>
+        <FeedbackForm />
+      </Box>
+  </>)
+}
+
 const Layout = ()=>{
   const classes = useStyles()
   const [barDimensions] = useRecoilState(barAtom)
@@ -68,8 +80,9 @@ const Layout = ()=>{
     <Box className={classes.root}>
       <AppBar />
       <Suspense fallback={null}>
-       {projectBar && <Projects />}
-       {resourceBar && <Resources />}
+        <Route path="/projects" render={()=><Projects />} />
+        <Route path="/resources" render={()=><Resources />} />
+        <Route path='/feedback' render={()=><Feedback />} />
       </Suspense>
       <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>
         <Map />
@@ -80,12 +93,14 @@ const Layout = ()=>{
 
 export default () => {
   return (
-    <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-      <ThemeProvider theme={theme}>
-        <RecoilRoot>
-          <Layout />
-        </RecoilRoot>
-      </ThemeProvider>
-  </FirebaseAppProvider>
+    <Router>
+      <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+        <ThemeProvider theme={theme}>
+          <RecoilRoot>
+            <Layout />
+          </RecoilRoot>
+        </ThemeProvider>
+      </FirebaseAppProvider>
+    </Router>
   )
 }
