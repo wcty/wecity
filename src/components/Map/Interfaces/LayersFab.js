@@ -9,7 +9,8 @@ const useStyles = makeStyles(theme => ({
   satelliteFab: {
     position: 'absolute',
     top: '9rem',
-    right: '1rem'
+    right: '1rem',
+    zIndex: 5
   }
 }))  
 

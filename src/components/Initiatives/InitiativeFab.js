@@ -10,13 +10,15 @@ import useMeasure from "use-measure";
 const useStyles = makeStyles(theme => ({
   InitiativeFab: {
     position: 'absolute',
-    right: '1rem'
+    right: '1rem',
+    zIndex: 5
   },
   alert: {
     position: 'absolute',
     top: '1rem',
     left: '1rem',
-    maxWidth: '60%'
+    maxWidth: '60%',
+    zIndex: 5
   }
 }))  
 

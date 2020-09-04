@@ -9,7 +9,8 @@ const useStyles = makeStyles(theme => ({
   locateFab: {
     position: 'absolute',
     top: '5.5rem',
-    right: '1rem'
+    right: '1rem',
+    zIndex: 5
   }
 }))  
 

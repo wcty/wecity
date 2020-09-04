@@ -84,7 +84,7 @@ export default ({ onlyMine, select })=>{
           {categories.map(opt=><MenuItem key={opt.name} value={opt.name}>{opt.label}</MenuItem>)}
         </Select>
       </FormControl>
-      {!onlyMine && <FormControl >
+      {!onlyMine && user && <FormControl >
         <FormControlLabel
           control={
             <Checkbox
