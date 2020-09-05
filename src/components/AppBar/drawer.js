@@ -9,10 +9,13 @@ import { initiativeBarAtom, selectedAtom, creatingAtom, projectBarAtom, resource
 import { useRecoilState } from 'recoil'
 import FeedbackForm from './FeedbackForm'
 import { Redirect, Route } from 'react-router-dom';
+import LangSelect from './LangSelect'
+import { useI18n } from 'global/Hooks'
 
 const useStyles = makeStyles({
   list: {
     width: 250,
+    padding: '1rem'
   },
   fullList: {
     width: 'auto',
@@ -35,57 +38,58 @@ export default ({ state, setState })=>{
   const [selected, setSelected] = useRecoilState(selectedAtom)
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const [redirect, setRedirect] = useState(null)
+  const i18n = useI18n()
 
   const user = useUser();
   const menuTop = user?
     [
       {
         id:'map',
-        text:'Мапа ініціатив'
+        text: i18n('initiativeMap')
       }, 
       {
         id:'initiatives',
-        text: 'Мої ініціативи'
+        text: i18n('myInitiatives')
       },
       {
         id: 'projects',
-        text: 'Проектні пропозиції'
+        text: i18n('projectLibrary')
       },
-      {
-        id: 'resources',
-        text: 'Локальні ресурси'
-      }
+      // {
+      //   id: 'resources',
+      //   text: i18n('resourceLibrary')
+      // }
     ]:
     [      
       {
         id:'map',
-        text:'Мапа ініціатив'
+        text:i18n('initiativeMap')
       }, 
       {
         id: 'projects',
-        text: 'Проектні пропозиції'
+        text: i18n('projectLibrary')
       },
-      {
-        id: 'resources',
-        text: 'Локальні ресурси'
-      }
+      // {
+      //   id: 'resources',
+      //   text: i18n('resourceLibrary')
+      // }
     ]
 
   const menuBottom = user?
     [
       {
         id: 'settings',
-        text:'Налаштування'
+        text:i18n('settings')
       }, 
       {
         id: 'feedback',
-        text:'Зворотній зв\'язок'
+        text:i18n('feedback')
       }
     ]:
     [
       {
         id: 'feedback',
-        text:'Зворотній зв\'язок'
+        text:i18n('feedback')
       }
     ]
 
@@ -96,10 +100,12 @@ export default ({ state, setState })=>{
           [classes.fullList]: anchor === 'top' || anchor === 'bottom',
         })}
         role="Menu of the map"
-        onClick={toggleDrawer(false)}
-        onKeyDown={toggleDrawer(false)}
       >
-        <List>
+        <List  
+          disablePadding       
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
           {menuTop.map((val, index) => (
             <ListItem button key={val.id} onClick={()=>{
               if(val.id==='map'){
@@ -123,7 +129,11 @@ export default ({ state, setState })=>{
           ))}
         </List>
         <Divider />
-        <List>
+        <List 
+          disablePadding
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
           {menuBottom.map((val, index) => (
             <ListItem button key={val.id} onClick={()=>{
               if(val.id==='settings'){
@@ -132,7 +142,8 @@ export default ({ state, setState })=>{
                 setRedirect('/feedback')
                 console.log('feedback')
               }
-            }}>
+            }}
+            >
               <ListItemIcon>
                 {val.id==='settings' && <SettingsApplicationsOutlined /> }
                 {val.id==='feedback' && <FeedbackOutlined /> }
@@ -141,6 +152,8 @@ export default ({ state, setState })=>{
             </ListItem>
           ))}
         </List>
+        <LangSelect variant="outlined" toggleDrawer={()=>{setState(false)}} style={{marginLeft: 'auto', marginTop: '1rem', float: 'right', minWidth: '2rem'}} />
+
       </div>
     )
   };

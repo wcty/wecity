@@ -8,6 +8,7 @@ import { useStorage, useFirestoreCollectionData, useFirestore, useUser } from 'r
 import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
 import distance from '@turf/distance'
 import { categories } from 'global/forms/projectCategories'
+import { useI18n } from 'global/Hooks'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,18 +61,19 @@ export default ({ onlyMine, select })=>{
     .collection('projects')
   const projectsRef = filterMine&&user? projectsRefPre.where("contractors", "array-contains", user.uid): projectsRefPre
   const projects = useFirestoreCollectionData(projectsRef)
-
+  const lang = useRecoilValue(Atoms.lang)
+  const i18n = useI18n()
   return (
     <div id="wrapper">
       <Typography variant="h6" style={{
         margin:'2rem',
         marginBottom: '1rem',
         textAlign: 'center'
-      }}>{onlyMine?'Мої проектні рішення':'Бібліотека проектних рішень'}</Typography>
+      }}>{onlyMine?i18n('myProjectsTitle'):i18n('projectsLibraryTitle')}</Typography>
 
       <FormControl variant="outlined"
         style={{width: '100%'}}>
-        <InputLabel id='category' >Оберіть категорію</InputLabel>
+        <InputLabel id='category' >{i18n('chooseCategory')}</InputLabel>
         <Select
           labelId='category'
           id='categorySelect'
@@ -81,7 +83,7 @@ export default ({ onlyMine, select })=>{
           }}
           label='category'
         >
-          {categories.map(opt=><MenuItem key={opt.name} value={opt.name}>{opt.label}</MenuItem>)}
+          {categories(i18n).map(opt=><MenuItem key={opt.name} value={opt.name}>{opt.label}</MenuItem>)}
         </Select>
       </FormControl>
       {!onlyMine && user && <FormControl >

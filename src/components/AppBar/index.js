@@ -12,6 +12,8 @@ import { useRecoilState } from 'recoil';
 import ErrorBoundary from 'global/ErrorBoundary'
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
 import UserForm from './UserForm'
+import { useI18n } from 'global/Hooks'
+
 const Styles = makeStyles( theme => ({
   appbar: {
     zIndex: 10,
@@ -48,7 +50,7 @@ const Styles = makeStyles( theme => ({
 
 const LogIn = ()=>{
   const classes = Styles()
-
+  const i18n = useI18n()
   const auth = useAuth()
   const user = useUser();
   const [current, setCurrent] = useRecoilState(userAtom)
@@ -120,19 +122,19 @@ const LogIn = ()=>{
                 color="default" 
                 className={classes.button}
               >
-                Вийти
+                {i18n('exit')}
               </Button>
             </div>
           :
         <Button onClick={signInWithGoogle} dense="true" color="default" className={classes.button}>
           <AccountCircle  className={classes.progress} />
-          Увійти
+          {i18n('enter')}
         </Button>}
  </>)
 }
 
 const Bar = (props)=>{
-
+  const i18n = useI18n()
   const classes = Styles()
   const barRef = useRef()
   const barMeasure = useMeasure(barRef)
@@ -162,7 +164,7 @@ const Bar = (props)=>{
             <div className={classes.progressLoaderContainer}>
               <CircularProgress size={24}  className={classes.progress} />
               <Typography className={classes.progressText} type="button" component="p">
-                Loading
+                {i18n('loading')}
               </Typography>
             </div>
           }>

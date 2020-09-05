@@ -19,8 +19,7 @@ import LocateFab from './Interfaces/LocateFab.js'
 import Markers from './Layers/Markers.js'
 import Satellite from './Layers/Satellite.js'
 import LayersFab from './Interfaces/LayersFab.js'
-import { Redirect } from 'react-router-dom'
-
+import { Redirect, Route } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   mapContainer: {
@@ -108,7 +107,7 @@ export default ()=>{
       <>
         {redirect && <Redirect to={redirect} />}
         <Suspense fallback={null}>
-          {initiativeBar && <Initiatives mapRef={mapRef} />}
+          <Route path='/initiatives' render={()=><Initiatives mapRef={mapRef}/>} />
         </Suspense>
         <Suspense fallback={
           <InitiativeFab active={false} />

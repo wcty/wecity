@@ -87,3 +87,21 @@ export const selectedProject = atom({
   key: 'selectedProject',
   default: null,
 })
+
+let defineLang = function(lang){
+  switch(lang) {
+      case 'uk':
+          return 'uk';
+      case 'ka':
+          return 'ka';
+      case 'fi':
+          return 'fi';
+      default:
+          return 'en';
+  }
+}
+
+export const lang = atom({
+  key: 'language',
+  default: defineLang(window.navigator.language.slice(0,2)),
+})

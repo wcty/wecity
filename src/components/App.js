@@ -1,3 +1,4 @@
+/* global i18n */
 import React, { useEffect, useRef, Suspense } from 'react'
 // import * as serviceWorker from '../serviceWorker';
 import { makeStyles } from '@material-ui/core/styles'

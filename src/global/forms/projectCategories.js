@@ -1,11 +1,16 @@
-export const categories = [
-  {name: 'all', label: "Всі категорії"},
-  {name: 'greenery', label: "Озеленення"},
-  {name: 'public space', label: "Громадські простори"},
-  {name: 'domestic', label: "Побутові"},
-  {name: 'recreation', label: "Відпочинок"},
-  {name: 'help', label: "Допомога"},
-  {name: 'art', label: "Мистецтво"},
-  {name: 'business', label: "Бізнес"},
-  {name: 'other', label: "Інше"}
+import React, { useMemo } from 'react'
+import { MenuItem } from '@material-ui/core'
+import { useRecoilValue } from 'recoil'
+import * as Atoms from 'global/Atoms'
+
+export const categories = (i18n)=>[
+  {name: 'all', label: i18n('allCategories')},
+  {name: 'greenery', label: i18n('greenery')},
+  {name: 'public space', label: i18n('publicSpace')},
+  {name: 'domestic', label: i18n('domestic')},
+  {name: 'recreation', label: i18n('recreation')},
+  {name: 'help', label: i18n('help')},
+  {name: 'art', label: i18n('art')},
+  {name: 'business', label: i18n('business')},
+  {name: 'other', label: i18n('other')}
 ]
