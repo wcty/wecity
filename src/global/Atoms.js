@@ -103,5 +103,5 @@ let defineLang = function(lang){
 
 export const lang = atom({
   key: 'language',
-  default: defineLang(window.navigator.language.slice(0,2)),
+  default: 'uk'//defineLang(window.navigator.language.slice(0,2)),
 })

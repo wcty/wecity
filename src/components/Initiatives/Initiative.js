@@ -20,6 +20,7 @@ import CreateProject from 'components/Projects/CreateProject'
 import ProjectLibrary from 'components/Projects/ProjectLibrary'
 import BackFab from 'components/Projects/BackFab'
 import moment from 'moment'
+import { Route, useParams } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -303,7 +304,7 @@ function SelectRole() {
   </>);
 }
 
-export default ({ mapRef, loaded })=> {
+export default ({ mapRef, loaded, id })=> {
   const classes = useStyles();
   const [marker, setMarker] = useRecoilState(Atoms.markerAtom)
   const initiatives = useFirestore().collection('markers')
@@ -321,7 +322,29 @@ export default ({ mapRef, loaded })=> {
   const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const images = useStorage().ref().child('initiatives')
   const theme = useTheme()
+  const params = useParams()
+  //const in = markers.features.find(f=>f.properties.id==id).properties
+  useEffect(()=>{
 
+    if(initiative){
+      console.log(initiative)
+    }
+    if(initiatives){
+      console.log(initiatives)
+    }
+    if(markers){
+      console.log(markers.features.find(f=>f.properties.id==id).properties)
+    }
+    console.log(params)
+
+  },[params, initiatives, initiative, markers])
+
+  useEffect(()=>{
+    if(selected && !initiative){
+      console.log('setInitiative')
+      setInitiative(markers.features.find(f=>f.properties.id==id).properties)
+    }
+  },[selected, initiative, id])
   useEffect(async()=>{
     if(loaded&&initiative){
       const map = mapRef.current.getMap()

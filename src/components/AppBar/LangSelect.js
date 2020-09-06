@@ -22,11 +22,11 @@ export default ({toggleDrawer, ...props})=>{
         <Select
         labelId="label-langSelect"
         id="langSelect"
-        value={'uk'/*lang*/}
+        value={lang}
         onChange={changeLanguage}
         label="lang"
         >
-            {/* <MenuItem value={'en'}>{i18n('en')}</MenuItem> */}
+            <MenuItem value={'en'}>{i18n('en')}</MenuItem>
             <MenuItem value={'uk'}>{i18n('uk')}</MenuItem>
             {/* <MenuItem value={'ka'}>ka</MenuItem> */}
             {/* <MenuItem value={'fi'}>fi</MenuItem> */}

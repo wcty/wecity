@@ -1,9 +1,6 @@
 export default {
-    'learnReact': 'Learn React',
-    'weatherCondition': 'Today it\'s {0} degrees',
-    'lastUpdated': 'updated {choice {0} #>=1 day | <1 days#} ago',
 
-    //Side drawer
+  //Side drawer
     initiativeMap: 'Мапа ініціатив',
     myInitiatives: 'Мої ініціативи',
     projectLibrary: 'Проектні пропозиції',
@@ -11,10 +8,10 @@ export default {
     settings: 'Налаштування',
     feedback: 'Зворотній зв\'язок', 
     language: 'Мова',
-    en: 'Анг',
-    uk: 'Укр',
-    ka: 'Гру',
-    fi: 'Фін',
+    en: '🇬🇧',
+    uk: '🇺🇦',
+    ka: '🇬🇪',
+    fi: '🇫🇮',
 
     //App bar
     enter: 'Увійти',
@@ -24,8 +21,12 @@ export default {
     //Project Library
     projectLibraryTitle: 'Бібліотека проектних рішень',
     myProjectsTitle: 'Мої проектні рішення', //when adding project to inititiative
+    onlyMineCheckbox: 'Показати лише створені мною',
+    noMyProjects: 'Ви ще не створили проектів{#choice у бібліотеці | за даною категорією#}.',
+    noProjects:  `У бібліотеці поки що немає проектів{#choice | за даною категорією#}.
+    Будьте першими хто їх додасть.`,
 
-    //categories
+    //categories of projects
     chooseCategory: 'Оберіть категорію',
     allCategories: 'Всі категорії',
     greenery: "Озеленення",
@@ -35,6 +36,9 @@ export default {
     help: "Допомога",
     art: "Мистецтво",
     business: "Бізнес",
-    other: "Інше"
+    other: "Інше",
+
+    //Feedback form
+
 
 };

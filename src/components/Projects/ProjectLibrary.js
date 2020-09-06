@@ -96,7 +96,7 @@ export default ({ onlyMine, select })=>{
               //color="primary"
             />
           }
-          label="Показати лише створені мною"
+          label={i18n('onlyMineCheckbox')}
         />
       </FormControl>}
       <List>
@@ -113,7 +113,6 @@ export default ({ onlyMine, select })=>{
                       className={classes.img} 
                       alt="Cover of the project"
                       onClick={()=>{
-                        console.log('clicked')
                         if(select){
                           select(project)
                         }else{
@@ -165,9 +164,8 @@ export default ({ onlyMine, select })=>{
           margin: '2rem',
           textAlign: 'center'
         }}>
-          {onlyMine? `Ви ще не створили проектів ${currentFilter=="all"?'у бібліотеці':'за даною категорією'}`:
-          `В бібліотеці поки що немає проектів ${currentFilter=="all"?'':'за даною категорією'}. 
-          Будьте першими хто їх додасть.`}
+          {onlyMine? i18n('noMyProjects', currentFilter=="all"):
+           i18n('noMyProjects', currentFilter=="all") }
         </Typography>
         }
       </List>

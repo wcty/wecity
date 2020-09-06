@@ -67,13 +67,9 @@ export default ()=>{
   const mapRef = useRef()
   const mapDimensions = useRecoilValue(mapAtom)
   const [loaded, setLoaded] = useState(false)
-  const [selected, setSelected] = useRecoilState(selectedAtom)
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
-  const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
-  const [projectBar, setProjectBar] = useRecoilState(projectBarAtom)
-  const [resourceBar, setResourceBar] = useRecoilState(resourceBarAtom)
   const [satellite, setSatellite] = useState(false)
   const [redirect, setRedirect] = useState(null)
+  const selected = useRecoilValue(selectedAtom)
 
   const getMarker = ()=>{
     const w = mapDimensions.width/2
@@ -119,7 +115,8 @@ export default ()=>{
           </AuthCheck>
         </Suspense>
         <Suspense fallback={null}>
-          <Initiative  mapRef={mapRef} loaded={loaded} getMarker={getMarker} />
+          <Route path={'/initiative/'+selected} render={(params)=>{
+            return <Initiative id={selected} mapRef={mapRef} loaded={loaded} getMarker={getMarker}/>}} />
         </Suspense>
         <LocateFab mapRef={mapRef} loaded={loaded} />
         <LayersFab satellite={satellite} setSatellite={setSatellite} />
