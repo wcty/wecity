@@ -102,7 +102,6 @@ const useStyles = makeStyles((theme) => ({
 
   MobileStepper:{
     background: "none",
-    position:'absolute',
     width:'100%',
     padding: 0
   },
@@ -129,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
-export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, directory, variant })=> {
+export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, directory, variant, floating })=> {
   const formSteps = formGetter()
   const classes = useStyles();
   const theme = useTheme();
@@ -189,14 +188,6 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
     }
   }, [imageLoadedURL])
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
   const Reset = ()=>{
     setFileName(null)
     setUuid(uuidv1())
@@ -254,6 +245,20 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
                   defaultValue={project && project[input.id]?project[input.id]:""}
                   helperText={`${project && project[input.id]?project[input.id].length:0}/${input.maxLength}`}
                 />
+              )
+            case 'note':
+              return (
+                <Typography
+                  key={input.id}
+                  id={input.id} 
+                  className={classes.text}
+                  variant="body2"
+                  style={{
+                    textAlign:'center',
+                  }}
+                >
+                  {input.label}
+                </Typography>
               )
             case 'select':
               return (
@@ -364,6 +369,7 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
       }    
 
       <MobileStepper
+        style={{position:floating?'relative':'absolute'}}
         steps={maxSteps}
         position="static"
         variant={variant?variant:'none'}

@@ -134,7 +134,8 @@ export default ({ isCreating, setIsCreating, setContactData })=> {
 
   return !finished && (
     <form className={classes.root} noValidate autoComplete="off" style={{textAlign:'start', padding:'1rem', margin:'auto'}} >
-      <Paper elevation={1} className={classes.paper} style={{paddingTop:'2rem'}} >  
+      <Paper elevation={1} className={classes.paper} style={{paddingTop:'2rem'}} > 
+      
       <Typography variant="h6" style={{textAlign:'start', margin:'1rem'}}>
         🖐Вітаємо шановний відвідувачу!
       </Typography>

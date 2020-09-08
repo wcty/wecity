@@ -6,6 +6,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {  selectedAtom, initiativeBarAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
 import { AddLocation } from '@material-ui/icons'
 import useMeasure from "use-measure";
+import { Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   InitiativeFab: {
@@ -30,15 +31,17 @@ export default ({ active, getMarker })=>{
   const fabRef = useRef()
   const setSelected = useSetRecoilState(selectedAtom)
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
+  const [redirect, setRedirect] = useState(null)
 
 
   return (
     <>
-    { !isCreating && (
+    {redirect && <Redirect to={redirect} />}
       <>
         <Fab 
           onClick={()=>{
             if(active){
+              setRedirect('/create-initiative')
               setIsCreating(true)
               setSelected(null)
               setInitiativeBar(false)
@@ -59,9 +62,6 @@ export default ({ active, getMarker })=>{
           <AddLocation />
         </Fab>
       </>
-    ) 
-
-    }
     { alert && !user && (
       <Collapse in={Boolean(alert)}>
         <Alert severity="info" className={classes.alert} onClose={() => {setAlert(null)}}>

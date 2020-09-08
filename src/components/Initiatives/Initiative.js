@@ -20,7 +20,7 @@ import CreateProject from 'components/Projects/CreateProject'
 import ProjectLibrary from 'components/Projects/ProjectLibrary'
 import BackFab from 'components/Projects/BackFab'
 import moment from 'moment'
-import { Route, useParams } from 'react-router-dom'
+import { Route, useRouteMatch, useParams } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -322,22 +322,21 @@ export default ({ mapRef, loaded, id })=> {
   const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const images = useStorage().ref().child('initiatives')
   const theme = useTheme()
-  const params = useParams()
+  let match = useRouteMatch()
+  let { initiativeID } = useParams();
   //const in = markers.features.find(f=>f.properties.id==id).properties
   useEffect(()=>{
 
-    if(initiative){
-      console.log(initiative)
+    if(markers && initiativeID){
+      const selectedInitiative = markers.features.find(f=>f.properties.id==initiativeID)
+      if(selectedInitiative){
+        setSelected(initiativeID);
+        setInitiative( selectedInitiative.properties )
+      }
     }
-    if(initiatives){
-      console.log(initiatives)
-    }
-    if(markers){
-      console.log(markers.features.find(f=>f.properties.id==id).properties)
-    }
-    console.log(params)
-
-  },[params, initiatives, initiative, markers])
+    console.log(match)
+    console.log(initiativeID)
+  },[markers, initiativeID, setInitiative])
 
   useEffect(()=>{
     if(selected && !initiative){
@@ -371,30 +370,7 @@ export default ({ mapRef, loaded, id })=> {
     }
   }, [mapRef, loaded, initiative])
 
-  useEffect(()=>{
-    if( loaded && isCreating && location ){
-      const map = mapRef.current.getMap()
-      const w = mapDimensions.width/2
-      const h = (mapDimensions.height - 350)/2
-      const offPoint = Object.values(map.unproject([w,h]))
-      const point = Object.values(map.getCenter())
-      const dist = distance(point, offPoint)
-      const center = [location.longitude, location.latitude]
-      const newOffPoint = translate({
-        type:"FeatureCollection",
-        features:[
-          {
-            type: "Feature",
-            geometry:{
-              type: "Point",
-              coordinates: center
-            }
-          }
-        ]
-      }, dist, 180)
-      map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
-    }
-  }, [mapRef, loaded, isCreating])
+
 
   useEffect(async()=>{
     if(selected) {

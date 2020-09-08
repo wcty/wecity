@@ -1,18 +1,8 @@
-import React from 'react' 
-import { List, ListItem, ListItemText, makeStyles } from '@material-ui/core'
 import addImage from 'assets/images/addImage.png'
 import { categories } from './projectCategories'
 import { useI18n } from 'global/Hooks'
 
-const useStyles = makeStyles(theme=>({
-  item:{
-    width: '100%',
-    paddingRight: '0.5rem'
-  }
-}))
-
 export default (initiative)=>{
-  const classes = useStyles()
   const i18n = useI18n()
 
   return [
@@ -22,24 +12,24 @@ export default (initiative)=>{
       type: "image", 
       id: "addImage",
       imgPath: addImage,
-      label: "+ Додайте титульну картинку"
+      label: i18n('projectAddCoverPhoto')
     },
     {
       type: "text",
       id: "name",
-      label: "Назва вашої пропозиції",
+      label: i18n('projectName'),
       maxLength: 40
     },
     {
       type: "text",
       id: "contractor",
-      label: "Виконавець",
+      label: i18n('projectContractor'),
       maxLength: 40
     },
     {
       type: "text",
       id: "location",
-      label: "Локація",
+      label: i18n('projectContractorLocation'),
       maxLength: 300
     }
   ],
@@ -47,20 +37,20 @@ export default (initiative)=>{
     {
       type: "select",
       id: "category",
-      label: "Оберіть категорію проекту",
+      label: i18n('projectCategory'),
       options: categories(i18n)
     },
     {
       type: "text",
       id: "problem",
-      label: "Яку проблему він має вирішити?",
+      label: i18n('projectProblem'),
       rows: 3,
       maxLength: 300
     },
     {
       type: "text",
       id: "description",
-      label: "Опишіть проект:",
+      label: i18n('projectDescription'),
       rows: 8,
       maxLength: 1000
     },
@@ -69,14 +59,14 @@ export default (initiative)=>{
     {
       type: "text",
       id: "experience",
-      label: "Який маєте досвід для реалізації?",
+      label: i18n('projectContractorExperience'),
       rows: 8,
       maxLength: 300
     },
     {
       type: "text",
       id: "resource",
-      label: "Які негрошові ресурси необхідні?",
+      label: i18n('projectOtherResources'),
       rows: 8,
       maxLength: 300
     },
@@ -85,26 +75,26 @@ export default (initiative)=>{
     {
       type: "text",
       id: "volunteers",
-      label: "Скільки волонтерів вам буде потрібно?",
+      label: i18n('projectNumberOfVolunteers'),
       maxLength: 3
     },
     {
       type: "text",
       id: "volunteersTask",
-      label: "Які задачі мають виконувати волонтери?",
+      label: i18n('projectVolunteerTasks'),
       rows: 4,
       maxLength: 300
     },
     {
       type: "text",
       id: "price",
-      label: "Який мінімальний необхідний бюджет?",
+      label: i18n('projectMinimalBudget'),
       maxLength: 10
     },
     {
       type: "text",
       id: "budgetDescription",
-      label: "Які витрати має покривати бюджет?",
+      label: i18n('projectBudgetCovers'),
       rows: 4,
       maxLength: 300
     },

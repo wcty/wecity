@@ -38,7 +38,37 @@ export default {
     business: "Бізнес",
     other: "Інше",
 
+    //Form controls
+    add: "Додати",
+    addAndJoin: "Додати та приєднатися",
+    cancel: "Відмінити",
+    back: "Назад",
+    next: "Далі",
+
     //Feedback form
 
+    //User form
 
+    //Project form
+    projectAddCoverPhoto: "+ Додайте титульну картинку",
+    projectName: "Назва вашої пропозиції",
+    projectContractor: "Виконавець",
+    projectContractorLocation: "Локація",
+    projectChooseCategory: "Оберіть категорію проекту",
+    projectProblem: "Яку проблему він має вирішити?",
+    projectDescription: "Опишіть проект:",
+    projectContractorExperience: "Який маєте досвід для реалізації?",
+    projectOtherResources: "Які негрошові ресурси необхідні?",
+    projectNumberOfVolunteers: "Скільки волонтерів вам буде потрібно?",
+    projectVolunteerTasks: "Які задачі мають виконувати волонтери?",
+    projectMinimalBudget: "Який мінімальний необхідний бюджет?",
+    projectBudgetCovers: "Які витрати має покривати бюджет?",
+
+    //Initiative form
+    initiativeInstruction: "Рухайте мапу щоб навести відмітку ініціативи (червоний маркер) на необхідну локацію, додайте назву і натисніть Далі.",
+    initiativeName: "Назва вашої ініціативи",
+    initiativeAddCoverPhoto: "+ Додайте титульне фото",
+    initiativeProblem: "Яку проблему має вирішити ініціатива?",
+    initiativeExpectedResult: "Опишіть очікувані результати:",
+    initiativeCurrentState: "Передумови для реалізації:"
 };

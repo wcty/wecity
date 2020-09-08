@@ -26,8 +26,8 @@ export default ({toggleDrawer, ...props})=>{
         onChange={changeLanguage}
         label="lang"
         >
-            <MenuItem value={'en'}>{i18n('en')}</MenuItem>
-            <MenuItem value={'uk'}>{i18n('uk')}</MenuItem>
+            <MenuItem value={'en'}>'🇬🇧'</MenuItem>
+            <MenuItem value={'uk'}>'🇺🇦'</MenuItem>
             {/* <MenuItem value={'ka'}>ka</MenuItem> */}
             {/* <MenuItem value={'fi'}>fi</MenuItem> */}
         </Select>

@@ -33,12 +33,11 @@ export default ({ submit, cancel, variant, submitText, cancelText })=>{
   const [location, setLocation] = useRecoilState(Atoms.locationAtom)
   const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
   const [expanded, setExpanded] = useRecoilState(Atoms.expanded)
-  const [initiative, setInitiative] = useRecoilState(Atoms.initiative)
 
 return <FormExpanded 
         directory="projects"
         isFilling={expanded} 
-        formGetter={()=>createProjectForm(initiative)} 
+        formGetter={()=>createProjectForm()} 
         variant={variant}
         backButton={(activeStep, setActiveStep, maxSteps, valid, project)=>
           activeStep === 0 ? (

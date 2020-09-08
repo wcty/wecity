@@ -18,7 +18,6 @@ export default () =>{
     if (event.features.length > 0) {
       const nextClickedStateId = event.features[0].properties.id;
       if ( !selected || ( selected !== nextClickedStateId )) {
-        setSelected(event.features[0].properties.id);
         setRedirect(`/initiative/${event.features[0].properties.id}`)
       }
     }

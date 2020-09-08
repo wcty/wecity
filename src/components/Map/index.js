@@ -4,7 +4,7 @@ import { CircularProgress } from '@material-ui/core'
 import MapGL from '@urbica/react-map-gl'
 import { mapboxConfig } from 'config'
 import { AuthCheck, SuspenseWithPerf } from 'reactfire';
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { locationAtom,viewAtom, creatingAtom, mapAtom, selectedAtom, initiativeBarAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
 import MarkerActive from 'assets/images/markerActive.svg'
 import LocationIcon from './Layers/LocationIcon.js'
@@ -46,20 +46,8 @@ const useStyles = makeStyles(theme => ({
   }
 }))          
 
-const NewMarkerDialog = (props)=>{
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
-  const classes = useStyles()
-
-  return <> 
-    <CreateInitiative {...props} />
-    { isCreating && (<>
-      <img alt="React Firebase" src={MarkerActive} className={classes.marker} width={42} height={42} />
-    </>)}
-  </>
-}
-
 export default ()=>{
-
+  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const classes = useStyles()
   const [location, setLocation] = useRecoilState(locationAtom)
   const [view, setView] = useRecoilState(viewAtom)
@@ -69,7 +57,7 @@ export default ()=>{
   const [loaded, setLoaded] = useState(false)
   const [satellite, setSatellite] = useState(false)
   const [redirect, setRedirect] = useState(null)
-  const selected = useRecoilValue(selectedAtom)
+  const setSelected = useSetRecoilState(selectedAtom)
 
   const getMarker = ()=>{
     const w = mapDimensions.width/2
@@ -115,8 +103,9 @@ export default ()=>{
           </AuthCheck>
         </Suspense>
         <Suspense fallback={null}>
-          <Route path={'/initiative/'+selected} render={(params)=>{
-            return <Initiative id={selected} mapRef={mapRef} loaded={loaded} getMarker={getMarker}/>}} />
+          <Route path={'/initiative/:initiativeID'} >
+            <Initiative mapRef={mapRef} loaded={loaded} getMarker={getMarker}/>
+          </Route>
         </Suspense>
         <LocateFab mapRef={mapRef} loaded={loaded} />
         <LayersFab satellite={satellite} setSatellite={setSatellite} />
@@ -132,6 +121,7 @@ export default ()=>{
           {...viewport}
           onClick={()=>{
             setRedirect('/')
+            setSelected(null)
           }}
         >
           {satellite && <Satellite />}
@@ -145,7 +135,17 @@ export default ()=>{
               mapRef={mapRef.current} 
               location={location} />
             <Markers />
-            <NewMarkerDialog getMarker={getMarker}/>
+
+            <Route path="/create-initiative" 
+              render={()=>loaded && 
+              <CreateInitiative 
+                getMarker={getMarker} 
+                loaded={loaded} 
+                mapRef={mapRef} 
+                cancel={()=>{setIsCreating(false); setRedirect('/') }} 
+              />}
+            />
+            
             { location &&
             <LocationIcon 
               loaded={loaded} 
