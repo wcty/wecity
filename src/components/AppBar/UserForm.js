@@ -12,29 +12,30 @@ import { useGeoFirestore } from 'global/Hooks'
 import * as firebase from 'firebase/app';
 import { getFeatures } from 'global/Misc'
 import ErrorBoundary from 'global/ErrorBoundary'
+import { useI18n } from 'global/Hooks'
 
 //1920x1080,851x315,484x252,180x180
 
-const formSteps = [
+const userForm =(i18n)=>[
   [
 
     {
       type: "text",
       id: "name",
-      label: "Ваше ім'я:",
+      label: i18n('userFormName'),
       maxLength: 50
     },
     {
       type: "text",
       id: "reachout",
-      label: "Як ви дізнались про наш експеримент:",
+      label: i18n('userFormHowDidYouFindUs'),
       rows: 4,
       maxLength: 300
     },
     {
       type: "text",
       id: "contact",
-      label: "Як з вами можна зв'язатися:",
+      label: i18n('userFormHowToContactYou'),
       rows: 4,
       maxLength: 300
     },
@@ -93,6 +94,8 @@ const useStyles = makeStyles((theme) => ({
 export default ({ isCreating, setIsCreating, setContactData })=> {
   const classes = useStyles();
   const theme = useTheme();
+  const i18n = useI18n()
+  const formSteps = userForm(i18n)
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = formSteps.length;
   const [resource, setResource] = useState(null)
@@ -137,13 +140,10 @@ export default ({ isCreating, setIsCreating, setContactData })=> {
       <Paper elevation={1} className={classes.paper} style={{paddingTop:'2rem'}} > 
       
       <Typography variant="h6" style={{textAlign:'start', margin:'1rem'}}>
-        🖐Вітаємо шановний відвідувачу!
+        {i18n('userFormName')}
       </Typography>
       <Typography variant="body1" style={{textAlign:'start', margin:'1.2rem'}}>
-        <p>- Ви потрапили на сайт, що є першим прототипом платформи для міського самоврядування Wecity.</p>
-        <p>- Цей сайт працює в експериментальному режимі, і його мета - протестувати різні методи громадського самоврядування онлайн
-        задля покращення наших міст - в рамках студентської архітектурної літньої школи EASA Chocolocal в Києві, на Чоколівці. </p>
-        <p>Щоби взяти участь у цьому експерименті, ми просимо вас для початку відповісти на декілька запитань.</p>
+        {i18n('userFormDescription')}
       </Typography>
 
       {

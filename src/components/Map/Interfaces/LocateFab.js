@@ -30,26 +30,23 @@ export default ({ active, getMarker, mapRef, loaded })=>{
     }
   }, [mapRef, loaded])
 
-  return ( !isCreating && (
-      <>
-        <Fab 
-          onClick={()=>{
-            if(location){
-              if(loaded){
-                const map = mapRef.current.getMap()
-                map.flyTo({center: [location.longitude, location.latitude], zoom: 16});
-              }
-            }
-          }}
-          className={classes.locateFab} 
-          raised="true" 
-          size="small"
-          aria-label="add"
-          disabled={!location}
-        >
-          <MyLocation />
-        </Fab>
-      </>
-    ) 
-  )
+  return <>
+    <Fab 
+      onClick={()=>{
+        if(location){
+          if(loaded){
+            const map = mapRef.current.getMap()
+            map.flyTo({center: [location.longitude, location.latitude], zoom: 16});
+          }
+        }
+      }}
+      className={classes.locateFab} 
+      raised="true" 
+      size="small"
+      aria-label="add"
+      disabled={!location}
+    >
+      <MyLocation />
+    </Fab>
+  </>
 }

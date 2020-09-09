@@ -5,6 +5,8 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { initiativeBarAtom, barAtom, mapAtom, selectedAtom, creatingAtom } from 'global/Atoms'
 import {  useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
 import InitiativeFab from 'components/Initiatives/InitiativeFab'
+import { useI18n } from 'global/Hooks'
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -42,6 +44,7 @@ export default ({ mapRef })=> {
   const [selected, setSelected] = useRecoilState(selectedAtom)
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const mapDimensions = useRecoilValue(mapAtom)
+  const i18n = useI18n()
 
   const initiativesRef = useFirestore()
     .collection('markers')
@@ -70,7 +73,7 @@ export default ({ mapRef })=> {
           marginBottom: '1rem',
           textAlign: 'center'
         }}>
-          Ініціативи до яких ви долучилися:
+          {i18n('intiativeLibraryTitle')}
         </Typography>
           <div id="wrapper">
           <List>
@@ -100,9 +103,7 @@ export default ({ mapRef })=> {
             margin: '2rem',
             textAlign: 'center'
           }}>
-            Ви поки що не долучилися до жодної ініціативи! 
-            Перейдіть на мапу і долучіться до тої, що здається вам важливою,
-            або запропонуйте власну
+            {i18n('initiativeLibraryEmpty')}
           </Typography>
           }
           </List>

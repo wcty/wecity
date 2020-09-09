@@ -49,21 +49,6 @@ const useStyles = makeStyles(theme => ({
   }  
 }))
 
-const Feedback = ()=>{
-  return (<>
-    <Box style={{
-        backgroundColor:'white',
-        position: 'fixed',
-        flexGrow: 1,
-        top: 0, left: 0, bottom: 0, right: 0,
-        zIndex: 999,
-        overflowY: "auto",  
-      }}>
-        <FeedbackForm />
-      </Box>
-  </>)
-}
-
 const Layout = ()=>{
   const classes = useStyles()
   const [barDimensions] = useRecoilState(barAtom)
@@ -83,7 +68,7 @@ const Layout = ()=>{
       <Suspense fallback={null}>
         <Route path="/projects" render={()=><Projects />} />
         <Route path="/resources" render={()=><Resources />} />
-        <Route path='/feedback' render={()=><Feedback />} />
+        <Route path='/feedback' render={()=><FeedbackForm />} />
       </Suspense>
       <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>
         <Map />

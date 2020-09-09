@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { SwipeableDrawer, Button, Box, List, Divider, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
@@ -41,6 +41,12 @@ export default ({ state, setState })=>{
   const i18n = useI18n()
 
   const user = useUser();
+  useEffect(()=>{
+    if(redirect){
+      setRedirect(null)
+    }
+  },[redirect])
+
   const menuTop = user?
     [
       {
@@ -137,7 +143,7 @@ export default ({ state, setState })=>{
           {menuBottom.map((val, index) => (
             <ListItem button key={val.id} onClick={()=>{
               if(val.id==='settings'){
-
+                //setRedirect('/settings')
               }else if(val.id==='feedback'){
                 setRedirect('/feedback')
                 console.log('feedback')

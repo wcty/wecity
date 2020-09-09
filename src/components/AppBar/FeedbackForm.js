@@ -4,29 +4,29 @@ import { Paper, FormControl, IconButton, InputLabel, Select, MenuItem, Typograph
 import { KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons';
 import { useUser, useFirestore } from 'reactfire';
 import { Redirect } from 'react-router-dom'
+import { useI18n } from 'global/Hooks'
 
 //1920x1080,851x315,484x252,180x180
 
-const formSteps = [
+const feedbackForm = (i18n)=>[
   [
-
     {
       type: "text",
       id: "name",
-      label: "Ваше ім'я:",
+      label: i18n('feedbackName'),
       maxLength: 50
     },
     {
       type: "text",
       id: "reachout",
-      label: "Ваше повідомлення:",
+      label: i18n('feedbackMessage'),
       rows: 8,
       maxLength: 600
     },
     {
       type: "text",
       id: "contact",
-      label: "Як з вами можна зв'язатися:",
+      label: i18n('feedbackContact'),
       rows: 8,
       maxLength: 600
     },
@@ -76,12 +76,12 @@ const useStyles = makeStyles((theme) => ({
 export default ()=> {
   const classes = useStyles();
   const theme = useTheme();
+  const i18n = useI18n()
+  const formSteps = feedbackForm(i18n)
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = formSteps.length;
   const [resource, setResource] = useState(null)
-
   const [imageLoadedURL, setImageLoadedURL] = useState(null)
-
   const [finished, setFinished] = useState(null)
   const [valid, setValid] = useState(false)
   const [redirect, setRedirect] = useState(null)
@@ -111,16 +111,22 @@ export default ()=> {
   const feedbackRef = useFirestore().collection('feedback')
   const user = useUser()
 
-  return (<>
+  return (<Box style={{
+    backgroundColor:'white',
+    position: 'fixed',
+    flexGrow: 1,
+    top: 0, left: 0, bottom: 0, right: 0,
+    zIndex: 999,
+    overflowY: "auto",  
+  }}>
     {redirect && <Redirect to={redirect}/> }
     <form className={classes.root} noValidate autoComplete="off" style={{textAlign:'start', padding:'1rem', margin:'auto'}} >
       <Paper elevation={1} className={classes.paper} style={{paddingTop:'2rem', paddingBottom:'1rem', position:'relative'}} >  
         <Typography variant="h6" style={{textAlign:'start', margin:'1rem'}}>
-          🖐Вітаємо шановний відвідувачу!
+          {i18n('feedbackGreeting')}
         </Typography>
         <Typography variant="body1" component="div" style={{textAlign:'start', margin:'1.2rem'}}>
-          <p>- За будь яких питань пишіть нам на пошту hi@weee.city.</p>
-          <p>- Якщо ви зареєстровані на нашому сайті ви також можете залишити свої запитання чи пропозиції у формі зворотнього зв'язку.</p>
+          {i18n('feedbackDescription')}
         </Typography>
     {!user && (
       <IconButton 
@@ -197,11 +203,11 @@ export default ()=> {
                   const message = {
                     to: ['hi@weee.city'],
                     message: {
-                      subject: `Зворотній зв'язок від ${resource.name}`,
+                      subject: `${i18n('feedbackEmailTitle')} ${resource.name}`,
                       text: `
-                        Ім'я: ${resource.name}.
-                        Повідомлення: ${resource.reachout}.
-                        Як зі мною зв'язатися: ${resource.contact}.
+                        ${i18n('feedbackEmailName')}: ${resource.name}.
+                        ${i18n('feedbackEmailMessage')}: ${resource.reachout}.
+                        ${i18n('feedbackEmailContact')}: ${resource.contact}.
                       `
                     }
                   }
@@ -216,11 +222,11 @@ export default ()=> {
                   }
                   setRedirect('/')
               }}>
-                Надіслати
+                {i18n('send')}
               </Button>
             ):(
               <Button disabled={!valid} size="small" className={classes.button} onClick={handleNext}>
-                Далі
+                {i18n('next')}
                 {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
               </Button>
             )
@@ -230,12 +236,12 @@ export default ()=> {
               <Button className={classes.button} variant="contained" size="small" onClick={()=>{
                 setRedirect('/')
               }} >
-                Не надсилати
+                {i18n('cancel')}
               </Button>
             ):(
               <Button size="small" className={classes.button} onClick={handleBack} >
                 {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                Назад
+                {i18n('send')}
               </Button>
             )
           }
@@ -243,6 +249,6 @@ export default ()=> {
         </>}
       </Paper>
     </form>
-    </>
+    </Box>
   );
 }

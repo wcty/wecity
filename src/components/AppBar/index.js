@@ -13,6 +13,7 @@ import ErrorBoundary from 'global/ErrorBoundary'
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
 import UserForm from './UserForm'
 import { useI18n } from 'global/Hooks'
+import { Route } from 'react-router-dom'
 
 const Styles = makeStyles( theme => ({
   appbar: {
@@ -104,6 +105,7 @@ const LogIn = ()=>{
     }}>
       <UserForm isCreating={newUser} setIsCreating={setNewUser} setContactData={setContactData}/>
     </Box>)}
+    <Route path='/settings'><UserForm isCreating={newUser} setIsCreating={setNewUser} setContactData={setContactData}/></Route>
     {user?  
             <div className={classes.userProfileContainer}>
 

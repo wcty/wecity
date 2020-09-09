@@ -94,7 +94,7 @@ export default (initiative)=>{
     {
       type: "text",
       id: "budgetDescription",
-      label: i18n('projectBudgetCovers'),
+      label: i18n('projectBudgetExpenses'),
       rows: 4,
       maxLength: 300
     },
