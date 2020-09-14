@@ -21,6 +21,7 @@ import ProjectLibrary from 'components/Projects/ProjectLibrary'
 import BackFab from 'components/Projects/BackFab'
 import moment from 'moment'
 import { Route, useRouteMatch, useParams } from 'react-router-dom'
+import {Helmet} from "react-helmet"
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -422,6 +423,14 @@ export default ({ mapRef, loaded, id })=> {
           }}
         >
           <div id="wrapper">
+          <Helmet>
+            <title>{"We.city: "+initiative.name}</title>
+            <meta property="og:title" content={initiative.name} />
+            <meta property="og:site_name" content="We.city" />
+            <meta property="og:description" content={initiative.problem} />
+            <meta property="og:url" content={"https://weee.city/initiative/"+initiative.id} />
+            <meta property="og:image" content={initiative.imageURL?initiative.imageURL.l: addImage} />
+          </Helmet>
           <IconButton 
             aria-label="return"
             style={{position:"absolute", right:"1rem", top:"0.5rem", zIndex: 30}}
