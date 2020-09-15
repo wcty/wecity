@@ -54,19 +54,17 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
   const [marker, setMarker] = useRecoilState(Atoms.markerAtom)
   const [markers, setMarkers] = useRecoilState(Atoms.markersAtom)
 
-  const markersCollection = useGeoFirestore().collection('markers')
+  const markersCollection = useGeoFirestore().collection('initiatives')
   const user = useUser()
-  const [finished, setFinished] = useState(null)
-
   const [selected, setSelected] = useRecoilState(Atoms.selectedAtom)
   const [location, setLocation] = useRecoilState(Atoms.locationAtom)
   const mapDimensions = useRecoilValue(Atoms.mapAtom)
   const [redirect, setRedirect] = useState(null)
-
+  const [finished, setFinished] = useState(false)
   let match = useRouteMatch()
 
   useEffect(()=>{
-    console.log(match)
+    //console.log(match)
     if( loaded && location ){
       const map = mapRef.current.getMap()
       const w = mapDimensions.width/2
@@ -89,13 +87,13 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
       }, dist, 180)
       map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
     }
-  }, [mapRef, loaded, isCreating, match])
+  }, [mapRef, loaded, isCreating])
 
   useEffect(()=>{
     if(redirect!==null){
       setRedirect(null)
     }
-  },[redirect,setRedirect])
+  },[redirect, setRedirect])
 
   return <>
   {redirect && <Redirect to={redirect} />}
@@ -103,11 +101,13 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
   <div className={classes.root}>
     <Paper elevation={1} className={classes.paper}>  
       <FormExpanded 
-        directory="markers"
+        directory="initiatives"
         isFilling={isCreating} 
         formGetter={()=>createInitiativeForm()} 
         floating
         variant='text'
+        finished={finished}
+        setFinished={setFinished}
         backButton={(activeStep, setActiveStep, maxSteps, valid, project)=>
           activeStep === 0 ? (
             <Button variant="contained" size="small" onClick={()=>{
@@ -125,14 +125,15 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
         nextButton={(activeStep, setActiveStep, maxSteps, valid, imageLoadedURL, project)=>
           activeStep === (maxSteps - 1) ? (
             <Button color="secondary" disabled={!valid} variant="contained" size="small" onClick={async ()=>{     
-              console.log(marker)
+              console.log(project)
               markersCollection.add({
-                ...marker,
+                ...project,
                 timestamp: new Date(),
                 imageURL: imageLoadedURL,
                 members: {ids:[user.uid], [user.uid]:{role: "Initiator"}},
                 coordinates: new firebase.firestore.GeoPoint(...getMarker().toArray())
               }).then(function(docRef) {
+                setFinished(true)
                 console.log("Document written with ID: ", docRef.id);
                 docRef.update({id:docRef.id})
                 setRedirect(`/initiative/${docRef.id}`)

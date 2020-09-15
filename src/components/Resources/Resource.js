@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 export default ({ resource, setResource })=> {
   const classes = useStyles();
   const theme = useTheme();
-  const resources = useFirestore().collection('markers')
+  const resources = useFirestore().collection('initiatives')
   const [location, setLocation] = useRecoilState(locationAtom)
   const map = useRecoilValue(mapAtom)
   const bar = useRecoilValue(barAtom)

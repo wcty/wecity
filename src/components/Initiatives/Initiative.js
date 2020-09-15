@@ -85,7 +85,8 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     top: '1rem',
     left: '1rem',
-    zIndex: 999
+    zIndex: 999,
+    maxWidth: 'calc( 100% - 4rem )'
   }
 }));
 
@@ -292,10 +293,10 @@ function SelectRole() {
   </>);
 }
 
-export default ({ mapRef, loaded, id })=> {
+export default ({ mapRef, loaded })=> {
   const classes = useStyles();
   const [marker, setMarker] = useRecoilState(Atoms.markerAtom)
-  const initiatives = useFirestore().collection('markers')
+  const initiatives = useFirestore().collection('initiatives')
   const [initiative, setInitiative] = useRecoilState(Atoms.initiative)
   const [selected, setSelected] = useRecoilState(Atoms.selectedAtom)
   const [isCreating, setIsCreating] = useRecoilState(Atoms.creatingAtom)
@@ -305,7 +306,7 @@ export default ({ mapRef, loaded, id })=> {
   const bar = useRecoilValue(Atoms.barAtom)
   const user = useUser()
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const markersCollection = useGeoFirestore().collection('markers')
+  const markersCollection = useGeoFirestore().collection('initiatives')
   const [markers, setMarkers] = useRecoilState(Atoms.markersAtom)
   const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const images = useStorage().ref().child('initiatives')
@@ -332,11 +333,11 @@ export default ({ mapRef, loaded, id })=> {
   },[markers, initiativeID, setInitiative])
 
   useEffect(()=>{
-    if(selected && !initiative){
-      console.log('setInitiative')
-      setInitiative(markers.features.find(f=>f.properties.id==id).properties)
+    if(initiativeID && !initiative){
+      console.log('setInitiative',initiativeID, markers)
+      setInitiative(markers.features.find(f=>f.properties.id==initiativeID)?markers.features.find(f=>f.properties.id==initiativeID).properties:null)
     }
-  },[selected, initiative, id])
+  },[initiativeID, initiative])
   useEffect(async()=>{
     if(loaded&&initiative){
       const map = mapRef.current.getMap()
@@ -564,7 +565,7 @@ export default ({ mapRef, loaded, id })=> {
                     method: 'post',
                     body: JSON.stringify({
                       "dynamicLinkInfo": {
-                        "domainUriPrefix": "https://wecity.page.link",
+                        "domainUriPrefix": "https://weee.city/in",
                         "link": `https://weee.city/initiative/${initiative.id}`,
                         "socialMetaTagInfo": {
                           "socialTitle": initiative.name,
@@ -612,7 +613,7 @@ export default ({ mapRef, loaded, id })=> {
               variant="contained"  
               color="secondary"
               style={{marginTop: '1rem'}}//
-              onClick={()=>DeleteObject(initiative, initiatives, images, 'markers', ()=>{setMarkers({type: "FeatureCollection", features: markers.features.filter(m=>m.properties.id!==initiative.id)}); setInitiative(null);})}
+              onClick={()=>DeleteObject(initiative, initiatives, images, 'initiatives', ()=>{setMarkers({type: "FeatureCollection", features: markers.features.filter(m=>m.properties.id!==initiative.id)}); setInitiative(null);})}
             >
               {i18n('delete')}
             </Button>}

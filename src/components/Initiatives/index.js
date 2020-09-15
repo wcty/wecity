@@ -47,7 +47,7 @@ export default ({ mapRef })=> {
   const i18n = useI18n()
 
   const initiativesRef = useFirestore()
-    .collection('markers')
+    .collection('initiatives')
     .where('members.ids', 'array-contains', user.uid)
   const initiatives = useFirestoreCollectionData(initiativesRef)
   

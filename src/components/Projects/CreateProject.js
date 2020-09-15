@@ -29,16 +29,18 @@ export default ({ submit, cancel, variant, submitText, cancelText })=>{
 
   const projectsCollection = useGeoFirestore().collection('projects')
   const user = useUser()
-  const [finished, setFinished] = useState(null)
   const [location, setLocation] = useRecoilState(Atoms.locationAtom)
   const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
   const [expanded, setExpanded] = useRecoilState(Atoms.expanded)
+  const [finished, setFinished] = useState(false)
 
 return <FormExpanded 
         directory="projects"
         isFilling={expanded} 
         formGetter={()=>createProjectForm()} 
         variant={variant}
+        finished={finished}
+        setFinished={setFinished}
         backButton={(activeStep, setActiveStep, maxSteps, valid, project)=>
           activeStep === 0 ? (
             <Button variant="contained" size="small" onClick={()=>{
@@ -64,6 +66,7 @@ return <FormExpanded
                 contractors: [user.uid],
                 coordinates: new firebase.firestore.GeoPoint(location?location.longitude:30.5234, location?location.latitude:50.4501)
               }).then(function(docRef) {
+                setFinished(true)
                 console.log("Document written with ID: ", docRef.id);
                 docRef.update({id: docRef.id})              
                 docRef.get().then(doc=>submit(docRef, doc))

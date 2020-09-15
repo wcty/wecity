@@ -6,6 +6,7 @@ import { locationAtom, markersAtom, viewAtom, selectedAtom } from 'global/Atoms'
 import { useGeoFirestore } from 'global/Hooks'
 import { getFeatures } from 'global/Misc'
 import { Redirect, useLocation } from 'react-router-dom';
+import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire'
 
 export default () =>{
   const GeoFirestore = useGeoFirestore() 
@@ -23,7 +24,7 @@ export default () =>{
 
   useEffect(()=>{
 
-    const geocollection = GeoFirestore.collection('markers');
+    const geocollection = GeoFirestore.collection('initiatives');
     geocollection.near({
       center: new firebase.firestore.GeoPoint(...Object.values(view)), 
       radius: 1000 }).get().then((value) => {

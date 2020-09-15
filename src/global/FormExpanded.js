@@ -128,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
-export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, directory, variant, floating })=> {
+export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, directory, variant, floating, finished, setFinished })=> {
   const formSteps = formGetter()
   const classes = useStyles();
   const theme = useTheme();
@@ -145,7 +145,7 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
   const user = useUser()
   const [progressState, setProgress] = useState(null)
   const [fileName, setFileName] = useState(null)
-  const [finished, setFinished] = useState(null)
+  //const [finished, setFinished] = useState(null)
   const [location, setLocation] = useRecoilState(Atoms.locationAtom)
   const map = useRecoilValue(Atoms.mapAtom)
   const [valid, setValid] = useState(false)
