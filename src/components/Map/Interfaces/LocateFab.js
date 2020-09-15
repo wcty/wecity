@@ -45,6 +45,7 @@ export default ({ active, getMarker, mapRef, loaded })=>{
       size="small"
       aria-label="add"
       disabled={!location}
+      style={{zIndex:1}}
     >
       <MyLocation />
     </Fab>

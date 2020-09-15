@@ -7,6 +7,7 @@ import {  selectedAtom, initiativeBarAtom, creatingAtom, userAtom, mapAtom } fro
 import { AddLocation } from '@material-ui/icons'
 import useMeasure from "use-measure";
 import { Redirect } from 'react-router-dom'
+import { useI18n } from 'global/Hooks'
 
 const useStyles = makeStyles(theme => ({
   InitiativeFab: {
@@ -32,7 +33,7 @@ export default ({ active, getMarker })=>{
   const setSelected = useSetRecoilState(selectedAtom)
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
   const [redirect, setRedirect] = useState(null)
-
+  const i18n = useI18n()
 
   return (
     <>
@@ -46,7 +47,7 @@ export default ({ active, getMarker })=>{
               setSelected(null)
               setInitiativeBar(false)
             }else{
-              setAlert({description: "Ви маєте увійти щоб створити ініціативу, проект або ресурс"})
+              setAlert({description: i18n('alertYouNeedToLogin')})
             }
           }}
           ref={fabRef}

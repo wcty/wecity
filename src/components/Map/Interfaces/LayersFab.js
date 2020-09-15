@@ -28,6 +28,7 @@ export default ({ satellite, setSatellite })=>{
       aria-label="satellite layer"
       size='small'
       //color={satellite?'primary':'inherit'}
+      style={{zIndex:1}}
       //style={{backgroundColor: satellite?'grey':theme.palette.primary.light}}
     >
       {satellite?<Layers fontSize='small' />:<Terrain  fontSize='small'/>}

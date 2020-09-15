@@ -42,6 +42,8 @@ export default {
     //Form controls
     add: "Add",
     addAndJoin: "Add and join",
+    join: "Join",
+    delete: "Delete",
     cancel: "Cancel",
     back: "Back",
     next: "Next",
@@ -101,5 +103,18 @@ export default {
     initiativeAddCoverPhoto: "+ Add the title photo",
     initiativeProblem: "Which problem stands behind the initiative?",
     initiativeExpectedResult: "Describe desired outcomes:",
-    initiativeCurrentState: "What is the current state of it:"
+    initiativeCurrentState: "What is the current state of it:",
+
+    //Initiative preview
+    initiativePreviewDistanceFromMeKM: 'km from me',
+    initiativePreviewDistanceFromMeM: 'm from me',
+    initiativePreviewShare: 'Share',
+    initiativePreviewProblem: 'Problematics or idea:',
+    initiativePreviewExpectedResult: 'Goals:',
+    initiativePreviewCurrentState: 'Current state:',
+    initiativePreviewDateAdded: 'Date added:',
+    
+    //Alerts
+    alertYouNeedToLogin: "You must be logged in to create initiative, project or resource",
+    alertLinkWasCopied: "Link was succesfully copied to the clipboard",
 };

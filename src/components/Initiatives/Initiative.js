@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, Suspense } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Paper, Typography, Fab, Card, CardActionArea, CardMedia, CardContent, CardActions, IconButton, Box, List, ListItem, ListItemText, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, TextField, InputAdornment, Checkbox } from '@material-ui/core'
+import { Collapse, Paper, Typography, Fab, Card, CardActionArea, CardMedia, CardContent, CardActions, IconButton, Box, List, ListItem, ListItemText, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, TextField, InputAdornment, Checkbox } from '@material-ui/core'
+import { Alert, AlertTitle } from '@material-ui/lab';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
@@ -10,7 +11,7 @@ import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
 import { render } from 'react-dom'
 import ImageViewer from 'react-simple-image-viewer'
-import { useGeoFirestore } from 'global/Hooks'
+import { useGeoFirestore, useI18n } from 'global/Hooks'
 import { getFeatures, DeleteObject } from 'global/Misc'
 import firebase from 'firebase'
 import useMeasure from 'use-measure'
@@ -20,8 +21,9 @@ import CreateProject from 'components/Projects/CreateProject'
 import ProjectLibrary from 'components/Projects/ProjectLibrary'
 import BackFab from 'components/Projects/BackFab'
 import moment from 'moment'
-import { Route, useRouteMatch, useParams } from 'react-router-dom'
+import { Route, useRouteMatch, useParams, Redirect } from 'react-router-dom'
 import {Helmet} from "react-helmet"
+import { Share } from '@material-ui/icons'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -56,11 +58,7 @@ const useStyles = makeStyles((theme) => ({
   button:{
     margin: "0.5rem"
   },
-  imageButton: {
-    position: "absolute",
-    top: "1rem",
-    left: "1rem"
-  },
+
   input: {
     display: 'none',
   },
@@ -69,23 +67,6 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(4),
     //height:'100%',
-  },
-  favourites:{
-    position: 'absolute',
-    left: theme.spacing(2),
-    top: 0,
-    backgroundColor: 'white',
-    transitionDuration: '0.3s'
-  },
-  backButton:{
-    zIndex: 200, 
-    margin:"0.5rem", 
-    color:'white',
-  },
-  nextButton:{
-    zIndex: 200, 
-    margin:"0.5rem", 
-    color:'white',
   },
   selectButton: {
     width: 'calc( 50% - 0.75rem )',
@@ -99,6 +80,13 @@ const useStyles = makeStyles((theme) => ({
     transitionDuration: '0.3s',
     
     //transition: 'width 2s'
+  },
+  alert: {
+    position: 'absolute',
+    top: '1rem',
+    left: '1rem',
+    right: '1rem',
+    zIndex: 999
   }
 }));
 
@@ -325,6 +313,12 @@ export default ({ mapRef, loaded, id })=> {
   const theme = useTheme()
   let match = useRouteMatch()
   let { initiativeID } = useParams();
+  const [redirect, setRedirect] = useState(null)
+  const i18n = useI18n()
+  const textarea = useRef()
+  const [copySuccess, setCopySuccess] = useState()
+  const [alert, setAlert] = useState(null)
+
   //const in = markers.features.find(f=>f.properties.id==id).properties
   useEffect(()=>{
 
@@ -386,6 +380,20 @@ export default ({ mapRef, loaded, id })=> {
   }, [selected])
 
   return (<>
+    {redirect && <Redirect to={redirect} />}
+    {alert && (
+      <Collapse in={Boolean(alert)}>
+        <Alert severity="info" className={classes.alert} onClose={() => {setAlert(null)}}>
+          <AlertTitle>Info</AlertTitle>
+          {alert=='loading'?i18n('loading'):
+          <>{i18n('alertLinkWasCopied')}<br/>
+          <form>
+            <textarea style={{paddingBottom:'0.5rem'}} value={alert}/>
+          </form>
+          </>}
+        </Alert>
+      </Collapse>
+    )}
     {isViewerOpen && (
       <>
     <IconButton 
@@ -401,8 +409,8 @@ export default ({ mapRef, loaded, id })=> {
       src={ [initiative.imageURL.l] }
       currentIndex={ 0 }
       onClose={ ()=>{ setIsViewerOpen(false) } }
-      zIndex={300}
-      style={{zIndex:300}}
+      zIndex={9}
+      style={{zIndex:9}}
     />
     </>
     )}
@@ -435,7 +443,8 @@ export default ({ mapRef, loaded, id })=> {
             aria-label="return"
             style={{position:"absolute", right:"1rem", top:"0.5rem", zIndex: 30}}
             onClick={()=>{
-              setSelected(null)
+              setRedirect('/')
+              //setSelected(null)
               setExpanded(false)
               setJoining(false)
             }}
@@ -478,10 +487,10 @@ export default ({ mapRef, loaded, id })=> {
               <LocationOn style={{fontSize: 'large'}} />
               {
                 (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<1 ? 
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +"м від мене":
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +i18n('initiativePreviewDistanceFromMeM'):
                 ((distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<10 ? 
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +"км від мене":
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +"км від мене")
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +i18n('initiativePreviewDistanceFromMeKM'):
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +i18n('initiativePreviewDistanceFromMeKM'))
               } 
             </span>)}
             {/* <span style={{float:'right'}}> <ExpandLess /></span> */}
@@ -512,30 +521,76 @@ export default ({ mapRef, loaded, id })=> {
           {/* Content */}
           
             { expanded && !joining && <Box style={{padding: '2rem', paddingTop: 0}}><List key='elements' disablePadding>
+
               {initiative.problem&& (<ListItem className={classes.item} disableGutters>
                 <ListItemText
-                  primary="Проблема або ідея:"
+                  primary={i18n('initiativePreviewProblem')}
                   secondary={initiative.problem}
                 />
               </ListItem>)}
+              
               {initiative.outcome&& (<ListItem className={classes.item} disableGutters>
                 <ListItemText
-                  primary="Мета:"
+                  primary={i18n('initiativePreviewExpectedResult')}
                   secondary={initiative.outcome}
                 />
               </ListItem>)}
               {initiative.context && (<ListItem className={classes.item} disableGutters>
                 <ListItemText
-                  primary="Передумови:"
+                  primary={i18n('initiativePreviewCurrentState')}
                   secondary={initiative.context}
                 />
               </ListItem>)}
               {initiative.timestamp && (<ListItem className={classes.item} disableGutters>
                 <ListItemText
-                  primary="Додано:"
+                  primary={i18n('initiativePreviewDateAdded')}
                   secondary={moment(initiative.timestamp.toDate()).format('DD.MM.YYYY')}
                 />
               </ListItem>)}
+              <Button onClick={()=>{
+                // console.log('click', textarea)
+                // textarea.current.select();
+                // document.execCommand('copy');
+                //e.target.focus();
+                console.log(initiative)
+                if(alert!=="loading"){
+                  setAlert("loading")                
+
+                  fetch('https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyC0R35s-u9bZCZOpwg8jVIzYg77HeKgr0Y', {
+                    method: 'post',
+                    body: JSON.stringify({
+                      "dynamicLinkInfo": {
+                        "domainUriPrefix": "https://wecity.page.link",
+                        "link": `https://weee.city/initiative/${initiative.id}`,
+                        "socialMetaTagInfo": {
+                          "socialTitle": initiative.name,
+                          "socialDescription": initiative.problem,
+                          "socialImageLink": initiative.imageURL.l,
+                        }
+                      },
+                      "suffix": {
+                        "option": "SHORT"
+                      },
+                    }),
+                  }).then(function(response) {
+                    return response.json();
+                  }).then(function(text) {
+                    console.log(text)
+                    var dummy = document.createElement('input')
+                    //text = `https://wecity.page.link/?link=https://weee.city/initiative/${initiative.id}&st=${initiative.name}&sd=${initiative.problem}&si=${encodeURI(initiative.imageURL.l)}`;
+    
+                    document.body.appendChild(dummy);
+                    dummy.value = text.shortLink;
+                    dummy.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummy);
+                    setAlert(text.shortLink)                
+                  });
+                }
+
+                }}>
+                <Share style={{paddingRight:"0.5rem"}} /> {i18n('initiativePreviewShare')}
+              </Button>
             </List>
             { user && !initiative.members[user.uid] && <Button 
               size="small" 
@@ -546,7 +601,7 @@ export default ({ mapRef, loaded, id })=> {
                 console.log('Приєднатися')
                 setJoining(true)
             }}>
-              Приєднатися
+              {i18n('join')}
             </Button>}
             { user && initiative.members[user.uid] && initiative.members.ids.length<2 && <Button 
               size="small" 
@@ -555,7 +610,7 @@ export default ({ mapRef, loaded, id })=> {
               style={{marginTop: '1rem'}}//
               onClick={()=>DeleteObject(initiative, initiatives, images, 'markers', ()=>{setMarkers({type: "FeatureCollection", features: markers.features.filter(m=>m.properties.id!==initiative.id)}); setInitiative(null);})}
             >
-              Видалити
+              {i18n('delete')}
             </Button>}
             </Box> }
 

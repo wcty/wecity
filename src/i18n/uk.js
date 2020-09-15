@@ -42,6 +42,8 @@ export default {
     //Form controls
     add: "Додати",
     addAndJoin: "Додати та приєднатися",
+    join: "Приєднатися",
+    delete: "Видалити",
     cancel: "Відмінити",
     back: "Назад",
     next: "Далі",
@@ -101,5 +103,18 @@ export default {
     initiativeAddCoverPhoto: "+ Додайте титульне фото",
     initiativeProblem: "Яку проблему має вирішити ініціатива?",
     initiativeExpectedResult: "Опишіть очікувані результати:",
-    initiativeCurrentState: "Передумови для реалізації:"
+    initiativeCurrentState: "Передумови для реалізації:",
+
+    //Initiative preview
+    initiativePreviewDistanceFromMeKM: 'км від мене',
+    initiativePreviewDistanceFromMeM: 'м від мене',
+    initiativePreviewShare: 'Поділитися',
+    initiativePreviewProblem: 'Проблема або ідея:',
+    initiativePreviewExpectedResult: 'Мета:',
+    initiativePreviewCurrentState: 'Передумови:',
+    initiativePreviewDateAdded: 'Додано:',
+
+    //Alerts
+    alertYouNeedToLogin: "Ви маєте увійти щоб створити ініціативу, проект або ресурс",
+    alertLinkWasCopied: "Посилання було успішно скопійовано в буфер обміну",
 };

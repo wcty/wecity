@@ -86,6 +86,12 @@ export default ()=>{
       setView(map.getCenter())
     }
   }, [mapRef.current, viewport])
+  
+  useEffect(()=>{
+    if(redirect=='/'){
+      setRedirect(null)
+    }
+  },[redirect, setRedirect])
 
   return (
       <>
@@ -121,7 +127,8 @@ export default ()=>{
           {...viewport}
           onClick={()=>{
             setRedirect('/')
-            setSelected(null)
+            console.log('mapclick')
+            //setSelected(null)
           }}
         >
           {satellite && <Satellite />}

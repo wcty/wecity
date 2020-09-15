@@ -5,21 +5,19 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { locationAtom, markersAtom, viewAtom, selectedAtom } from 'global/Atoms'
 import { useGeoFirestore } from 'global/Hooks'
 import { getFeatures } from 'global/Misc'
-import { Redirect } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 
 export default () =>{
   const GeoFirestore = useGeoFirestore() 
   const [markers, setMarkers] = useRecoilState(markersAtom)
-  const [selected, setSelected] = useRecoilState(selectedAtom)
   const [redirect, setRedirect] = useState(null)
   const view = useRecoilValue(viewAtom)
+  const location = useLocation()
 
   const onClick = (event) => {
     if (event.features.length > 0) {
       const nextClickedStateId = event.features[0].properties.id;
-      if ( !selected || ( selected !== nextClickedStateId )) {
-        setRedirect(`/initiative/${event.features[0].properties.id}`)
-      }
+      setRedirect(`/initiative/${event.features[0].properties.id}`)
     }
   };
 
@@ -32,6 +30,12 @@ export default () =>{
       setMarkers({type:"FeatureCollection", features: getFeatures(value)})
     });
   }, [GeoFirestore])
+  
+  useEffect(()=>{
+    if(redirect!==null){
+      setRedirect(null)
+    }
+  },[redirect, setRedirect])
   
   return (
     <>  
@@ -56,7 +60,7 @@ export default () =>{
           'text-halo-color': "white",   
         }}
         layout={{
-          'icon-image': ['case', ['==', ['get', 'id'], selected], 'marker-active', 'marker-fixed'],
+          'icon-image': ['case', ['==', ['get', 'id'], location.pathname.replace('/initiative/','')], 'marker-active', 'marker-fixed'],
           'icon-anchor': 'bottom',
           'icon-allow-overlap': true,
             // ["step",
@@ -75,7 +79,7 @@ export default () =>{
           'icon-ignore-placement': true,
           'text-ignore-placement': true,
           'symbol-spacing': 1,
-          'text-field': ['case', ['==', ['get', 'id'], selected], ['get', 'name'], ''],
+          'text-field': ['case', ['==', ['get', 'id'], location.pathname.replace('/initiative/','')], ['get', 'name'], ''],
           'text-anchor': 'top',
           'text-font': ["Montserrat SemiBold"],
           'text-size': 13,
