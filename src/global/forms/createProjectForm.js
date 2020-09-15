@@ -12,24 +12,24 @@ export default (initiative)=>{
       type: "image", 
       id: "addImage",
       imgPath: addImage,
-      label: i18n('projectAddCoverPhoto')
+      label: i18n('projectFormAddCoverPhoto')
     },
     {
       type: "text",
       id: "name",
-      label: i18n('projectName'),
+      label: i18n('projectFormName'),
       maxLength: 40
     },
     {
       type: "text",
       id: "contractor",
-      label: i18n('projectContractor'),
+      label: i18n('projectFormContractor'),
       maxLength: 40
     },
     {
       type: "text",
       id: "location",
-      label: i18n('projectContractorLocation'),
+      label: i18n('projectFormContractorLocation'),
       maxLength: 300
     }
   ],
@@ -43,14 +43,14 @@ export default (initiative)=>{
     {
       type: "text",
       id: "problem",
-      label: i18n('projectProblem'),
+      label: i18n('projectFormProblem'),
       rows: 3,
       maxLength: 300
     },
     {
       type: "text",
       id: "description",
-      label: i18n('projectDescription'),
+      label: i18n('projectFormDescription'),
       rows: 8,
       maxLength: 1000
     },
@@ -59,14 +59,14 @@ export default (initiative)=>{
     {
       type: "text",
       id: "experience",
-      label: i18n('projectContractorExperience'),
+      label: i18n('projectFormContractorExperience'),
       rows: 8,
       maxLength: 300
     },
     {
       type: "text",
       id: "resource",
-      label: i18n('projectOtherResources'),
+      label: i18n('projectFormOtherResources'),
       rows: 8,
       maxLength: 300
     },
@@ -75,26 +75,26 @@ export default (initiative)=>{
     {
       type: "text",
       id: "volunteers",
-      label: i18n('projectNumberOfVolunteers'),
+      label: i18n('projectFormNumberOfVolunteers'),
       maxLength: 3
     },
     {
       type: "text",
       id: "volunteersTask",
-      label: i18n('projectVolunteerTasks'),
+      label: i18n('projectFormVolunteerTasks'),
       rows: 4,
       maxLength: 300
     },
     {
       type: "text",
       id: "price",
-      label: i18n('projectMinimalBudget'),
+      label: i18n('projectFormMinimalBudget'),
       maxLength: 10
     },
     {
       type: "text",
       id: "budgetDescription",
-      label: i18n('projectBudgetExpenses'),
+      label: i18n('projectFormBudgetExpenses'),
       rows: 4,
       maxLength: 300
     },

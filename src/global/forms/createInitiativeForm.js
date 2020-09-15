@@ -10,12 +10,12 @@ export default (initiative)=>{
       {
         type: "note",
         id: "notes",
-        label: i18n('initiativeInstruction'),
+        label: i18n('initiativeFormInstruction'),
       },
       {
         type: "text",
         id: "name",
-        label: i18n('initiativeName'),
+        label: i18n('initiativeFormName'),
         maxLength: 40
       }
     ],
@@ -24,21 +24,21 @@ export default (initiative)=>{
         type: "image", 
         id: "addImage",
         imgPath: addImage,
-        label: i18n('initiativeAddCoverPhoto')
+        label: i18n('initiativeFormAddCoverPhoto')
       }
     ],
     [
       {
         type: "text",
         id: "problem",
-        label: i18n('initiativeProblem'),
+        label: i18n('initiativeFormProblem'),
         rows: 2,
         maxLength: 300
       },
       {
         type: "text",
         id: "outcome",
-        label: i18n('initiativeExpectedResult'),
+        label: i18n('initiativeFormExpectedResult'),
         rows: 1,
         maxLength: 300
       },
@@ -47,7 +47,7 @@ export default (initiative)=>{
       {
         type: "text",
         id: "context",
-        label: i18n('initiativeCurrentState'),
+        label: i18n('initiativeFormCurrentState'),
         rows: 6,
         maxLength: 300
       },

@@ -338,6 +338,7 @@ export default ({ mapRef, loaded })=> {
       setInitiative(markers.features.find(f=>f.properties.id==initiativeID)?markers.features.find(f=>f.properties.id==initiativeID).properties:null)
     }
   },[initiativeID, initiative])
+
   useEffect(async()=>{
     if(loaded&&initiative){
       const map = mapRef.current.getMap()
@@ -492,10 +493,10 @@ export default ({ mapRef, loaded })=> {
               <LocationOn style={{fontSize: 'large'}} />
               {
                 (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<1 ? 
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +i18n('initiativePreviewDistanceFromMeM'):
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +i18n('initiativeDistanceFromMeM'):
                 ((distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<10 ? 
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +i18n('initiativePreviewDistanceFromMeKM'):
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +i18n('initiativePreviewDistanceFromMeKM'))
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +i18n('initiativeDistanceFromMeKM'):
+                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +i18n('initiativeDistanceFromMeKM'))
               } 
             </span>)}
             {/* <span style={{float:'right'}}> <ExpandLess /></span> */}
@@ -529,26 +530,26 @@ export default ({ mapRef, loaded })=> {
 
               {initiative.problem&& (<ListItem className={classes.item} disableGutters>
                 <ListItemText
-                  primary={i18n('initiativePreviewProblem')}
+                  primary={i18n('initiativeProblem')}
                   secondary={initiative.problem}
                 />
               </ListItem>)}
               
               {initiative.outcome&& (<ListItem className={classes.item} disableGutters>
                 <ListItemText
-                  primary={i18n('initiativePreviewExpectedResult')}
+                  primary={i18n('initiativeExpectedResult')}
                   secondary={initiative.outcome}
                 />
               </ListItem>)}
               {initiative.context && (<ListItem className={classes.item} disableGutters>
                 <ListItemText
-                  primary={i18n('initiativePreviewCurrentState')}
+                  primary={i18n('initiativeCurrentState')}
                   secondary={initiative.context}
                 />
               </ListItem>)}
               {initiative.timestamp && (<ListItem className={classes.item} disableGutters>
                 <ListItemText
-                  primary={i18n('initiativePreviewDateAdded')}
+                  primary={i18n('initiativeDateAdded')}
                   secondary={moment(initiative.timestamp.toDate()).format('DD.MM.YYYY')}
                 />
               </ListItem>)}
@@ -594,7 +595,7 @@ export default ({ mapRef, loaded })=> {
                 }
 
                 }}>
-                <Share style={{paddingRight:"0.5rem"}} /> {i18n('initiativePreviewShare')}
+                <Share style={{paddingRight:"0.5rem"}} /> {i18n('initiativeShare')}
               </Button>
             </List>
             { user && !initiative.members[user.uid] && <Button 

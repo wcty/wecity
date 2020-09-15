@@ -10,6 +10,7 @@ import distance from '@turf/distance'
 import { render } from 'react-dom';
 import ImageViewer from 'react-simple-image-viewer';
 import { categories } from 'global/forms/projectCategories'
+import { useI18n } from 'global/Hooks'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,6 +77,8 @@ export default ({ project, setProject })=> {
   const directory='projects'
   const objects = useFirestore().collection(directory)
   const images = useStorage().ref().child(directory)
+  const i18n = useI18n()
+
   return (<>
     {isViewerOpen && (
       <>
@@ -141,75 +144,75 @@ export default ({ project, setProject })=> {
               <ArrowBack color="primary"/>
             </IconButton>
           </section>
-            {project.category && (<Chip label={categories.find(c=>c.name==project.category).label} style={{marginLeft: '1rem', marginTop: '-5rem', zIndex: 9, position: 'relative'}} />)}
+            {project.category && (<Chip label={categories(i18n).find(c=>c.name==project.category).label} style={{marginLeft: '1rem', marginTop: '-5rem', zIndex: 9, position: 'relative'}} />)}
             <Typography variant="h6" style={{marginLeft:'1rem', marginTop:'0rem'}}>
               {project.name? project.name: "Name is not set"}
             </Typography>
               <List>
                 {project.contractor&& (<ListItem>
                   <ListItemText
-                    primary="Ім'я виконавця:"
+                    primary={i18n('projectContractor')}
                     secondary={project.contractor}
                   />
                 </ListItem>)}
                 {project.location&& (<ListItem>
                   <ListItemText
-                    primary="Місце виробництва:"
+                    primary={i18n('projectContractorLocation')}
                     secondary={project.location}
                   />
                 </ListItem>)}
                 {project.problem&& (<ListItem>
                   <ListItemText
-                    primary="Яку проблему має вирішити:"
+                    primary={i18n('projectProblem')}
                     secondary={project.problem}
                   />
                 </ListItem>)}
                 {project.description&& (<ListItem>
                   <ListItemText
-                    primary="Опис проекту:"
+                    primary={i18n('projectDescription')}
                     secondary={project.description}
                   />
                 </ListItem>)}
                 {project.experience && (<ListItem>
                   <ListItemText
-                    primary="Досвід виконавця:"
+                    primary={i18n('projectContractorExperience')}
                     secondary={project.experience}
                   />
                 </ListItem>)}
                 {project.resource && (<ListItem>
                   <ListItemText
-                    primary="Необхідні ресурси (не грошові):"
+                    primary={i18n('projectOtherResources')}
                     secondary={project.resource}
                   />
                 </ListItem>)}
                 {project.volunteers && (<ListItem>
                   <ListItemText
-                    primary="Необхідна кількість волонтерів:"
+                    primary={i18n('projectNumberOfVolunteers')}
                     secondary={project.volunteers}
                   />
                 </ListItem>)}
 
                 {project.volunteersTask && (<ListItem>
                   <ListItemText
-                    primary="Задачі волонтерів:"
+                    primary={i18n('projectVolunteerTasks')}
                     secondary={project.volunteersTask}
                   />
                 </ListItem>)}
                 {project.price && (<ListItem>
                   <ListItemText
-                    primary="Мінімальний необхідний бюджет:"
+                    primary={i18n('projectMinimalBudget')}
                     secondary={project.price}
                   />
                 </ListItem>)}
                 {project.budgetDescription && (<ListItem>
                   <ListItemText
-                    primary="Які витрати покриває бюджет:"
+                    primary={i18n('projectBudgetExpenses')}
                     secondary={project.budgetDescription}
                   />
                 </ListItem>)}
                 {project.timestamp && (<ListItem>
                   <ListItemText
-                    primary="Додано:"
+                    primary={i18n('projectDateAdded')}
                     secondary={project.timestamp.toDate().getDay()+"."+project.timestamp.toDate().getMonth()+"."+project.timestamp.toDate().getFullYear()}
                   />
                 </ListItem>)}
@@ -226,7 +229,7 @@ export default ({ project, setProject })=> {
                 console.log('button')
               }}
             >
-              Додати проект в ініціативу
+              {i18n('addToInItiative')}
             </Button>}
             {project.contractors && project.contractors.find(c=>c==user.uid) &&<Button 
               elevation={15} 
@@ -253,7 +256,7 @@ export default ({ project, setProject })=> {
                 }else{console.log(object)}
               }}
             >
-              Видалити
+              {i18n('delete')}
             </Button>}
           
           </Suspense>

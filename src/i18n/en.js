@@ -42,6 +42,7 @@ export default {
     //Form controls
     add: "Add",
     addAndJoin: "Add and join",
+    addToInitiative: "Add to Initiative",
     join: "Join",
     delete: "Delete",
     cancel: "Cancel",
@@ -77,20 +78,33 @@ export default {
     userFormHowToContactYou: "How can we contact you:",
 
     //Project form
-    projectAddCoverPhoto: "+ Add cover image",
-    projectName: "Name of your proposal",
-    projectContractor: "Contractor organization",
-    projectContractorLocation: "Place of realization",
-    projectChooseCategory: "Choose project category",
-    projectProblem: "Which problem it is called to solve?",
-    projectDescription: "describe the project:",
-    projectContractorExperience: "Do you have any relavant experience?",
-    projectOtherResources: "Which non-financial resources would you need for its relization?",
-    projectNumberOfVolunteers: "How many volunteers would you need?",//maybe remove
-    projectVolunteerTasks: "What tasks should be done by volunteers?",
-    projectMinimalBudget: "What is the minimal necessary budget?",
-    projectBudgetExpenses: "Which expenses will it cover?",
+    projectFormAddCoverPhoto: "+ Add cover image",
+    projectFormName: "Name of your proposal",
+    projectFormContractor: "Contractor organization",
+    projectFormContractorLocation: "Place of realization",
+    projectFormChooseCategory: "Choose project category",
+    projectFormProblem: "Which problem it is called to solve?",
+    projectFormDescription: "describe the project:",
+    projectFormContractorExperience: "Do you have any relavant experience?",
+    projectFormOtherResources: "Which non-financial resources would you need for its relization?",
+    projectFormNumberOfVolunteers: "How many volunteers would you need?",//maybe remove
+    projectFormVolunteerTasks: "What tasks should be done by volunteers?",
+    projectFormMinimalBudget: "What is the minimal necessary budget?",
+    projectFormBudgetExpenses: "Which expenses will it cover?",
     
+    //Project preview
+    projectContractor: "Contractor name",
+    projectContractorLocation: "Place of implementation",
+    projectProblem: "Which problem is solving",
+    projectDescription: "Project description",
+    projectContractorExperience: "Contractor experience",
+    projectOtherResources: "Necessary no-financial resources",
+    projectNumberOfVolunteers: "Necessary number of volunteers",
+    projectVolunteerTasks: "Volunteer tasks",
+    projectMinimalBudget: "Minimal required budget",
+    projectBudgetExpenses: "What does the budget covers",
+    projectDateAdded: "Date added",
+
     //Initiative library
     intiativeLibraryTitle: "Initiatives that you've joined:",
     initiativeLibraryEmpty: 
@@ -98,21 +112,21 @@ export default {
     Go to the Map and join the one, that seem important,
     or propose your own`,
     //Initiative form
-    initiativeInstruction: "Move the map to locate the initiative marker (red) in the right place, then add the name and click Next.",
-    initiativeName: "Name of your initiative",
-    initiativeAddCoverPhoto: "+ Add the title photo",
-    initiativeProblem: "Which problem stands behind the initiative?",
-    initiativeExpectedResult: "Describe desired outcomes:",
-    initiativeCurrentState: "What is the current state of it:",
+    initiativeFormInstruction: "Move the map to locate the initiative marker (red) in the right place, then add the name and click Next.",
+    initiativeFormName: "Name of your initiative",
+    initiativeFormAddCoverPhoto: "+ Add the title photo",
+    initiativeFormProblem: "Which problem stands behind the initiative?",
+    initiativeFormExpectedResult: "Describe desired outcomes:",
+    initiativeFormCurrentState: "What is the current state of it:",
 
     //Initiative preview
-    initiativePreviewDistanceFromMeKM: 'km from me',
-    initiativePreviewDistanceFromMeM: 'm from me',
-    initiativePreviewShare: 'Share',
-    initiativePreviewProblem: 'Problematics or idea:',
-    initiativePreviewExpectedResult: 'Goals:',
-    initiativePreviewCurrentState: 'Current state:',
-    initiativePreviewDateAdded: 'Date added:',
+    initiativeDistanceFromMeKM: 'km from me',
+    initiativeDistanceFromMeM: 'm from me',
+    initiativeShare: 'Share',
+    initiativeProblem: 'Problematics or idea:',
+    initiativeExpectedResult: 'Goals:',
+    initiativeCurrentState: 'Current state:',
+    initiativeDateAdded: 'Date added:',
     
     //Alerts
     alertYouNeedToLogin: "You must be logged in to create initiative, project or resource",
