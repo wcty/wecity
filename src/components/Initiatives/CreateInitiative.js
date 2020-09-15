@@ -15,7 +15,7 @@ import createInitiativeForm from 'global/forms/createInitiativeForm'
 import FormExpanded from 'global/FormExpanded'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
-import { useRouteMatch } from 'react-router-dom';
+import { useRouteMatch, Redirect } from 'react-router-dom';
 import MarkerActive from 'assets/images/markerActive.svg'
 
 
@@ -61,6 +61,8 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
   const [selected, setSelected] = useRecoilState(Atoms.selectedAtom)
   const [location, setLocation] = useRecoilState(Atoms.locationAtom)
   const mapDimensions = useRecoilValue(Atoms.mapAtom)
+  const [redirect, setRedirect] = useState(null)
+
   let match = useRouteMatch()
 
   useEffect(()=>{
@@ -89,13 +91,20 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
     }
   }, [mapRef, loaded, isCreating, match])
 
+  useEffect(()=>{
+    if(redirect!==null){
+      setRedirect(null)
+    }
+  },[redirect,setRedirect])
+
   return <>
+  {redirect && <Redirect to={redirect} />}
   <img alt="Marker for new initiative" src={MarkerActive} className={classes.marker} width={42} height={42} />
   <div className={classes.root}>
     <Paper elevation={1} className={classes.paper}>  
       <FormExpanded 
         directory="markers"
-        isFilling={true/*isCreating*/} 
+        isFilling={isCreating} 
         formGetter={()=>createInitiativeForm()} 
         floating
         variant='text'
@@ -116,7 +125,7 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
         nextButton={(activeStep, setActiveStep, maxSteps, valid, imageLoadedURL, project)=>
           activeStep === (maxSteps - 1) ? (
             <Button color="secondary" disabled={!valid} variant="contained" size="small" onClick={async ()=>{     
-              
+              console.log(marker)
               markersCollection.add({
                 ...marker,
                 timestamp: new Date(),
@@ -126,7 +135,7 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
               }).then(function(docRef) {
                 console.log("Document written with ID: ", docRef.id);
                 docRef.update({id:docRef.id})
-                setSelected(docRef.id)
+                setRedirect(`/initiative/${docRef.id}`)
               })
               .catch(function(error) {
                   console.error("Error adding document: ", error);

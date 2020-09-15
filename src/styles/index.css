@@ -15,10 +15,10 @@ canvas {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
 }
 
-p::-moz-selection { background-color: grey}
-p::selection { background-color: grey; }
-input::-moz-selection { background-color: grey}
-input::selection { background-color: grey; }
+p::-moz-selection { background-color: lightgrey}
+p::selection { background-color: lightgrey; }
+input::-moz-selection { background-color: lightgrey}
+input::selection { background-color: lightgrey; }
 
 .react-simple-image-viewer__modal{
   z-index: 9;

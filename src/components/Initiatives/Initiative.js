@@ -377,6 +377,12 @@ export default ({ mapRef, loaded, id })=> {
     }
   }, [selected])
 
+  useEffect(()=>{
+    if(redirect!==null){
+      setRedirect(null)
+    }
+  },[redirect,setRedirect])
+
   return (<>
     {redirect && <Redirect to={redirect} />}
     {alert && (
