@@ -85,7 +85,6 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     top: '1rem',
     left: '1rem',
-    right: '1rem',
     zIndex: 999
   }
 }));
@@ -315,7 +314,6 @@ export default ({ mapRef, loaded, id })=> {
   let { initiativeID } = useParams();
   const [redirect, setRedirect] = useState(null)
   const i18n = useI18n()
-  const textarea = useRef()
   const [copySuccess, setCopySuccess] = useState()
   const [alert, setAlert] = useState(null)
 
@@ -388,7 +386,7 @@ export default ({ mapRef, loaded, id })=> {
           {alert=='loading'?i18n('loading'):
           <>{i18n('alertLinkWasCopied')}<br/>
           <form>
-            <textarea style={{paddingBottom:'0.5rem'}} value={alert}/>
+            <TextField style={{paddingBottom:'0.5rem', paddingTop:'0.5rem', width:'100%'}} value={alert}/>
           </form>
           </>}
         </Alert>

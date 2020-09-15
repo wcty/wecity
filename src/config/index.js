@@ -1,6 +1,6 @@
 export const firebaseConfig = {
   apiKey: "AIzaSyC0R35s-u9bZCZOpwg8jVIzYg77HeKgr0Y",
-  authDomain: "wecity-223ab.firebaseapp.com",
+  authDomain: "weee.city",
   databaseURL: "https://wecity-223ab.firebaseio.com",
   projectId: "wecity-223ab",
   storageBucket: "wecity-223ab.appspot.com",
