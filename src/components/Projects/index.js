@@ -1,80 +1,63 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Divider, List, Typography, ListItem, FormControlLabel, Checkbox, ListItemText, FormControl, InputLabel, Select, MenuItem, Grid } from '@material-ui/core';
-import addImage from 'assets/images/addImage.png'
-import { useRecoilState, useRecoilValue } from 'recoil';
+import React, { useState, useEffect } from 'react';
+import { makeStyles, Paper } from '@material-ui/core';
+import { useRecoilValue } from 'recoil';
 import * as Atoms from 'global/Atoms'
-import { useStorage, useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
-import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
-import distance from '@turf/distance'
+import { useUser } from 'reactfire';
 import ProjectFab from './ProjectFab'
 import CreateProject from './CreateProject'
 import Project from './Project'
 import ProjectLibrary from './ProjectLibrary'
-
-const useStyles = makeStyles((theme) => ({
+import { Redirect, Route } from 'react-router-dom'
+import { useTheme } from '@material-ui/core/styles';
+const useStyles = makeStyles((theme)=>({
   root: {
     flexGrow: 1,
     zIndex: 999,
-    position: 'fixed',
-    height: "100%",
-    width: "100%",
+    position: 'fixed', 
+    width:'100%',
+    bottom: '0',
+    right: '0',
+    borderRadius: '0',
     overflowX: "hidden",
+    overflowY: 'scroll',
+    padding: '1rem',
+    paddingTop: 0,
+    paddingBottom: 0,
+    boxSizing: 'border-box',
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
-		},
-  },
-  info:{
-    padding: theme.spacing(2),
-    //height:'100%',
-    width: '100%'
-  },
-  img: {
-    height: '160px',
-    maxWidth: 400,
-    overflow: 'hidden',
-    display: 'block',
-    width: '100%',
-    margin: "auto",
-    verticalAlign: 'middle',
-    objectFit: 'cover'
-  },
-  paper:{
-    height: "100%",
-    minHeight: "250px",
-    width: "100%",
-    overflowX: "hidden",
-    transitionDuration: '0.3s'
-  },
-}));
+    },
+  }
+}))
 
 export default ()=> {
-  const classes = useStyles();
+  const classes = useStyles()
   const user = useUser()
   const bar = useRecoilValue(Atoms.barAtom)
-  const [selected, setSelected] = useRecoilState(Atoms.selectedAtom)
-  const [isCreating, setIsCreating] = useState(false)
-  const [selectedProject, setSelectedProject] = useRecoilState(Atoms.selectedProject)
+  const [redirect, setRedirect] = useState()
+  const theme = useTheme()
+  
+  useEffect(()=>{
+    if(redirect){
+      setRedirect(null)
+    }
+  },[redirect])
 
   return (<>
-    <Paper elevation={1} className={classes.root} 
+    {redirect && <Redirect to={redirect}/>}
+    <Paper elevation={1} className={classes.root}
       style={{
-        height: `calc(100% - ${bar.height}px)`, 
-        width:'100%',
-        bottom: '0',
-        right: '0',
-        borderRadius: '0',
-        overflowY: 'scroll',
-        padding: '1rem',
-        paddingTop: 0,
-        paddingBottom: 0,
-        boxSizing: 'border-box'
+        height: `calc(100% - ${bar.height}px)`,
       }}
     > 
-      {user && <ProjectFab isCreating={isCreating} setIsCreating={setIsCreating} active />}
-      {!isCreating && <ProjectLibrary />}
-      {isCreating && <CreateProject cancel={()=>setIsCreating(false)} submit={(docRef, doc)=>{setSelectedProject(doc.data()); setIsCreating(false)}} variant='text' submitText='Додати' />}
-      {selectedProject&& <Project project={selectedProject} setProject={setSelectedProject} />}
+      {user && <ProjectFab/>}
+      <ProjectLibrary />
+      <Route path="/create-project">
+        <CreateProject cancel={()=>setRedirect(false)} submit={(docRef, doc)=>{setRedirect(`/projects/${docRef.id}`)}} variant='text' submitText='Додати' />
+      </Route> 
+      <Route path="/projects/:projectId">
+        <Project/>
+      </Route> 
     </Paper>
   </>)
 }

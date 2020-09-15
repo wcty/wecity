@@ -4,13 +4,14 @@ import { Paper, Typography, IconButton, Chip, List, ListItem, ListItemText, Butt
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { creatingAtom, markerAtom , barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
-import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire';
+import { useStorage, useFirestore, useFirestoreDocData, useUser } from 'reactfire';
 import { Close, ArrowBack } from '@material-ui/icons'
 import distance from '@turf/distance'
-import { render } from 'react-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import ImageViewer from 'react-simple-image-viewer';
 import { categories } from 'global/forms/projectCategories'
 import { useI18n } from 'global/Hooks'
+import { Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,7 +70,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default ({ project, setProject })=> {
+export default ()=> {
+  const { projectId } = useParams()
+  let history = useHistory()
   const classes = useStyles();
   const bar = useRecoilValue(barAtom)
   const user = useUser()
@@ -78,8 +81,19 @@ export default ({ project, setProject })=> {
   const objects = useFirestore().collection(directory)
   const images = useStorage().ref().child(directory)
   const i18n = useI18n()
+  const projectRef = useFirestore()
+    .collection('projects').doc( projectId )
+  const project = useFirestoreDocData(projectRef, {startWithValue: null})
+  
+  const [redirect, setRedirect] = useState()
+  useEffect(()=>{
+    if(redirect){
+      setRedirect(null)
+    }
+  },[redirect])
 
-  return (<>
+  return project && (<>
+    {redirect && <Redirect to={redirect} />}
     {isViewerOpen && (
       <>
         <IconButton 
@@ -138,7 +152,7 @@ export default ({ project, setProject })=> {
               aria-label="return"
               style={{position:"absolute", display:'block', right:"1.5rem", top:"0.5rem"}}
               onClick={()=>{
-                setProject(null)
+                setRedirect('/projects')
               }}
             >
               <ArrowBack color="primary"/>
@@ -220,18 +234,19 @@ export default ({ project, setProject })=> {
           </div>
           <Suspense fallback={null}>
           
-            {user&&<Button 
-              elevation={15} 
-              variant="contained" 
-              size="small"
-              style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 
-              onClick={()=>{
-                console.log('button')
-              }}
-            >
-              {i18n('addToInItiative')}
-            </Button>}
-            {project.contractors && project.contractors.find(c=>c==user.uid) &&<Button 
+            {user&&<>
+              <Button 
+                elevation={15} 
+                variant="contained" 
+                size="small"
+                style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 
+                onClick={()=>{
+                  console.log('button')
+                }}
+              >
+                {i18n('addToInitiative')}
+              </Button>
+              {project.contractors && project.contractors.find(c=>c==user.uid) &&<Button 
               elevation={15} 
               variant="contained" 
               size="small"
@@ -249,7 +264,7 @@ export default ({ project, setProject })=> {
                         console.log('Errored at image deletion', error)
                       });
                     })
-                    setProject(null)
+                    setRedirect('/projects')
                   }).catch(function(error) {
                       console.error("Error removing document: ", error);
                   });
@@ -258,7 +273,7 @@ export default ({ project, setProject })=> {
             >
               {i18n('delete')}
             </Button>}
-          
+            </>}
           </Suspense>
         </Paper>
     </form>

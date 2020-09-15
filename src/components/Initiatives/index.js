@@ -6,6 +6,7 @@ import { initiativeBarAtom, barAtom, mapAtom, selectedAtom, creatingAtom } from 
 import {  useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
 import InitiativeFab from 'components/Initiatives/InitiativeFab'
 import { useI18n } from 'global/Hooks'
+import { Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,6 +46,13 @@ export default ({ mapRef })=> {
   const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const mapDimensions = useRecoilValue(mapAtom)
   const i18n = useI18n()
+  const [redirect, setRedirect] = useState()
+
+  useEffect(()=>{
+    if(redirect){
+      setRedirect(null)
+    }
+  },[redirect])
 
   const initiativesRef = useFirestore()
     .collection('initiatives')
@@ -58,6 +66,7 @@ export default ({ mapRef })=> {
   }
 
   return (<>
+        {redirect && <Redirect to={redirect}/>}
         <Paper elevation={1} className={classes.root} 
           style={{
             height: `calc(100% - ${bar.height}px)`, 
@@ -84,9 +93,9 @@ export default ({ mapRef })=> {
               <div key={i}>
               <ListItem button onClick={()=>{
                 console.log(initiative)
-                setSelected(initiative.id)
-                setIsCreating(null)  
-                setInitiativeBar(false)
+                setRedirect(`/initiative/${initiative.id}`)
+                // setIsCreating(null)  
+                // setInitiativeBar(false)
               }}>
                 <img src={initiative.imageURL.xs} key={i+'img'} width="120px" height="120px" style={{paddingLeft: '2rem', padding: '1rem', objectFit:'cover'}}/>
                 <ListItemText key={i+'lit'}

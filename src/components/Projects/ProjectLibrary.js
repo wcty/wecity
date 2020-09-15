@@ -9,6 +9,7 @@ import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/i
 import distance from '@turf/distance'
 import { categories } from 'global/forms/projectCategories'
 import { useI18n } from 'global/Hooks'
+import { Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,6 +64,8 @@ export default ({ onlyMine, select })=>{
   const projects = useFirestoreCollectionData(projectsRef)
   const lang = useRecoilValue(Atoms.lang)
   const i18n = useI18n()
+  const [redirect, setRedirect] = useState()
+
   return (
     <div id="wrapper">
       <Typography variant="h6" style={{
@@ -70,7 +73,7 @@ export default ({ onlyMine, select })=>{
         marginBottom: '1rem',
         textAlign: 'center'
       }}>{onlyMine?i18n('myProjectsTitle'):i18n('projectsLibraryTitle')}</Typography>
-
+      {redirect && <Redirect to={redirect}/>}
       <FormControl variant="outlined"
         style={{width: '100%'}}>
         <InputLabel id='category' >{i18n('chooseCategory')}</InputLabel>
@@ -135,6 +138,7 @@ export default ({ onlyMine, select })=>{
                     <div className={classes.info}             
                       onClick={()=>{  
                         console.log('clicked')  
+                        setRedirect(`/projects/${project.id}`)
                         if(select){
                           select(project)
                         }else{                      

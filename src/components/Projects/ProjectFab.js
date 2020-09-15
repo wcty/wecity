@@ -1,11 +1,8 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Fab, Collapse } from '@material-ui/core'
-import { Alert, AlertTitle } from '@material-ui/lab';
-import { useRecoilState, useRecoilValue } from 'recoil'
-import {  selectedAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
-import { AddLocation, MyLocation, Add } from '@material-ui/icons'
-import useMeasure from "use-measure";
+import { Fab } from '@material-ui/core'
+import { Add } from '@material-ui/icons'
+import { Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   CreateInitiative: {
@@ -15,15 +12,21 @@ const useStyles = makeStyles(theme => ({
   },
 }))  
 
-export default ({ active, getMarker, isCreating, setIsCreating })=>{
+export default ({ active })=>{
   const classes = useStyles()
+  const [redirect, setRedirect] = useState()
+  useEffect(()=>{
+    if(redirect){
+      setRedirect(null)
+    }
+  },[redirect])
 
-  return !isCreating && (
-    <>
+  return <>
+        {redirect && <Redirect to={redirect}/>}
         <Fab 
           onClick={()=>{
             if(active){
-              setIsCreating(true)
+              setRedirect('/create-initiative')
             }
           }}
           style={{
@@ -36,5 +39,4 @@ export default ({ active, getMarker, isCreating, setIsCreating })=>{
           <Add />
         </Fab>
       </>
-  )
 }
