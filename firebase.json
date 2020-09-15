@@ -10,9 +10,8 @@
     "appAssociation": "AUTO",
     "rewrites": [
       {
-        "source": "**",
-        "dynamicLinks": true,
-        "destination": "/index.html"
+        "source": "/**",
+        "dynamicLinks": true
       }
     ],
     "headers": [
