@@ -56,7 +56,8 @@ export default ({ mapRef })=> {
 
   const initiativesRef = useFirestore()
     .collection('initiatives')
-    .where('members.ids', 'array-contains', user.uid)
+    .orderBy(`members.${user.uid}`)
+    //.where('members.ids', 'array-contains', user.uid)
   const initiatives = useFirestoreCollectionData(initiativesRef)
   
   const getMarker = ()=>{

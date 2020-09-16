@@ -14,6 +14,7 @@ import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
 import UserForm from './UserForm'
 import { useI18n } from 'global/Hooks'
 import { Route } from 'react-router-dom'
+import { theme } from 'global/Theme';
 
 const Styles = makeStyles( theme => ({
   appbar: {
@@ -148,7 +149,7 @@ const Bar = (props)=>{
   },[barMeasure])
   return (
     <>
-      <AppBar elevation={1} position="static" className={classes.appbar} ref={barRef}>
+      <AppBar elevation={1} color='primary.light' position="static" className={classes.appbar} ref={barRef}>
         <Toolbar >
         <IconButton onClick={()=>{setDrawer(!drawer)}} 
           edge="start" 

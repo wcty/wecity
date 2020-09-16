@@ -1,11 +1,11 @@
 import React, { useState, useEffect, Suspense } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Collapse, Paper, Typography, IconButton, Box, List, ListItem, ListItemText, Button, TextField } from '@material-ui/core'
+import { Collapse, Paper, Typography, IconButton, Box, List, ListItem, ListItemText, Button, TextField, Divider } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
-import { useStorage, useFirestore, useUser } from 'reactfire'
+import { useStorage, useFirestore, useUser, useFirestoreDocData } from 'reactfire'
 import { People, LocationOn, ExpandLess, Close } from '@material-ui/icons'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
@@ -17,6 +17,7 @@ import { useRouteMatch, useParams, Redirect } from 'react-router-dom'
 import {Helmet} from "react-helmet"
 import { Share } from '@material-ui/icons'
 import SelectRole from './SelectRole'
+import InitiativeGroup from './InitiativeGroup'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -60,7 +61,7 @@ export default ({ mapRef, loaded })=> {
   const classes = useStyles();
   const [marker, setMarker] = useRecoilState(Atoms.markerAtom)
   const initiatives = useFirestore().collection('initiatives')
-  const [initiative, setInitiative] = useRecoilState(Atoms.initiative)
+  // const [initiative, setInitiative] = useRecoilState(Atoms.initiative)
   const [selected, setSelected] = useRecoilState(Atoms.selectedAtom)
   const [isCreating, setIsCreating] = useRecoilState(Atoms.creatingAtom)
   const [location, setLocation] = useRecoilState(Atoms.locationAtom)
@@ -76,24 +77,26 @@ export default ({ mapRef, loaded })=> {
   const theme = useTheme()
   let match = useRouteMatch()
   let { initiativeID } = useParams();
+  const initiativeRef = useFirestore().collection('initiatives').doc(initiativeID)
+  const initiative = useFirestoreDocData(initiativeRef)
   const [redirect, setRedirect] = useState(null)
   const i18n = useI18n()
   const [copySuccess, setCopySuccess] = useState()
   const [alert, setAlert] = useState(null)
 
   //const in = markers.features.find(f=>f.properties.id==id).properties
-  useEffect(()=>{
+  // useEffect(()=>{
 
-    if(markers && initiativeID){
-      const selectedInitiative = markers.features.find(f=>f.properties.id==initiativeID)
-      if(selectedInitiative){
-        setSelected(initiativeID);
-        setInitiative( selectedInitiative.properties )
-      }
-    }
-    console.log(match)
-    console.log(initiativeID)
-  },[markers, initiativeID, setInitiative])
+  //   if(markers && initiativeID){
+  //     const selectedInitiative = markers.features.find(f=>f.properties.id==initiativeID)
+  //     if(selectedInitiative){
+  //       setSelected(initiativeID);
+  //       setInitiative( selectedInitiative.properties )
+  //     }
+  //   }
+  //   console.log(match)
+  //   console.log(initiativeID)
+  // },[markers, initiativeID, setInitiative])
 
   useEffect(async()=>{
     if(loaded&&initiative){
@@ -121,6 +124,9 @@ export default ({ mapRef, loaded })=> {
     }
   }, [mapRef, loaded, initiative])
 
+  useEffect(()=>{
+    setExpanded(false)
+  },[initiativeID])
   // useEffect(async()=>{
   //   if(selected) {
   //     setExpanded(false)
@@ -137,7 +143,7 @@ export default ({ mapRef, loaded })=> {
     if(redirect!==null){
       setRedirect(null)
     }
-  },[redirect,setRedirect])
+  },[redirect, setRedirect])
 
   return (<>
     {redirect && <Redirect to={redirect} />}
@@ -174,7 +180,7 @@ export default ({ mapRef, loaded })=> {
     />
     </>
     )}
-    { selected && initiative && !isViewerOpen && (
+    { /*selected &&*/ initiative && !isViewerOpen && (
         <Paper 
           className={classes.paper} 
           style={{
@@ -256,7 +262,7 @@ export default ({ mapRef, loaded })=> {
             {/* <span style={{float:'right'}}> <ExpandLess /></span> */}
             <span style={{marginLeft: location?"2rem":undefined}}>
               <People style={{fontSize: 'large'}} /> 
-              {initiative.members?initiative.members.ids.length:0}
+              {initiative.members?Object.keys(initiative.members).length-1:0}
             </span>
             <Typography variant="h6">
               {initiative.name? initiative.name: "Name is not set"}
@@ -307,72 +313,79 @@ export default ({ mapRef, loaded })=> {
                   secondary={moment(initiative.timestamp.toDate()).format('DD.MM.YYYY')}
                 />
               </ListItem>)}
-              <Button onClick={()=>{
-                // console.log('click', textarea)
-                // textarea.current.select();
-                // document.execCommand('copy');
-                //e.target.focus();
-                console.log(initiative)
-                if(alert!=="loading"){
-                  setAlert("loading")                
-
-                  fetch('https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyC0R35s-u9bZCZOpwg8jVIzYg77HeKgr0Y', {
-                    method: 'post',
-                    body: JSON.stringify({
-                      "dynamicLinkInfo": {
-                        "domainUriPrefix": "https://weee.city/in",
-                        "link": `https://weee.city/initiative/${initiative.id}`,
-                        "socialMetaTagInfo": {
-                          "socialTitle": initiative.name,
-                          "socialDescription": initiative.problem,
-                          "socialImageLink": initiative.imageURL.l,
-                        }
-                      },
-                      "suffix": {
-                        "option": "SHORT"
-                      },
-                    }),
-                  }).then(function(response) {
-                    return response.json();
-                  }).then(function(text) {
-                    console.log(text)
-                    var dummy = document.createElement('input')
-                    //text = `https://wecity.page.link/?link=https://weee.city/initiative/${initiative.id}&st=${initiative.name}&sd=${initiative.problem}&si=${encodeURI(initiative.imageURL.l)}`;
-    
-                    document.body.appendChild(dummy);
-                    dummy.value = text.shortLink;
-                    dummy.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(dummy);
-                    setAlert(text.shortLink)                
-                  });
-                }
-
-                }}>
-                <Share style={{paddingRight:"0.5rem"}} /> {i18n('initiativeShare')}
-              </Button>
             </List>
-            { user && !initiative.members[user.uid] && <Button 
-              size="small" 
-              variant="contained"  
-              color="secondary"
-              style={{marginTop: '1rem'}}
-              onClick={async ()=>{    
-                console.log('Приєднатися')
-                setJoining(true)
-            }}>
-              {i18n('join')}
-            </Button>}
-            { user && initiative.members[user.uid] && initiative.members.ids.length<2 && <Button 
-              size="small" 
-              variant="contained"  
-              color="secondary"
-              style={{marginTop: '1rem'}}//
-              onClick={()=>DeleteObject(initiative, initiatives, images, 'initiatives', ()=>{setMarkers({type: "FeatureCollection", features: markers.features.filter(m=>m.properties.id!==initiative.id)}); setInitiative(null);})}
-            >
-              {i18n('delete')}
-            </Button>}
-            </Box> }
+            <Box style={{display: "flex", justifyContent: "space-between"}}>
+              <Button onClick={()=>{
+                  // console.log('click', textarea)
+                  // textarea.current.select();
+                  // document.execCommand('copy');
+                  //e.target.focus();
+                  console.log(initiative)
+                  if(alert!=="loading"){
+                    setAlert("loading")                
+
+                    fetch('https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyC0R35s-u9bZCZOpwg8jVIzYg77HeKgr0Y', {
+                      method: 'post',
+                      body: JSON.stringify({
+                        "dynamicLinkInfo": {
+                          "domainUriPrefix": "https://weee.city/in",
+                          "link": `https://weee.city/initiative/${initiative.id}`,
+                          "socialMetaTagInfo": {
+                            "socialTitle": initiative.name,
+                            "socialDescription": initiative.problem,
+                            "socialImageLink": initiative.imageURL.l,
+                          }
+                        },
+                        "suffix": {
+                          "option": "SHORT"
+                        },
+                      }),
+                    }).then(function(response) {
+                      return response.json();
+                    }).then(function(text) {
+                      console.log(text)
+                      var dummy = document.createElement('input')
+                      //text = `https://wecity.page.link/?link=https://weee.city/initiative/${initiative.id}&st=${initiative.name}&sd=${initiative.problem}&si=${encodeURI(initiative.imageURL.l)}`;
+      
+                      document.body.appendChild(dummy);
+                      dummy.value = text.shortLink;
+                      dummy.select();
+                      document.execCommand('copy');
+                      document.body.removeChild(dummy);
+                      setAlert(text.shortLink)                
+                    });
+                  }
+                  }}>
+                  <Share style={{paddingRight:"0.5rem"}} /> {i18n('initiativeShare')}
+                </Button>
+              { user && !initiative.members[user.uid] && <Button 
+                size="small" 
+                variant="contained"  
+                color="secondary"
+                onClick={async ()=>{    
+                  console.log('Приєднатися')
+                  setJoining(true)
+              }}>
+                {i18n('join')}
+              </Button>}
+              { user && initiative.members[user.uid] && (<>
+                  {Object.keys(initiative.members).length<=2 && 
+                  <Button 
+                    size="small" 
+                    variant="outlined"  
+                    color="secondary"
+                    onClick={()=>DeleteObject(initiative, initiatives, images, 'initiatives', ()=>{setMarkers({type: "FeatureCollection", features: markers.features.filter(m=>m.properties.id!==initiative.id)}); /*setInitiative(null)*/;})}
+                  >
+                    {i18n('delete')}
+                  </Button>}
+                </>)
+              }
+              </Box> 
+              { user && initiative.members[user.uid] && (<>
+                <InitiativeGroup/>
+              </>)}
+            </Box>}
+            
 
             <Suspense fallback={null}>
             { expanded && joining && <Box style={{padding: '2rem', paddingTop:0}}>

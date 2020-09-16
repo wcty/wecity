@@ -1,29 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Collapse, Paper, Typography, Fab, Card, CardActionArea, CardMedia, CardContent, CardActions, IconButton, Box, List, ListItem, ListItemText, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, TextField, InputAdornment, Checkbox } from '@material-ui/core'
-import { Alert, AlertTitle } from '@material-ui/lab';
-import addImage from 'assets/images/addImage.png'
+import { makeStyles } from '@material-ui/core/styles'
+import {  Typography, Card, CardActionArea, CardMedia, CardContent, CardActions, IconButton, Box, List, ListItem, ListItemText, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, TextField, InputAdornment, Checkbox } from '@material-ui/core'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
 import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire'
-import { People, LocationOn, ExpandLess, KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons'
-import distance from '@turf/distance'
-import translate from '@turf/transform-translate'
-import { render } from 'react-dom'
-import ImageViewer from 'react-simple-image-viewer'
-import { useGeoFirestore, useI18n } from 'global/Hooks'
-import { getFeatures, DeleteObject } from 'global/Misc'
-import firebase from 'firebase'
-import useMeasure from 'use-measure'
-import FormExpanded from 'global/FormExpanded'
-import createProjectForm from 'global/forms/createProjectForm'
+import { DeleteObject } from 'global/Misc'
 import CreateProject from 'components/Projects/CreateProject'
 import ProjectLibrary from 'components/Projects/ProjectLibrary'
 import BackFab from 'components/Projects/BackFab'
-import moment from 'moment'
-import { Route, useRouteMatch, useParams, Redirect } from 'react-router-dom'
-import {Helmet} from "react-helmet"
-import { Share } from '@material-ui/icons'
+import { useParams, Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -113,7 +98,7 @@ function MediaCard({ directory }) {
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" variant="contained" color="primary" style={{color: "black"}} 
+        <Button size="small" variant="outlined" color="primary" style={{color: "black"}} 
           onClick={()=>{
             if(selectType.type=='newProject'){
               DeleteObject(selectType.object, objects, images, 'projects', ()=>setSelectType(null))
@@ -129,15 +114,29 @@ function MediaCard({ directory }) {
   );
 }
 
+const roleLookup = {
+  donate: "Donator",
+  volunteer: "Volunteer",
+  project: "Contractor",
+  resource: "Provider"
+}
 export default ()=>{
   const [value, setValue] = useState({type:'donate'});
   const [periodic, setPeriodic] = useState(false);
   const [sum, setSum] = useState(200);
-  const [job, setJob] = useState(2)
+  const [job, setJob] = useState()
   // const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
   const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
-
+  const { initiativeID } = useParams()
+  const initiativeRef = useFirestore().collection("initiatives").doc( initiativeID )
+  const user = useUser()
+  const [redirect, setRedirect] = useState()
+  useEffect(()=>{
+    if(redirect){
+      setRedirect(null)
+    }
+  },[redirect])
   const classes = useStyles()
   const handleChange = (event) => {
     setValue({type: event.target.value});
@@ -145,6 +144,7 @@ export default ()=>{
   useEffect(()=>console.log(selectType),[selectType])
 
   return (<>
+    {redirect && <Redirect to={redirect} />}
     <FormControl component="fieldset" style={{display: (!selectType || selectType.object ) ? 'block': 'none'}}>
       <Typography variant="subtitle2">Приєднатися до ініціативи</Typography>
       <RadioGroup aria-label="gender" name="gender1" value={value.type} onChange={handleChange}>
@@ -181,7 +181,7 @@ export default ()=>{
             variant="outlined"
             onChange={(e)=>{
               setJob(e.target.value)
-              console.log(e.target.value)
+              // console.log(e.target.value)
             }}
             variant="outlined"
             multiline={true}
@@ -196,6 +196,7 @@ export default ()=>{
           {value.type=="project" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}}>
             {!selectType && <>
               <Button 
+                disabled
                 size="small" 
                 variant="outlined"  
                 className={classes.selectButton}
@@ -206,6 +207,7 @@ export default ()=>{
                 Обрати з бібліотеки
               </Button>
               <Button 
+                disabled
                 size="small" 
                 variant="outlined" 
                 className={classes.selectButton}
@@ -225,6 +227,7 @@ export default ()=>{
           <FormControlLabel value="resource" control={<Radio />} label="Я готова/ий надати матеріали або послуги" />
           {value.type=="resource" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}} >
             <Button 
+              disabled
               size="small" 
               variant="outlined"  
               className={classes.selectButton}
@@ -236,6 +239,7 @@ export default ()=>{
               Обрати з бібліотеки
             </Button>
             <Button 
+              disabled
               size="small" 
               variant="outlined"  
               className={classes.selectButton}
@@ -250,7 +254,7 @@ export default ()=>{
       </RadioGroup>
       <Button 
         size="small" 
-        variant="contained"  
+        variant="outlined"  
         color="primary"
         style={{marginTop: '1rem', color: 'black'}}
         onClick={async ()=>{    
@@ -259,13 +263,30 @@ export default ()=>{
         Назад
       </Button>
       <Button 
+        disabled={value.type=="project"||value.type=="resource"||(value.type=="donate"&&sum<50)||(value.type=="volunteer" && (!job || job.length<5) )}
         size="small" 
         variant="contained"  
         color="secondary"
         style={{marginTop: '1rem', float: 'right'}}
         onClick={async ()=>{    
           console.log('Приєднатися')
-          //setJoining(true)
+          initiativeRef.set({ 
+            members: {[user.uid]:{ 
+              role: roleLookup[value.type], 
+              name: user.displayName,
+              avatar: user.photoURL,
+              info: {
+              ...(value.type=="donate" && {sum, periodic}),
+              ...(value.type=="volunteer" && {job}),
+            } }, ids:[user.uid]},
+            projects: {},
+            resources: {
+              ...(value.type=="donate" && {finance: {[user.uid]:{sum, periodic}}}),
+              ...(value.type=="volunteer" && {volunteers: {[user.uid]:{job}}}),
+            },
+          }, {merge: true})
+          setRedirect(`/initiative/${ initiativeID }`)
+          setJoining(false)
       }}>
         Приєднатися
       </Button>

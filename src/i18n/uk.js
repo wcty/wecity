@@ -128,7 +128,18 @@ export default {
     initiativeCurrentState: 'Передумови:',
     initiativeDateAdded: 'Додано:',
 
+    //Initiative Group
+    initiativeGroupChat: "Чат",
+    initiativeGroupMembers: "Учасники",
+    initiativeGroupProjects: "Рішення",
+    initiativeGroupResources: "Ресурси",
+
     //Alerts
     alertYouNeedToLogin: "Ви маєте увійти щоб створити ініціативу, проект або ресурс",
     alertLinkWasCopied: "Посилання було успішно скопійовано в буфер обміну",
+
+    //Chat
+    chatCreatedInitiative: "{0} created initiative",
+    chatJoinedInitiative: "{0} joined initiative",
+    chatWriteYourMessage: "Write your message"
 };

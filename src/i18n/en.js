@@ -128,6 +128,12 @@ export default {
     initiativeCurrentState: 'Current state:',
     initiativeDateAdded: 'Date added:',
     
+    //Initiative Group
+    initiativeGroupChat: "Chat",
+    initiativeGroupMembers: "Members",
+    initiativeGroupProjects: "Projects",
+    initiativeGroupResources: "Resources",
+        
     //Alerts
     alertYouNeedToLogin: "You must be logged in to create initiative, project or resource",
     alertLinkWasCopied: "Link was succesfully copied to the clipboard",
