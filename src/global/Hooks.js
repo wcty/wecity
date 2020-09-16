@@ -51,28 +51,33 @@ export const useI18n = ()=>{
         let i18nKey = i18nData[key];
         const choiceRegex = /{#choice.*#}/g;
 
-        if (typeof params !== 'object') {
+        if(typeof params !== 'object'){
+          if(i18nKey){
             i18nKey = i18nKey.replace('{0}', params);
-            Choice(params)
-        } else {
-            for (let i = 0; i < params.length; i++) {
-                i18nKey = i18nKey.replace(`{${i}}`, params[i]);
-                Choice(params[i])
+          }
+          Choice(params)
+        }else{
+          for (let i = 0; i < params.length; i++) {
+            if(i18nKey){
+              i18nKey = i18nKey.replace(`{${i}}`, params[i]);
             }
+            Choice(params[i])
+          }
         }
         function Choice(value){
           if (i18nKey.match(choiceRegex)) {
-              for (const choicePattern of i18nKey.match(choiceRegex)) {
-
-                const choices = choicePattern.replace('{#choice','').replace('#}','').split('|')
-                console.log(choices, choicePattern, value)
+            for (const choicePattern of i18nKey.match(choiceRegex)) {
+              const choices = choicePattern.replace('{#choice','').replace('#}','').split('|')
+              //console.log(choices, choicePattern, value)
+              if(i18nKey){
                 i18nKey = i18nKey.replace(choicePattern, choices[!value?0:1]);
               }
+            }
           }
         }
         return i18nKey;
-    } else {
+    }else{
         return i18nData[key];
     }
-  };
+  }
 }

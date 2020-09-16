@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { AppBar, Toolbar, Box, Paper, Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
+import { AppBar, Toolbar, Box, Paper, Avatar, Button, Typography, IconButton, CircularProgress, useTheme } from '@material-ui/core'
 import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
 import firebase from 'firebase'
@@ -143,13 +143,14 @@ const Bar = (props)=>{
   const barMeasure = useMeasure(barRef)
   const [barDimensions, setBarDimensions] = useRecoilState(barAtom)
   const [drawer, setDrawer] = useState(false)
+  // const theme = useTheme()
   useEffect(()=>{
     setBarDimensions(barMeasure)
     //console.log(barMeasure)
   },[barMeasure])
   return (
     <>
-      <AppBar elevation={1} color='primary.light' position="static" className={classes.appbar} ref={barRef}>
+      <AppBar elevation={1} color="default" position="static" className={classes.appbar} ref={barRef}>
         <Toolbar >
         <IconButton onClick={()=>{setDrawer(!drawer)}} 
           edge="start" 
