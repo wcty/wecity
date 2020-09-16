@@ -91,7 +91,8 @@ export default {
     projectFormVolunteerTasks: "What tasks should be done by volunteers?",
     projectFormMinimalBudget: "What is the minimal necessary budget?",
     projectFormBudgetExpenses: "Which expenses will it cover?",
-    
+    projectFormCategory: "Choose category",
+
     //Project preview
     projectContractor: "Contractor name",
     projectContractorLocation: "Place of implementation",

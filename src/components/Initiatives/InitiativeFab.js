@@ -13,7 +13,6 @@ const useStyles = makeStyles(theme => ({
   InitiativeFab: {
     position: 'absolute',
     right: '1rem',
-    zIndex: 5
   },
   alert: {
     position: 'absolute',
@@ -55,7 +54,7 @@ export default ({ active, getMarker })=>{
           style={{
             top: initiativeBar?'unset':'1rem',
             bottom: initiativeBar?'1rem':'unset',
-
+            zIndex: 1,
           }}
           raised="true" 
           aria-label="add"

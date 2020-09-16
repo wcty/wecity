@@ -163,24 +163,24 @@ export default ()=> {
               {project.name? project.name: "Name is not set"}
             </Typography>
               <List>
-                {project.contractor&& (<ListItem>
+                {project.contractor && (<ListItem>
                   <ListItemText
                     primary={i18n('projectContractor')}
                     secondary={project.contractor}
                   />
                 </ListItem>)}
-                {project.location&& (<ListItem>
+                {/* {project.location&& (<ListItem>
                   <ListItemText
                     primary={i18n('projectContractorLocation')}
                     secondary={project.location}
                   />
-                </ListItem>)}
-                {project.problem&& (<ListItem>
+                </ListItem>)} */}
+                {/* {project.problem&& (<ListItem>
                   <ListItemText
                     primary={i18n('projectProblem')}
                     secondary={project.problem}
                   />
-                </ListItem>)}
+                </ListItem>)} */}
                 {project.description&& (<ListItem>
                   <ListItemText
                     primary={i18n('projectDescription')}
@@ -193,12 +193,12 @@ export default ()=> {
                     secondary={project.experience}
                   />
                 </ListItem>)}
-                {project.resource && (<ListItem>
+                {/* {project.resource && (<ListItem>
                   <ListItemText
                     primary={i18n('projectOtherResources')}
                     secondary={project.resource}
                   />
-                </ListItem>)}
+                </ListItem>)} */}
                 {project.volunteers && (<ListItem>
                   <ListItemText
                     primary={i18n('projectNumberOfVolunteers')}
@@ -224,12 +224,12 @@ export default ()=> {
                     secondary={project.budgetDescription}
                   />
                 </ListItem>)}
-                {project.timestamp && (<ListItem>
+                {/* {project.timestamp && (<ListItem>
                   <ListItemText
                     primary={i18n('projectDateAdded')}
                     secondary={project.timestamp.toDate().getDay()+"."+project.timestamp.toDate().getMonth()+"."+project.timestamp.toDate().getFullYear()}
                   />
-                </ListItem>)}
+                </ListItem>)} */}
               </List>
           </div>
           <Suspense fallback={null}>

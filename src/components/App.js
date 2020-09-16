@@ -1,5 +1,5 @@
 /* global i18n */
-import React, { useEffect, useRef, Suspense } from 'react'
+import React, { useEffect, useRef, Suspense, useState } from 'react'
 // import * as serviceWorker from '../serviceWorker';
 import { makeStyles } from '@material-ui/core/styles'
 import { Box } from '@material-ui/core'
@@ -18,6 +18,8 @@ import { useRecoilValue } from 'recoil'
 import { projectBarAtom, resourceBarAtom } from 'global/Atoms'
 import FeedbackForm from './AppBar/FeedbackForm'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import CreateProject from './Projects/CreateProject'
+import { Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
 
@@ -57,7 +59,12 @@ const Layout = ()=>{
   const setMapDimensions = useSetRecoilState(mapAtom)
   const projectBar = useRecoilValue(projectBarAtom)
   const resourceBar = useRecoilValue(resourceBarAtom)
-
+  const [redirect, setRedirect] = useState()
+  useEffect(()=>{
+    if(redirect){
+      setRedirect(null)
+    }
+  },[redirect])
   useEffect(()=>{
     setMapDimensions(mapMeasure)
   }, [mapMeasure])
@@ -67,6 +74,9 @@ const Layout = ()=>{
       <AppBar />
       <Suspense fallback={null}>
         <Route path="/projects" render={()=><Projects />} />
+        <Route path="/create-project">
+          <CreateProject cancel={()=>setRedirect('/projects')} submit={(docRef, doc)=>{setRedirect(`/projects/${docRef.id}`)}} variant='text' submitText='Додати' />
+        </Route> 
         <Route path="/resources" render={()=><Resources />} />
         <Route path='/feedback' render={()=><FeedbackForm />} />
       </Suspense>

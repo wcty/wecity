@@ -4,7 +4,6 @@ import { useRecoilValue } from 'recoil';
 import * as Atoms from 'global/Atoms'
 import { useUser } from 'reactfire';
 import ProjectFab from './ProjectFab'
-import CreateProject from './CreateProject'
 import Project from './Project'
 import ProjectLibrary from './ProjectLibrary'
 import { Redirect, Route } from 'react-router-dom'
@@ -52,9 +51,6 @@ export default ()=> {
     > 
       {user && <ProjectFab/>}
       <ProjectLibrary />
-      <Route path="/create-project">
-        <CreateProject cancel={()=>setRedirect(false)} submit={(docRef, doc)=>{setRedirect(`/projects/${docRef.id}`)}} variant='text' submitText='Додати' />
-      </Route> 
       <Route path="/projects/:projectId">
         <Project/>
       </Route> 

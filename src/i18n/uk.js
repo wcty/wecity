@@ -91,7 +91,8 @@ export default {
     projectFormVolunteerTasks: "Які задачі мають виконувати волонтери?",
     projectFormMinimalBudget: "Який мінімальний необхідний бюджет?",
     projectFormBudgetExpenses: "Які витрати має покривати бюджет?",
-    
+    projectFormCategory: "Оберіть категорію",
+
     //Project preview
     projectContractor: "Ім'я виконавця",
     projectContractorLocation: "Місце виробництва",

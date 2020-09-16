@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))  
 
-export default ({ active })=>{
+export default ()=>{
   const classes = useStyles()
   const [redirect, setRedirect] = useState()
   useEffect(()=>{
@@ -25,9 +25,7 @@ export default ({ active })=>{
         {redirect && <Redirect to={redirect}/>}
         <Fab 
           onClick={()=>{
-            if(active){
-              setRedirect('/create-initiative')
-            }
+            setRedirect('/create-project')
           }}
           style={{
             zIndex:200

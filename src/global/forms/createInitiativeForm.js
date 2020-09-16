@@ -33,14 +33,12 @@ export default (initiative)=>{
         id: "problem",
         label: i18n('initiativeFormProblem'),
         rows: 2,
-        maxLength: 300
       },
       {
         type: "text",
         id: "outcome",
         label: i18n('initiativeFormExpectedResult'),
         rows: 1,
-        maxLength: 300
       },
     ],
     [
@@ -49,7 +47,6 @@ export default (initiative)=>{
         id: "context",
         label: i18n('initiativeFormCurrentState'),
         rows: 6,
-        maxLength: 300
       },
     ]
   ]};

@@ -20,7 +20,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box pr={4} pl={4}>
+        <Box pr={4} pl={4} style={{textAlign:"center", marginTop: "1.5rem", paddingLeft:"2rem"}} >
           {children}
         </Box>
       )}
@@ -134,13 +134,28 @@ export default function FullWidthTabs() {
         </TabPanel>
         
         <TabPanel value={value} index={1} dir={theme.direction}>
-            {i18n('initiativeGroupMembers')}
+            <Typography variant="h6"> 
+              {i18n('initiativeGroupMembers')}
+            </Typography>
+            <Typography variant="caption"> 
+              In active development
+            </Typography>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          {i18n('initiativeGroupProjects')}
+          <Typography variant="h6"> 
+            {i18n('initiativeGroupProjects')}
+          </Typography>
+          <Typography variant="caption"> 
+            In active development
+          </Typography>
         </TabPanel>
         <TabPanel value={value} index={3} dir={theme.direction}>
-          {i18n('initiativeGroupResources')}
+          <Typography variant="h6"> 
+            {i18n('initiativeGroupResources')}
+          </Typography>
+          <Typography variant="caption"> 
+            In active development
+          </Typography>
         </TabPanel>
       </SwipeableViews>
     </div>

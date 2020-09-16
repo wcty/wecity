@@ -22,61 +22,62 @@ export default (initiative)=>{
     },
     {
       type: "text",
-      id: "contractor",
-      label: i18n('projectFormContractor'),
-      maxLength: 40
+      id: "description",
+      label: i18n('projectFormDescription'),
+      rows: 4,
     },
-    {
-      type: "text",
-      id: "location",
-      label: i18n('projectFormContractorLocation'),
-      maxLength: 300
-    }
-  ],
-  [
     {
       type: "select",
       id: "category",
-      label: i18n('projectCategory'),
+      label: i18n('projectFormCategory'),
       options: categories(i18n)
     },
     {
       type: "text",
-      id: "problem",
-      label: i18n('projectFormProblem'),
-      rows: 3,
-      maxLength: 300
-    },
-    {
-      type: "text",
-      id: "description",
-      label: i18n('projectFormDescription'),
-      rows: 8,
-      maxLength: 1000
-    },
-  ],
-  [
-    {
-      type: "text",
       id: "experience",
       label: i18n('projectFormContractorExperience'),
-      rows: 8,
-      maxLength: 300
+      rows: 4,
     },
-    {
-      type: "text",
-      id: "resource",
-      label: i18n('projectFormOtherResources'),
-      rows: 8,
-      maxLength: 300
-    },
+    // {
+    //   type: "text",
+    //   id: "contractor",
+    //   label: i18n('projectFormContractor'),
+    //   maxLength: 40
+    // },
+    // {
+    //   type: "text",
+    //   id: "location",
+    //   label: i18n('projectFormContractorLocation'),
+    //   maxLength: 300
+    // }
   ],
+  //[
+    // {
+    //   type: "text",
+    //   id: "problem",
+    //   label: i18n('projectFormProblem'),
+    //   rows: 3,
+    //   maxLength: 300
+    // },
+
+  //],
+  //[
+
+    // {
+    //   type: "text",
+    //   id: "resource",
+    //   label: i18n('projectFormOtherResources'),
+    //   rows: 8,
+    //   maxLength: 300
+    // },
+  //],
   [
     {
-      type: "text",
+      type: "number",
       id: "volunteers",
       label: i18n('projectFormNumberOfVolunteers'),
-      maxLength: 3
+      maxLength: 3,
+      adornment: "люд."
     },
     {
       type: "text",
@@ -86,10 +87,11 @@ export default (initiative)=>{
       maxLength: 300
     },
     {
-      type: "text",
+      type: "number",
       id: "price",
       label: i18n('projectFormMinimalBudget'),
-      maxLength: 10
+      maxLength: 10,
+      adornment: "грн"
     },
     {
       type: "text",

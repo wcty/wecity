@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, FormControl, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
+import { Paper, FormControl, InputAdornment, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import addImage from 'assets/images/addImage.png'
@@ -156,6 +156,8 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
       formSteps[activeStep].forEach((d,i)=>{
         if(d.type=='image'){
           if(!(imageLoadedURL)) bool = false
+        }else if(d.type=='number'){
+          if(!(project[d.id]&&project[d.id].length>0&&!isNaN(project[d.id]))) bool = false
         }else if(d.type!='note'){
           if(!(project[d.id]&&project[d.id].length>0)) bool = false
         }
@@ -233,17 +235,37 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
                   id={input.id} 
                   label={input.label}
                   className={classes.text}
+                  defaultValue={input.label=="name"?user.displayName:undefined}
                   variant="outlined"
                   multiline={input.rows? true: undefined}
                   rows={input.rows? input.rows: undefined}
-                  inputProps={{
+                  inputProps={input.maxLength && {
                     maxLength: input.maxLength
                   }}
                   onChange={(e)=>{
                     setProject(Object.assign(project?Object.assign({}, project):{}, { [input.id]: e.target.value }))
                   }}
                   defaultValue={project && project[input.id]?project[input.id]:""}
-                  helperText={`${project && project[input.id]?project[input.id].length:0}/${input.maxLength}`}
+                  helperText={input.maxLength && `${project && project[input.id]?project[input.id].length:0}/${input.maxLength}`}
+                />
+              )
+            case 'number':
+              return (
+                <TextField 
+                  key={input.id}
+                  id={input.id} 
+                  label={input.label}
+                  className={classes.text}
+                  defaultValue={input.label=="name"?user.displayName:undefined}
+                  variant="outlined"
+                  InputProps={input.adornment && {
+                    endAdornment:<InputAdornment position="end">{input.adornment}</InputAdornment>
+                  }}
+                  onChange={(e)=>{
+                    setProject(Object.assign(project?Object.assign({}, project):{}, { [input.id]: e.target.value }))
+                  }}
+                  defaultValue={project && project[input.id]?project[input.id]:""}
+                  //helperText={input.maxLength && `${project && project[input.id]?project[input.id].length:0}/${input.maxLength}`}
                 />
               )
             case 'note':
@@ -269,13 +291,13 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
                     key={input.id} 
                     labelId={input.id}
                     id={input.id}
-                    value={project && project[input.id]?project[input.id]:""}
+                    value={project && project[input.id]?project[input.id]:undefined}
                     onChange={(e)=>{
                       setProject(Object.assign(project?Object.assign({}, project):{}, { [input.id]: e.target.value }))
                     }}
                     label={input.label}
                   >
-                    {input.options.map(opt=><MenuItem key={opt.name} value={opt.name}>{opt.label}</MenuItem>)}
+                    {input.options.filter(f=>f.name!=="all").map(opt=><MenuItem key={opt.name} value={opt.name}>{opt.label}</MenuItem>)}
                   </Select>
                 </FormControl>
               )
