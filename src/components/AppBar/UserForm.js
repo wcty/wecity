@@ -1,17 +1,9 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, FormControl, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
+import { Paper, FormControl, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import addImage from 'assets/images/addImage.png'
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { creatingAtom, userAtom, locationAtom, mapAtom } from 'global/Atoms'
-import { useStorage, useUser, useFirestore, useFirestoreDocOnce } from 'reactfire';
-import { v1 as uuidv1 } from 'uuid';
-import { useGeoFirestore } from 'global/Hooks'
-import * as firebase from 'firebase/app';
-import { getFeatures } from 'global/Misc'
-import ErrorBoundary from 'global/ErrorBoundary'
+import { useFirestore } from 'reactfire';
 import { useI18n } from 'global/Hooks'
 
 //1920x1080,851x315,484x252,180x180
@@ -99,31 +91,8 @@ export default ({ isCreating, setIsCreating, setContactData })=> {
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = formSteps.length;
   const [resource, setResource] = useState(null)
-  const [uuid, setUuid] = useState(uuidv1())
-  const imageRef = useStorage().ref().child('resources')
 
-  const [imageLoadedURL, setImageLoadedURL] = useState(null)
-
-  const resourcesCollection = useGeoFirestore().collection('resources')
-  const user = useUser()
-  const [finished, setFinished] = useState(null)
-  const [location, setLocation] = useRecoilState(locationAtom)
-  const [valid, setValid] = useState(false)
-
-  useEffect(async()=>{
-    let bool = true
-    if(resource){
-      formSteps[activeStep].forEach((d,i)=>{
-        if(d.type=='image'){
-          if(!(imageLoadedURL)) bool = false
-        }else if(d.type!='note'){
-          if(!(resource[d.id]&&resource[d.id].length>0)) bool = false
-        }
-      })
-      setValid(bool)
-    }
-    console.log(bool)
-  },  [activeStep, resource, imageLoadedURL])
+  const [finished] = useState(null)
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -203,7 +172,7 @@ export default ({ isCreating, setIsCreating, setContactData })=> {
         className={classes.MobileStepper}
         nextButton={
           activeStep === (maxSteps - 1) ? (
-            <Button disabled={!valid} className={classes.button} variant="contained" size="small" onClick={async ()=>{    
+            <Button /*disabled={!valid}*/ className={classes.button} variant="contained" size="small" onClick={async ()=>{    
               setContactData({...resource, id:isCreating})
               if(users) {
                 users.set({...resource, id:isCreating})
@@ -219,7 +188,7 @@ export default ({ isCreating, setIsCreating, setContactData })=> {
               Надіслати
             </Button>
           ):(
-            <Button disabled={!valid} size="small" className={classes.button} onClick={handleNext}>
+            <Button /*disabled={!valid}*/ size="small" className={classes.button} onClick={handleNext}>
               Далі
               {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
             </Button>

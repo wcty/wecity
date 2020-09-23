@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, {  useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Fab } from '@material-ui/core'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import {  markerAtom, viewAtom, creatingAtom, userAtom, locationAtom } from 'global/Atoms'
+import { useRecoilState } from 'recoil'
+import { locationAtom } from 'global/Atoms'
 import { MyLocation } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -14,14 +14,9 @@ const useStyles = makeStyles(theme => ({
   }
 }))  
 
-export default ({ active, getMarker, mapRef, loaded })=>{
+export default ({ mapRef, loaded })=>{
   const classes = useStyles()
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
-  const [view, setView] = useRecoilState(viewAtom)
-  const [marker, setMarker] = useRecoilState(markerAtom)
-  const [alert, setAlert] = useState(null)
-  const user = useRecoilValue(userAtom)
-  const [location, setLocation] = useRecoilState(locationAtom)
+  const [location] = useRecoilState(locationAtom)
 
   useEffect(()=>{
     if(loaded&&location){

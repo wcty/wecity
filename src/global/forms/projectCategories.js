@@ -1,8 +1,3 @@
-import React, { useMemo } from 'react'
-import { MenuItem } from '@material-ui/core'
-import { useRecoilValue } from 'recoil'
-import * as Atoms from 'global/Atoms'
-
 export const categories = (i18n)=>[
   {name: 'all', label: i18n('allCategories')},
   {name: 'greenery', label: i18n('greenery')},

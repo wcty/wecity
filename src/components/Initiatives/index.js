@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Divider, List, Typography, ListItem, ListItemText, Button } from '@material-ui/core';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { initiativeBarAtom, barAtom, mapAtom, selectedAtom, creatingAtom } from 'global/Atoms'
+import { Paper, Divider, List, Typography, ListItem, ListItemText } from '@material-ui/core';
+import { useRecoilValue } from 'recoil';
+import { barAtom, mapAtom } from 'global/Atoms'
 import {  useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
 import InitiativeFab from 'components/Initiatives/InitiativeFab'
 import { useI18n } from 'global/Hooks'
@@ -33,7 +33,7 @@ const useAddress = (coords)=>{
       }
       request()
     }
-  }, [address])
+  }, [address, coords])
   return address
 }
 
@@ -41,9 +41,6 @@ export default ({ mapRef })=> {
   const classes = useStyles();
   const user = useUser()
   const bar = useRecoilValue(barAtom)
-  const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
-  const [selected, setSelected] = useRecoilState(selectedAtom)
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const mapDimensions = useRecoilValue(mapAtom)
   const i18n = useI18n()
   const [redirect, setRedirect] = useState()
@@ -98,7 +95,7 @@ export default ({ mapRef })=> {
                 // setIsCreating(null)  
                 // setInitiativeBar(false)
               }}>
-                <img src={initiative.imageURL.xs} key={i+'img'} width="120px" height="120px" style={{paddingLeft: '2rem', padding: '1rem', objectFit:'cover'}}/>
+                <img src={initiative.imageURL.xs} alt="Cover" key={i+'img'} width="120px" height="120px" style={{paddingLeft: '2rem', padding: '1rem', objectFit:'cover'}}/>
                 <ListItemText key={i+'lit'}
                   primary={initiative.name}
                   secondary={useAddress(Object.values(initiative.coordinates)||'')

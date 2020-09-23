@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, FormControl, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
+import { FormControl, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, CircularProgress, Box } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { creatingAtom, userAtom, locationAtom, mapAtom } from 'global/Atoms'
-import { useStorage, useUser, useStorageDownloadURL } from 'reactfire';
+import { locationAtom, mapAtom } from 'global/Atoms'
+import { useStorage, useUser } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
 import { useGeoFirestore } from 'global/Hooks'
 import * as firebase from 'firebase/app';
-import { getFeatures } from 'global/Misc'
 import ErrorBoundary from 'global/ErrorBoundary'
 
 //1920x1080,851x315,484x252,180x180
@@ -228,17 +227,17 @@ export default ({ isCreating, setIsCreating })=> {
   const [progressState, setProgress] = useState(null)
   const [fileName, setFileName] = useState(null)
   const [finished, setFinished] = useState(null)
-  const [location, setLocation] = useRecoilState(locationAtom)
+  const [location] = useRecoilState(locationAtom)
   const map = useRecoilValue(mapAtom)
   const [valid, setValid] = useState(false)
 
-  useEffect(async()=>{
+  useEffect(()=>{
     let bool = true
     if(resource){
       formSteps[activeStep].forEach((d,i)=>{
-        if(d.type=='image'){
+        if(d.type==='image'){
           if(!(imageLoadedURL)) bool = false
-        }else if(d.type!='note'){
+        }else if(d.type!=='note'){
           if(!(resource[d.id]&&resource[d.id].length>0)) bool = false
         }
       })
@@ -268,7 +267,7 @@ export default ({ isCreating, setIsCreating })=> {
         }
       }
     }
-  }, [imageLoadedURL])
+  }, [imageLoadedURL, fileName, imageRef])
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -308,7 +307,7 @@ export default ({ isCreating, setIsCreating })=> {
         Reset()
       }
     }
-  }, [isCreating])
+  }, [isCreating, finished, imageLoadedURL])
 
   return isCreating && (
     <form className={classes.root} noValidate autoComplete="off"  >
@@ -412,6 +411,8 @@ export default ({ isCreating, setIsCreating })=> {
 
                               case 'storage/unknown':
                                 // Unknown error occurred, inspect error.serverResponse
+                                break;
+                              default:
                                 break;
                             }
                           }, function() {

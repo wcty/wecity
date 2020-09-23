@@ -1,4 +1,3 @@
-/* global i18n */
 import React, { useEffect, useRef, Suspense, useState } from 'react'
 // import * as serviceWorker from '../serviceWorker';
 import { makeStyles } from '@material-ui/core/styles'
@@ -14,12 +13,9 @@ import { theme } from 'global/Theme'
 import { firebaseConfig } from 'config'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { FirebaseAppProvider } from 'reactfire'
-import { useRecoilValue } from 'recoil'
-import { projectBarAtom, resourceBarAtom } from 'global/Atoms'
 import FeedbackForm from './AppBar/FeedbackForm'
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import CreateProject from './Projects/CreateProject'
-import { Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
 
@@ -57,8 +53,6 @@ const Layout = ()=>{
   const mapRef = useRef()
   const mapMeasure = useMeasure(mapRef)
   const setMapDimensions = useSetRecoilState(mapAtom)
-  const projectBar = useRecoilValue(projectBarAtom)
-  const resourceBar = useRecoilValue(resourceBarAtom)
   const [redirect, setRedirect] = useState()
   useEffect(()=>{
     if(redirect){
@@ -67,7 +61,7 @@ const Layout = ()=>{
   },[redirect])
   useEffect(()=>{
     setMapDimensions(mapMeasure)
-  }, [mapMeasure])
+  }, [mapMeasure, setMapDimensions])
 
   return (
     <Box className={classes.root}>

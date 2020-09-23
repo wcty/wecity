@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import {  Typography, Card, CardActionArea, CardMedia, CardContent, CardActions, IconButton, Box, List, ListItem, ListItemText, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, TextField, InputAdornment, Checkbox } from '@material-ui/core'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import {  Typography, Card, CardActionArea, CardMedia, CardContent, CardActions,  Box, Button, Radio, RadioGroup, FormControlLabel, FormControl, TextField, InputAdornment, Checkbox } from '@material-ui/core'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 import * as Atoms from 'global/Atoms'
-import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire'
+import { useStorage, useFirestore, useUser } from 'reactfire'
 import { DeleteObject } from 'global/Misc'
 import CreateProject from 'components/Projects/CreateProject'
 import ProjectLibrary from 'components/Projects/ProjectLibrary'
@@ -100,14 +100,14 @@ function MediaCard({ directory }) {
       <CardActions>
         <Button size="small" variant="outlined" color="primary" style={{color: "black"}} 
           onClick={()=>{
-            if(selectType.type=='newProject'){
+            if(selectType.type==='newProject'){
               DeleteObject(selectType.object, objects, images, 'projects', ()=>setSelectType(null))
-            }else if(selectType.type=='selectProject'){
+            }else if(selectType.type==='selectProject'){
               setSelectType(null)
             }
           }}
         >
-          {selectType.type=='newProject'?'Видалити':'Очистити'}
+          {selectType.type==='newProject'?'Видалити':'Очистити'}
         </Button>
       </CardActions>
     </Card>
@@ -127,7 +127,7 @@ export default ()=>{
   const [job, setJob] = useState()
   // const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
-  const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
+  const setJoining = useSetRecoilState(Atoms.joiningAtom)
   const { initiativeID } = useParams()
   const initiativeRef = useFirestore().collection("initiatives").doc( initiativeID )
   const user = useUser()
@@ -150,7 +150,7 @@ export default ()=>{
       <RadioGroup aria-label="gender" name="gender1" value={value.type} onChange={handleChange}>
         <Box id='donate' className={classes.selectGroup}>
           <FormControlLabel value="donate" control={<Radio />} label="Я готова/ий пожертвувати гроші" />
-          {value.type=="donate" && <><TextField 
+          {value.type==="donate" && <><TextField 
             key='donate'
             id='donate'
             label='Сума'
@@ -173,7 +173,7 @@ export default ()=>{
         </Box>
         <Box id='volunteer'className={classes.selectGroup} >
           <FormControlLabel value="volunteer" control={<Radio />} label="Я готова/ий бути волонтером" />
-          {value.type=="volunteer" && <TextField 
+          {value.type==="volunteer" && <TextField 
             key='volunteer'
             id='volunteer'
             label='Яку роботу ви можете виконувати?'
@@ -183,7 +183,6 @@ export default ()=>{
               setJob(e.target.value)
               // console.log(e.target.value)
             }}
-            variant="outlined"
             multiline={true}
             rows={2}
             inputProps={{
@@ -193,7 +192,7 @@ export default ()=>{
         </Box>
         <Box id='project' className={classes.selectGroup}>
           <FormControlLabel value="project" control={<Radio />} label="Я готова/ий запропонувати проектне рішення" />
-          {value.type=="project" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}}>
+          {value.type==="project" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}}>
             {!selectType && <>
               <Button 
                 disabled
@@ -225,7 +224,7 @@ export default ()=>{
         </Box>
         <Box id='resource' className={classes.selectGroup}>
           <FormControlLabel value="resource" control={<Radio />} label="Я готова/ий надати матеріали або послуги" />
-          {value.type=="resource" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}} >
+          {value.type==="resource" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}} >
             <Button 
               disabled
               size="small" 
@@ -263,7 +262,7 @@ export default ()=>{
         Назад
       </Button>
       <Button 
-        disabled={value.type=="project"||value.type=="resource"||(value.type=="donate"&&sum<50)||(value.type=="volunteer" && (!job || job.length<5) )}
+        disabled={value.type==="project"||value.type==="resource"||(value.type==="donate"&&sum<50)||(value.type==="volunteer" && (!job || job.length<5) )}
         size="small" 
         variant="contained"  
         color="secondary"
@@ -276,13 +275,13 @@ export default ()=>{
               name: user.displayName,
               avatar: user.photoURL,
               info: {
-              ...(value.type=="donate" && {sum, periodic}),
-              ...(value.type=="volunteer" && {job}),
+              ...(value.type==="donate" && {sum, periodic}),
+              ...(value.type==="volunteer" && {job}),
             } }, ids:[user.uid]},
             projects: {},
             resources: {
-              ...(value.type=="donate" && {finance: {[user.uid]:{sum, periodic}}}),
-              ...(value.type=="volunteer" && {volunteers: {[user.uid]:{job}}}),
+              ...(value.type==="donate" && {finance: {[user.uid]:{sum, periodic}}}),
+              ...(value.type==="volunteer" && {volunteers: {[user.uid]:{job}}}),
             },
           }, {merge: true})
           setRedirect(`/initiative/${ initiativeID }`)
@@ -292,22 +291,22 @@ export default ()=>{
       </Button>
     </FormControl>
     {selectType && !selectType.object && <>
-      {selectType.type=="selectProject" && !selectType.object && <>
+      {selectType.type==="selectProject" && !selectType.object && <>
         <ProjectLibrary onlyMine 
           select={(project)=>setSelectType({type: "selectProject", object: project })} 
         />
         <BackFab back={()=>setSelectType(null)}/>
       </>}
-      {selectType.type=="newProject" && !selectType.object && <>
+      {selectType.type==="newProject" && !selectType.object && <>
         <CreateProject 
           submit={(docRef, doc)=>setSelectType({type: "newProject", object: {...doc.data(), id: docRef.id} })} 
           cancel={()=>setSelectType(null)}
         />
       </>}
-      {selectType.type=="selectResource" && !selectType.object && <>
+      {selectType.type==="selectResource" && !selectType.object && <>
         <CreateProject />
       </>}
-      {selectType.type=="newResource" && !selectType.object && <>
+      {selectType.type==="newResource" && !selectType.object && <>
         <CreateProject />
       </>} 
     </>}

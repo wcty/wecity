@@ -1,15 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import SwipeableViews from 'react-swipeable-views';
 import { makeStyles, withStyles, useTheme } from '@material-ui/core/styles';
 import { Divider, Tabs, Tab, Typography, Box} from '@material-ui/core';
 import { useI18n } from 'global/Hooks'
-import { useDatabase } from 'reactfire';
-import { useParams } from 'react-router-dom';
 import InitiativeChat from './InitiativeChat'
-import ScrollToBottom, { useScrollToBottom, useScrollToTop, useObserveScrollPosition } from 'react-scroll-to-bottom';
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+function TabPanel({ children, value, index, ...other }) {
 
   return (
     <div
@@ -17,13 +13,10 @@ function TabPanel(props) {
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
+      style={{paddingTop: '0.25rem'}}
       {...other}
     >
-      {value === index && (
-        <Box pr={4} pl={4} style={{textAlign:"center", marginTop: "1.5rem", paddingLeft:"2rem"}} >
-          {children}
-        </Box>
-      )}
+      {value === index && children}
     </div>
   );
 }
@@ -42,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '-2rem',
     marginTop: '1rem'
   },
+  tab: {
+    backgroundColor: '#eeeeee',
+    boxSizing: "border-box"
+  }
 }));
 
 const AntTabs = withStyles({
@@ -124,16 +121,10 @@ export default function FullWidthTabs() {
         onChangeIndex={handleChangeIndex}
         style={{paddingTop:0}}
       >
-        <TabPanel value={value} index={0} dir={theme.direction}>
-        <Box id="chatContainer" style={{width:"100%", padding:0, maxHeight:"75vh", minHeight: "5rem", marginBottom:"2.5rem", overflowY:"auto", position:"relative"}}>
-          <ScrollToBottom>
-
+        <TabPanel value={value} index={0} dir={theme.direction} className={classes.tab}>
             <InitiativeChat/>
-          </ScrollToBottom>
-        </Box>
         </TabPanel>
-        
-        <TabPanel value={value} index={1} dir={theme.direction}>
+        <TabPanel value={value} index={1} dir={theme.direction} className={classes.tab}>
             <Typography variant="h6"> 
               {i18n('initiativeGroupMembers')}
             </Typography>
@@ -141,7 +132,7 @@ export default function FullWidthTabs() {
               In active development
             </Typography>
         </TabPanel>
-        <TabPanel value={value} index={2} dir={theme.direction}>
+        <TabPanel value={value} index={2} dir={theme.direction} className={classes.tab}>
           <Typography variant="h6"> 
             {i18n('initiativeGroupProjects')}
           </Typography>
@@ -149,7 +140,7 @@ export default function FullWidthTabs() {
             In active development
           </Typography>
         </TabPanel>
-        <TabPanel value={value} index={3} dir={theme.direction}>
+        <TabPanel value={value} index={3} dir={theme.direction} className={classes.tab}>
           <Typography variant="h6"> 
             {i18n('initiativeGroupResources')}
           </Typography>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense } from 'react'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Collapse, Paper, Typography, IconButton, Box, List, ListItem, ListItemText, Button, TextField, Divider } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import { Collapse, Paper, Typography, IconButton, Box, List, ListItem, ListItemText, Button, TextField } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -10,10 +10,10 @@ import { People, LocationOn, ExpandLess, Close } from '@material-ui/icons'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
 import ImageViewer from 'react-simple-image-viewer'
-import { useGeoFirestore, useI18n } from 'global/Hooks'
+import { useI18n } from 'global/Hooks'
 import { DeleteObject } from 'global/Misc'
 import moment from 'moment'
-import { useRouteMatch, useParams, Redirect } from 'react-router-dom'
+import { useParams, Redirect } from 'react-router-dom'
 import {Helmet} from "react-helmet"
 import { Share } from '@material-ui/icons'
 import SelectRole from './SelectRole'
@@ -59,29 +59,23 @@ const useStyles = makeStyles((theme) => ({
 
 export default ({ mapRef, loaded })=> {
   const classes = useStyles();
-  const [marker, setMarker] = useRecoilState(Atoms.markerAtom)
   const initiatives = useFirestore().collection('initiatives')
   // const [initiative, setInitiative] = useRecoilState(Atoms.initiative)
-  const [selected, setSelected] = useRecoilState(Atoms.selectedAtom)
-  const [isCreating, setIsCreating] = useRecoilState(Atoms.creatingAtom)
-  const [location, setLocation] = useRecoilState(Atoms.locationAtom)
+  const [selected] = useRecoilState(Atoms.selectedAtom)
+  const [location] = useRecoilState(Atoms.locationAtom)
   const [expanded, setExpanded] = useRecoilState(Atoms.expanded)
   const mapDimensions = useRecoilValue(Atoms.mapAtom)
   const bar = useRecoilValue(Atoms.barAtom)
   const user = useUser()
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const markersCollection = useGeoFirestore().collection('initiatives')
   const [markers, setMarkers] = useRecoilState(Atoms.markersAtom)
   const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const images = useStorage().ref().child('initiatives')
-  const theme = useTheme()
-  let match = useRouteMatch()
   let { initiativeID } = useParams();
   const initiativeRef = useFirestore().collection('initiatives').doc(initiativeID)
   const initiative = useFirestoreDocData(initiativeRef)
   const [redirect, setRedirect] = useState(null)
   const i18n = useI18n()
-  const [copySuccess, setCopySuccess] = useState()
   const [alert, setAlert] = useState(null)
 
   //const in = markers.features.find(f=>f.properties.id==id).properties
@@ -97,47 +91,41 @@ export default ({ mapRef, loaded })=> {
   //   console.log(match)
   //   console.log(initiativeID)
   // },[markers, initiativeID, setInitiative])
+  useEffect(()=>{if(!initiative||!initiative.name){setRedirect('/')}},[initiative])
 
-  useEffect(async()=>{
-    if(loaded&&initiative){
-      const map = mapRef.current.getMap()
-      const center = Object.values(initiative.coordinates)
-      const w = mapDimensions.width/2
-      const h = (mapDimensions.height - 350)/2
-      const offPoint = Object.values(map.unproject([w,h]))
-      const point = Object.values(map.getCenter())
-      const dist = distance(point, offPoint)
-      const newOffPoint = translate({
-        type:"FeatureCollection",
-        features:[
-          {
-            type: "Feature",
-            geometry:{
-              type: "Point",
-              coordinates: center
+  useEffect(()=>{
+    async function moveMap() {
+      if(loaded&&initiative&&initiative.name){
+        const map = mapRef.current.getMap()
+        const center = Object.values(initiative.coordinates)
+        const w = mapDimensions.width/2
+        const h = (mapDimensions.height - 350)/2
+        const offPoint = Object.values(map.unproject([w,h]))
+        const point = Object.values(map.getCenter())
+        const dist = distance(point, offPoint)
+        const newOffPoint = translate({
+          type:"FeatureCollection",
+          features:[
+            {
+              type: "Feature",
+              geometry:{
+                type: "Point",
+                coordinates: center
+              }
             }
-          }
-        ]
-      }, dist, 180)
-      console.log(newOffPoint.features[0].geometry.coordinates)
-      newOffPoint.features[0].geometry.coordinates && map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
+          ]
+        }, dist, 180)
+        console.log(newOffPoint.features[0].geometry.coordinates)
+        newOffPoint.features[0].geometry.coordinates && map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
+      }
     }
-  }, [mapRef, loaded, initiative])
+    moveMap()
+
+  }, [mapRef, loaded, initiative, mapDimensions.width, mapDimensions.height])
 
   useEffect(()=>{
     setExpanded(false)
-  },[initiativeID])
-  // useEffect(async()=>{
-  //   if(selected) {
-  //     setExpanded(false)
-  //     console.log(markers.features)
-  //     const current = markers.features.find(f=>f.properties.id==selected?selected:null)
-  //     if (current) setInitiative(current.properties)
-  //     setIsCreating(false)
-  //     setMarker(null)
-  //     setJoining(false)
-  //   }
-  // }, [selected])
+  },[initiativeID, setExpanded])
 
   useEffect(()=>{
     if(redirect!==null){
@@ -151,7 +139,7 @@ export default ({ mapRef, loaded })=> {
       <Collapse in={Boolean(alert)}>
         <Alert severity="info" className={classes.alert} onClose={() => {setAlert(null)}}>
           <AlertTitle>Info</AlertTitle>
-          {alert=='loading'?i18n('loading'):
+          {alert==='loading'?i18n('loading'):
           <>{i18n('alertLinkWasCopied')}<br/>
           <form>
             <TextField style={{paddingBottom:'0.5rem', paddingTop:'0.5rem', width:'100%'}} value={alert}/>
@@ -180,7 +168,7 @@ export default ({ mapRef, loaded })=> {
     />
     </>
     )}
-    { /*selected &&*/ initiative && !isViewerOpen && (
+    { /*selected &&*/ initiative && initiative.name && !isViewerOpen && (
         <Paper 
           className={classes.paper} 
           style={{
@@ -286,7 +274,7 @@ export default ({ mapRef, loaded })=> {
 
           {/* Content */}
           
-            { expanded && !joining && <Box style={{padding: '2rem', paddingTop: 0}}><List key='elements' disablePadding>
+            { expanded && !joining && <Box style={{padding: '2rem', paddingTop: 0, paddingBottom: 0 }}><List key='elements' disablePadding>
 
               {initiative.problem&& (<ListItem className={classes.item} disableGutters>
                 <ListItemText
@@ -358,7 +346,7 @@ export default ({ mapRef, loaded })=> {
                   }}>
                   <Share style={{paddingRight:"0.5rem"}} /> {i18n('initiativeShare')}
                 </Button>
-              { user && !initiative.members[user.uid] && <Button 
+              { user && initiative && !initiative.members[user.uid] && <Button 
                 size="small" 
                 variant="contained"  
                 color="secondary"
@@ -368,7 +356,7 @@ export default ({ mapRef, loaded })=> {
               }}>
                 {i18n('join')}
               </Button>}
-              { user && initiative.members[user.uid] && (<>
+              { user && initiative && initiative.members[user.uid] && (<>
                   {Object.keys(initiative.members).length<=2 && 
                   <Button 
                     size="small" 

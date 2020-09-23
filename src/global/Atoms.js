@@ -1,4 +1,5 @@
 import { atom } from 'recoil';
+import { isNullishCoalesce } from 'typescript';
 
 export const locationAtom = atom({
   key: 'location', 
@@ -89,7 +90,7 @@ export const selectedProject = atom({
 })
 
 let defineLang = function(lang){
-  switch(lang) {
+  switch(lang?lang:window.navigator.language.slice(0,2)) {
       case 'uk':
           return 'uk';
       case 'ka':
@@ -103,5 +104,15 @@ let defineLang = function(lang){
 
 export const lang = atom({
   key: 'language',
-  default: 'uk'//defineLang(window.navigator.language.slice(0,2)),
+  default: defineLang('uk'),
+})
+
+export const imageURL = atom({
+  key: 'imageURL',
+  default: null,
+})
+
+export const fileName = atom({
+  key: 'fileName',
+  default: null,
 })

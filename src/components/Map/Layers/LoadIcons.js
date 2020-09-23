@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import { Source, Layer } from '@urbica/react-map-gl'
+import { useEffect } from 'react'
 import MarkerActive from 'assets/images/markerActive.svg'
 import Marker from 'assets/images/marker.svg'
 
@@ -42,7 +41,6 @@ export default ({ mapRef, loaded, location })=>{
     if(loaded){
       const map = mapRef.getMap()
       // map.addImage('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
-      const svgWrapper = document.createElement("div")
       loadMarker(map, Marker, 'marker-fixed', 40, )
       loadMarker(map, MarkerActive, 'marker-active', 60)
     }

@@ -1,13 +1,12 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Typography, IconButton, Chip, List, ListItem, ListItemText, Button } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { creatingAtom, markerAtom , barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
+import {  useRecoilValue } from 'recoil';
+import {  barAtom } from 'global/Atoms'
 import { useStorage, useFirestore, useFirestoreDocData, useUser } from 'reactfire';
 import { Close, ArrowBack } from '@material-ui/icons'
-import distance from '@turf/distance'
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import ImageViewer from 'react-simple-image-viewer';
 import { categories } from 'global/forms/projectCategories'
 import { useI18n } from 'global/Hooks'
@@ -72,7 +71,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default ()=> {
   const { projectId } = useParams()
-  let history = useHistory()
   const classes = useStyles();
   const bar = useRecoilValue(barAtom)
   const user = useUser()
@@ -158,7 +156,7 @@ export default ()=> {
               <ArrowBack color="primary"/>
             </IconButton>
           </section>
-            {project.category && (<Chip label={categories(i18n).find(c=>c.name==project.category).label} style={{marginLeft: '1rem', marginTop: '-5rem', zIndex: 9, position: 'relative'}} />)}
+            {project.category && (<Chip label={categories(i18n).find(c=>c.name===project.category).label} style={{marginLeft: '1rem', marginTop: '-5rem', zIndex: 9, position: 'relative'}} />)}
             <Typography variant="h6" style={{marginLeft:'1rem', marginTop:'0rem'}}>
               {project.name? project.name: "Name is not set"}
             </Typography>
@@ -246,7 +244,7 @@ export default ()=> {
               >
                 {i18n('addToInitiative')}
               </Button>
-              {project.contractors && project.contractors.find(c=>c==user.uid) &&<Button 
+              {project.contractors && project.contractors.find(c=>c===user.uid) &&<Button 
               elevation={15} 
               variant="contained" 
               size="small"

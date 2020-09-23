@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Fab, useTheme } from '@material-ui/core'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import {  markerAtom, viewAtom, creatingAtom, userAtom, locationAtom } from 'global/Atoms'
-import { Layers, SatelliteOutlined, Terrain } from '@material-ui/icons'
+import { Fab } from '@material-ui/core'
+import { Layers, Terrain } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
   satelliteFab: {
@@ -16,7 +14,6 @@ const useStyles = makeStyles(theme => ({
 
 export default ({ satellite, setSatellite })=>{
   const classes = useStyles()
-  const theme = useTheme()
 
   return ( 
     <Fab 

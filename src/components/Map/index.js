@@ -5,8 +5,7 @@ import MapGL from '@urbica/react-map-gl'
 import { mapboxConfig } from 'config'
 import { AuthCheck, SuspenseWithPerf } from 'reactfire';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { locationAtom,viewAtom, creatingAtom, mapAtom, selectedAtom, initiativeBarAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
-import MarkerActive from 'assets/images/markerActive.svg'
+import { locationAtom,viewAtom, creatingAtom, mapAtom } from 'global/Atoms'
 import LocationIcon from './Layers/LocationIcon.js'
 import LoadIcons from './Layers/LoadIcons.js'
 
@@ -47,17 +46,16 @@ const useStyles = makeStyles(theme => ({
 }))          
 
 export default ()=>{
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
+  const setIsCreating = useSetRecoilState(creatingAtom)
   const classes = useStyles()
   const [location, setLocation] = useRecoilState(locationAtom)
-  const [view, setView] = useRecoilState(viewAtom)
+  const setView = useSetRecoilState(viewAtom)
   const [viewport, setViewport] = useState({ latitude: 50.4501, longitude: 30.5234, zoom:15 });
   const mapRef = useRef()
   const mapDimensions = useRecoilValue(mapAtom)
   const [loaded, setLoaded] = useState(false)
   const [satellite, setSatellite] = useState(false)
   const [redirect, setRedirect] = useState(null)
-  const setSelected = useSetRecoilState(selectedAtom)
 
   const getMarker = ()=>{
     const w = mapDimensions.width/2
@@ -78,17 +76,17 @@ export default ()=>{
       }else{
         setLocation(false);
       }
-  }, [navigator, navigator.geolocation])
+  }, [navigator, navigator.geolocation, setLocation])
 
   useEffect(()=>{
     if(mapRef.current){
       const map = mapRef.current.getMap()
       setView(map.getCenter())
     }
-  }, [mapRef.current, viewport])
+  }, [viewport, setView])
   
   useEffect(()=>{
-    if(redirect=='/'){
+    if(redirect){
       setRedirect(null)
     }
   },[redirect, setRedirect])

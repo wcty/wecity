@@ -1,12 +1,11 @@
 import React, { Suspense, useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Typography, IconButton, Chip, List, ListItem, ListItemText, Button } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { barAtom, markersAtom, selectedAtom, locationAtom, mapAtom } from 'global/Atoms'
-import { useFirestore, useUser } from 'reactfire';
+import { useRecoilValue } from 'recoil';
+import { barAtom} from 'global/Atoms'
+import { useUser } from 'reactfire';
 import { Close } from '@material-ui/icons'
-import { render } from 'react-dom';
 import ImageViewer from 'react-simple-image-viewer';
 
 const useStyles = makeStyles((theme) => ({
@@ -68,10 +67,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default ({ resource, setResource })=> {
   const classes = useStyles();
-  const theme = useTheme();
-  const resources = useFirestore().collection('initiatives')
-  const [location, setLocation] = useRecoilState(locationAtom)
-  const map = useRecoilValue(mapAtom)
   const bar = useRecoilValue(barAtom)
   const user = useUser()
   const [isViewerOpen, setIsViewerOpen] = useState(false);

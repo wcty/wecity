@@ -1,12 +1,10 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Divider, List, Typography, ListItem, FormControlLabel, Checkbox, ListItemText, FormControl, InputLabel, Select, MenuItem, Grid } from '@material-ui/core';
+import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Paper,  List, Typography,  FormControlLabel, Checkbox, FormControl, InputLabel, Select, MenuItem, Grid } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import * as Atoms from 'global/Atoms'
-import { useStorage, useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
-import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
-import distance from '@turf/distance'
+import { useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
 import { categories } from 'global/forms/projectCategories'
 import { useI18n } from 'global/Hooks'
 import { Redirect } from 'react-router-dom'
@@ -62,7 +60,6 @@ export default ({ onlyMine, select })=>{
     .collection('projects')
   const projectsRef = filterMine&&user? projectsRefPre.where("contractors", "array-contains", user.uid): projectsRefPre
   const projects = useFirestoreCollectionData(projectsRef)
-  const lang = useRecoilValue(Atoms.lang)
   const i18n = useI18n()
   const [redirect, setRedirect] = useState()
 
@@ -82,7 +79,7 @@ export default ({ onlyMine, select })=>{
           id='categorySelect'
           value={currentFilter||"all"}
           onChange={(e)=>{
-            setCurrentFilter(e.target.value=="all"?null:e.target.value)
+            setCurrentFilter(e.target.value==="all"?null:e.target.value)
           }}
           label='category'
         >
@@ -119,7 +116,7 @@ export default ({ onlyMine, select })=>{
                         if(select){
                           select(project)
                         }else{
-                          if(selectedProject&&(selectedProject.id==project.id)){
+                          if(selectedProject&&(selectedProject.id===project.id)){
                             setSelectedProject(null)
                           }else{
                             setSelectedProject(project)
@@ -142,7 +139,7 @@ export default ({ onlyMine, select })=>{
                         if(select){
                           select(project)
                         }else{                      
-                          if(selectedProject&&(selectedProject.id==project.id)){
+                          if(selectedProject&&(selectedProject.id===project.id)){
                             setSelectedProject(null)
                           }else{
                             setSelectedProject(project)
@@ -168,8 +165,8 @@ export default ({ onlyMine, select })=>{
           margin: '2rem',
           textAlign: 'center'
         }}>
-          {onlyMine? i18n('noMyProjects', currentFilter=="all"):
-           i18n('noMyProjects', currentFilter=="all") }
+          {onlyMine? i18n('noMyProjects', currentFilter==="all"):
+           i18n('noMyProjects', currentFilter==="all") }
         </Typography>
         }
       </List>

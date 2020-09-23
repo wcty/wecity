@@ -2,5 +2,7 @@ make adding tasks for volunteers on project creation (make optional fields: min 
 make adding expenses for budget on project creation
 
 location\community (initiative) - design(initiative) - resources(initiative)
-
+change initiative member role to the object or array, to support multiple
+edit or delete comment
+like, dislike, or comment
 

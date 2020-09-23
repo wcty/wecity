@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { AppBar, Toolbar, Box, Paper, Avatar, Button, Typography, IconButton, CircularProgress, useTheme } from '@material-ui/core'
+import { AppBar, Toolbar, Box,  Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
 import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
 import firebase from 'firebase'
@@ -8,13 +8,11 @@ import useMeasure from "use-measure";
 import { barAtom, userAtom } from 'global/Atoms'
 import Drawer from './drawer'
 import { useAuth, useUser, useFirestore } from 'reactfire';
-import { useRecoilState } from 'recoil';
-import ErrorBoundary from 'global/ErrorBoundary'
+import { useSetRecoilState } from 'recoil';
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
 import UserForm from './UserForm'
 import { useI18n } from 'global/Hooks'
 import { Route } from 'react-router-dom'
-import { theme } from 'global/Theme';
 
 const Styles = makeStyles( theme => ({
   appbar: {
@@ -55,10 +53,10 @@ const LogIn = ()=>{
   const i18n = useI18n()
   const auth = useAuth()
   const user = useUser();
-  const [current, setCurrent] = useRecoilState(userAtom)
+  const setCurrent = useSetRecoilState(userAtom)
   const usersRef = useFirestore().collection('users')
   const [newUser, setNewUser] = useState(false)
-  const [contactData, setContactData] = useState(false)
+  //const [contactData, setContactData] = useState(false)
 
   useEffect(()=>{
     if(user){
@@ -67,7 +65,7 @@ const LogIn = ()=>{
       .then((docSnapshot) => {
         if (docSnapshot.exists) {
           users.onSnapshot((doc) => {
-            console.log(doc)
+            //console.log(doc)
             // do stuff with the data
           });
         } else {
@@ -78,7 +76,7 @@ const LogIn = ()=>{
       });
       setCurrent(JSON.parse(JSON.stringify(user)))
     }
-  }, [user] )
+  }, [user, setCurrent, usersRef] )
 
   // useEffect(()=>{
   //   if(contactData&&usersRef){
@@ -104,9 +102,9 @@ const LogIn = ()=>{
       zIndex: 999,
       overflowY: "auto",  
     }}>
-      <UserForm isCreating={newUser} setIsCreating={setNewUser} setContactData={setContactData}/>
+      <UserForm isCreating={newUser} setIsCreating={setNewUser} /*setContactData={setContactData}*//>
     </Box>)}
-    <Route path='/settings'><UserForm isCreating={newUser} setIsCreating={setNewUser} setContactData={setContactData}/></Route>
+    <Route path='/settings'><UserForm isCreating={newUser} setIsCreating={setNewUser} /*setContactData={setContactData}*/ /></Route>
     {user?  
             <div className={classes.userProfileContainer}>
 
@@ -141,13 +139,13 @@ const Bar = (props)=>{
   const classes = Styles()
   const barRef = useRef()
   const barMeasure = useMeasure(barRef)
-  const [barDimensions, setBarDimensions] = useRecoilState(barAtom)
+  const setBarDimensions = useSetRecoilState(barAtom)
   const [drawer, setDrawer] = useState(false)
   // const theme = useTheme()
   useEffect(()=>{
     setBarDimensions(barMeasure)
     //console.log(barMeasure)
-  },[barMeasure])
+  },[barMeasure, setBarDimensions])
   return (
     <>
       <AppBar elevation={1} color="default" position="static" className={classes.appbar} ref={barRef}>

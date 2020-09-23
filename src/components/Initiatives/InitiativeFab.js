@@ -1,11 +1,10 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Fab, Collapse } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import {  selectedAtom, initiativeBarAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
+import {  selectedAtom, initiativeBarAtom, creatingAtom, userAtom } from 'global/Atoms'
 import { AddLocation } from '@material-ui/icons'
-import useMeasure from "use-measure";
 import { Redirect } from 'react-router-dom'
 import { useI18n } from 'global/Hooks'
 
@@ -25,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 
 export default ({ active, getMarker })=>{
   const classes = useStyles()
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
+  const setIsCreating = useSetRecoilState(creatingAtom)
   const [alert, setAlert] = useState(null)
   const user = useRecoilValue(userAtom)
   const fabRef = useRef()
@@ -33,6 +32,12 @@ export default ({ active, getMarker })=>{
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
   const [redirect, setRedirect] = useState(null)
   const i18n = useI18n()
+
+  useEffect(()=>{
+    if(redirect){
+      setRedirect(null)
+    }
+  },[redirect])
 
   return (
     <>

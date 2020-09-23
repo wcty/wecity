@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
+import { Paper, Button } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import addImage from 'assets/images/addImage.png'
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import * as Atoms from 'global/Atoms'
-import { useStorage, useUser, useStorageDownloadURL } from 'reactfire';
-import { v1 as uuidv1 } from 'uuid';
+import { useUser } from 'reactfire';
 import { useGeoFirestore } from 'global/Hooks'
 import * as firebase from 'firebase/app';
 import { getFeatures } from 'global/Misc'
@@ -15,7 +13,7 @@ import createInitiativeForm from 'global/forms/createInitiativeForm'
 import FormExpanded from 'global/FormExpanded'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
-import { useRouteMatch, Redirect } from 'react-router-dom';
+import {  Redirect } from 'react-router-dom';
 import MarkerActive from 'assets/images/markerActive.svg'
 
 
@@ -51,17 +49,15 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
   const classes = useStyles();
   const theme = useTheme();
   const [isCreating, setIsCreating] = useRecoilState(Atoms.creatingAtom)
-  const [marker, setMarker] = useRecoilState(Atoms.markerAtom)
-  const [markers, setMarkers] = useRecoilState(Atoms.markersAtom)
+  const setMarker = useSetRecoilState(Atoms.markerAtom)
+  const setMarkers = useSetRecoilState(Atoms.markersAtom)
 
   const markersCollection = useGeoFirestore().collection('initiatives')
   const user = useUser()
-  const [selected, setSelected] = useRecoilState(Atoms.selectedAtom)
-  const [location, setLocation] = useRecoilState(Atoms.locationAtom)
+  const [location] = useRecoilState(Atoms.locationAtom)
   const mapDimensions = useRecoilValue(Atoms.mapAtom)
   const [redirect, setRedirect] = useState(null)
   const [finished, setFinished] = useState(false)
-  let match = useRouteMatch()
 
   useEffect(()=>{
     //console.log(match)
@@ -87,7 +83,7 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
       }, dist, 180)
       map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
     }
-  }, [mapRef, loaded, isCreating])
+  }, [mapRef, loaded, isCreating, mapDimensions.height, mapDimensions.width])
 
   useEffect(()=>{
     if(redirect!==null){

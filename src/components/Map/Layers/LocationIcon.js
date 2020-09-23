@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react'
 import { Source, Layer } from '@urbica/react-map-gl'
-import MarkerActive from 'assets/images/markerActive.svg'
-import Marker from 'assets/images/marker.svg'
 
 const pulsingDot = (map)=>{
   var size = 60;

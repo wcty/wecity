@@ -1,14 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import { SwipeableDrawer, Button, Box, List, Divider, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { MapOutlined, LibraryBooksOutlined, ChatBubbleOutline, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined } from '@material-ui/icons';
-import { useAuth, useUser } from 'reactfire';
-import ErrorBoundary from 'global/ErrorBoundary'
-import { initiativeBarAtom, selectedAtom, creatingAtom, projectBarAtom, resourceBarAtom } from 'global/Atoms'
-import { useRecoilState } from 'recoil'
-import FeedbackForm from './FeedbackForm'
-import { Redirect, Route } from 'react-router-dom';
+import { SwipeableDrawer, List, Divider, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { MapOutlined, LibraryBooksOutlined, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined } from '@material-ui/icons';
+import {  useUser } from 'reactfire';
+import { Redirect } from 'react-router-dom';
 import LangSelect from './LangSelect'
 import { useI18n } from 'global/Hooks'
 
@@ -26,17 +22,12 @@ export default ({ state, setState })=>{
   const classes = useStyles();
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
   const toggleDrawer = (open) => (event) => {
-    const anchor = 'left'
+    
     if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
     setState(open);
   };
-  const [resourceBar, setResourceBar] = useRecoilState(resourceBarAtom)
-  const [projectBar, setProjectBar] = useRecoilState(projectBarAtom)
-  const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
-  const [selected, setSelected] = useRecoilState(selectedAtom)
-  const [isCreating, setIsCreating] = useRecoilState(creatingAtom)
   const [redirect, setRedirect] = useState(null)
   const i18n = useI18n()
 
@@ -105,7 +96,7 @@ export default ({ state, setState })=>{
         className={clsx(classes.list, {
           [classes.fullList]: anchor === 'top' || anchor === 'bottom',
         })}
-        role="Menu of the map"
+        // role="Menu"
       >
         <List  
           disablePadding       

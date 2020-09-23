@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, FormControl, IconButton, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
+import { Paper, FormControl, IconButton, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, Box } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons';
 import { useUser, useFirestore } from 'reactfire';
 import { Redirect } from 'react-router-dom'
@@ -81,25 +81,24 @@ export default ()=> {
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = formSteps.length;
   const [resource, setResource] = useState(null)
-  const [imageLoadedURL, setImageLoadedURL] = useState(null)
-  const [finished, setFinished] = useState(null)
+  const [imageLoadedURL] = useState(null)
   const [valid, setValid] = useState(false)
   const [redirect, setRedirect] = useState(null)
 
-  useEffect(async()=>{
+  useEffect(()=>{
     let bool = true
     if(resource){
       formSteps[activeStep].forEach((d,i)=>{
-        if(d.type=='image'){
+        if(d.type==='image'){
           if(!(imageLoadedURL)) bool = false
-        }else if(d.type!='note'){
+        }else if(d.type!=='note'){
           if(!(resource[d.id]&&resource[d.id].length>0)) bool = false
         }
       })
       setValid(bool)
     }
     console.log(bool)
-  },  [activeStep, resource, imageLoadedURL])
+  },  [activeStep, resource, imageLoadedURL, formSteps])
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);

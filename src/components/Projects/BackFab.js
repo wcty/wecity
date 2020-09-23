@@ -1,11 +1,7 @@
-import React, { useState, useRef } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Fab, Collapse } from '@material-ui/core'
-import { Alert, AlertTitle } from '@material-ui/lab';
-import { useRecoilState, useRecoilValue } from 'recoil'
-import {  selectedAtom, creatingAtom, userAtom, mapAtom } from 'global/Atoms'
+import { Fab } from '@material-ui/core'
 import { ArrowBack } from '@material-ui/icons'
-import useMeasure from "use-measure";
 
 const useStyles = makeStyles(theme => ({
   CreateInitiative: {

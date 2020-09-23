@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import * as geofirestore from 'geofirestore';
 import { useFirestore } from 'reactfire';
 import en from 'i18n/en.js'
@@ -18,6 +18,7 @@ export function useGeoFirestore() {
 export function useLocation() {
   const defaultValue = {longitude: 30.5234, latitude: 50.4501}
   const [location, setLocation] = useState(defaultValue)
+  
   useEffect(()=>{
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function(position) {
@@ -26,7 +27,7 @@ export function useLocation() {
         setLocation(updateLocation);
       })
     }
-  }, [navigator, navigator.geolocation ])
+  }, [ defaultValue ])
 
   return location
 }
@@ -47,7 +48,7 @@ export const useI18n = ()=>{
   },[lang])
 
   return (key, params) => {
-    if (params==false || params || params === 0) {
+    if (params===false || params || params === 0) {
         let i18nKey = i18nData[key];
         const choiceRegex = /{#choice.*#}/g;
 
@@ -65,7 +66,7 @@ export const useI18n = ()=>{
           }
         }
         function Choice(value){
-          if (i18nKey.match(choiceRegex)) {
+          if (i18nKey && i18nKey.match(choiceRegex)) {
             for (const choicePattern of i18nKey.match(choiceRegex)) {
               const choices = choicePattern.replace('{#choice','').replace('#}','').split('|')
               //console.log(choices, choicePattern, value)

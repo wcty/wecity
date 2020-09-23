@@ -1,19 +1,11 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, FormControl, InputAdornment, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, InputBase, CircularProgress, Box } from '@material-ui/core';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import addImage from 'assets/images/addImage.png'
-import { useRecoilState, useRecoilValue } from 'recoil';
-import * as Atoms from 'global/Atoms'
-import { useStorage, useUser, useStorageDownloadURL } from 'reactfire';
+import React, { useState, useEffect, useRef } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { FormControl, InputAdornment, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, CircularProgress, Box } from '@material-ui/core';
+import { useStorage } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
-import { useGeoFirestore } from 'global/Hooks'
-import * as firebase from 'firebase/app';
-import { getFeatures } from 'global/Misc'
 import ErrorBoundary from 'global/ErrorBoundary'
-import useMeasure from 'use-measure';
-
+import * as Atoms from 'global/Atoms'
+import { useRecoilState } from 'recoil'
 function CircularProgressWithLabel(props) {
 
   return (
@@ -127,62 +119,60 @@ const useStyles = makeStyles((theme) => ({
   },
   
 }));
-
-export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, directory, variant, floating, finished, setFinished })=> {
+let imageLoadedVar = null
+let fileNameVar = null
+export default ({ isFilling, formGetter, nextButton, backButton, directory, variant, floating, finished, setFinished })=> {
   const formSteps = formGetter()
   const classes = useStyles();
-  const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = formSteps.length;
   const [project, setProject] = useState(null)
   const [uuid, setUuid] = useState(uuidv1())
   const imageRef = useStorage().ref().child(directory)
+  const [imageLoadedURL, setImageLoadedURL] = useRecoilState(Atoms.imageURL)
 
-  const [imageLoadedURL, setImageLoadedURL] = useState(null)
+  //const setImageLoadedURL = (val)=>{imageLoadedURL=val}
   const [thumbLoadedURL, setThumbLoadedURL] = useState(null)
 
-  const projectsCollection = useGeoFirestore().collection(directory)
-  const user = useUser()
   const [progressState, setProgress] = useState(null)
-  const [fileName, setFileName] = useState(null)
-  //const [finished, setFinished] = useState(null)
-  const [location, setLocation] = useRecoilState(Atoms.locationAtom)
-  const map = useRecoilValue(Atoms.mapAtom)
+  const [fileName, setFileName] = useRecoilState(Atoms.fileName)
+  
   const [valid, setValid] = useState(false)
+  const formDOM = useRef()
 
   useEffect(async()=>{
     let bool = true
     if(project){
       formSteps[activeStep].forEach((d,i)=>{
-        if(d.type=='image'){
+        if(d.type==='image'){
           if(!(imageLoadedURL)) bool = false
-        }else if(d.type=='number'){
+        }else if(d.type==='number'){
           if(!(project[d.id]&&project[d.id].length>0&&!isNaN(project[d.id]))) bool = false
-        }else if(d.type!='note'){
+        }else if(d.type!=='note'){
           if(!(project[d.id]&&project[d.id].length>0)) bool = false
         }
       })
       setValid(bool)
     }
-    console.log(bool)
-  },  [activeStep, project, imageLoadedURL])
+    //console.log(bool)
+  },  [activeStep, project, imageLoadedURL, /*formSteps*/])
 
   useEffect(()=>{
     if(fileName){
       let i = 0
       WaitResize()
       function WaitResize(){
-        console.log(fileName)
+        //console.log(fileName)
         const extension = '.'+fileName.split('.').reverse()[0]
 
         imageRef.child( fileName.replace(extension,'_484x252'+extension) ).getDownloadURL().then(onResolve, onReject)
         function onResolve(foundURL) {
             //stuff
             setThumbLoadedURL(foundURL)
-            console.log('exists')
+            //console.log('exists')
         }
         function onReject(error) {
-            console.log(error.code);
+            //console.log(error.code);
             i+=1
             if(i<10) setTimeout(WaitResize, 1000)
         }
@@ -191,17 +181,20 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
   }, [imageLoadedURL])
 
   const Reset = ()=>{
+    if(imageLoadedURL){
+      DeleteImage()
+      setImageLoadedURL(null)
+      setThumbLoadedURL(null)
+    }
     setFileName(null)
     setUuid(uuidv1())
-    setImageLoadedURL(null)
-    setThumbLoadedURL(null)
     setProject(null)
     setActiveStep(0)
     setFinished(false)
   }
   
   const DeleteImage = ()=>{
-    const extension = '.'+fileName.split('.').reverse()[0]
+    const extension = '.'+ fileName.split('.').reverse()[0]
 
     ////1920x1080,851x315,484x252,180x180
     imageRef.child(fileName.replace(extension,'_180x180'+extension)).delete()
@@ -209,20 +202,17 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
     imageRef.child(fileName.replace(extension,'_851x315'+extension)).delete()
     imageRef.child(fileName.replace(extension,'_1920x1080'+extension)).delete()
   }
+  
   useEffect(()=>{
-    if(!isFilling){
-      if(imageLoadedURL&&!finished){
-        console.log('cancelled image upload')
-        DeleteImage()
-      }
-      if(!finished){
-        console.log('cancelled input data')
+    return () => {
+      // Anything in here is fired on component unmount.
+      if(!finished&&!formDOM.current){
         Reset()
       }
     }
-  }, [isFilling])
+  }, [imageLoadedURL, finished, formDOM])
 
-  return <form className={classes.root} noValidate autoComplete="off"  >
+  return <form className={classes.root} noValidate autoComplete="off" ref={formDOM} >
       {
         formSteps[activeStep].map(( input, i )=>{
           switch (input.type){
@@ -235,7 +225,7 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
                   id={input.id} 
                   label={input.label}
                   className={classes.text}
-                  defaultValue={input.label=="name"?user.displayName:undefined}
+                  // defaultValue={input.label==="name"?user.displayName:undefined}
                   variant="outlined"
                   multiline={input.rows? true: undefined}
                   rows={input.rows? input.rows: undefined}
@@ -256,7 +246,7 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
                   id={input.id} 
                   label={input.label}
                   className={classes.text}
-                  defaultValue={input.label=="name"?user.displayName:undefined}
+                  // defaultValue={input.label=="name"?user.displayName:undefined}
                   variant="outlined"
                   InputProps={input.adornment && {
                     endAdornment:<InputAdornment position="end">{input.adornment}</InputAdornment>
@@ -359,6 +349,8 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
                               case 'storage/unknown':
                                 // Unknown error occurred, inspect error.serverResponse
                                 break;
+                              default:
+                                break;
                             }
                           }, function() {
                             // Upload completed successfully, now we can get the download URL
@@ -366,13 +358,14 @@ export default ({ isFilling, setIsFilling, formGetter, nextButton, backButton, d
                             uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
                               console.log(downloadURL)
                               const extension = '.'+downloadURL.split('?')[0].split('.').reverse()[0]
-                              setImageLoadedURL({
+                              const links = {
                                 xs: downloadURL.replace(extension, '_180x180'+extension),
                                 s: downloadURL.replace(extension, '_484x252'+extension),
                                 m: downloadURL.replace(extension, '_851x315'+extension),
                                 l: downloadURL.replace(extension, '_1920x1080'+extension),
-                              })
-                              console.log(imageLoadedURL, !progressState, !thumbLoadedURL)                    
+                              }
+                              setImageLoadedURL(links)
+                              //console.log(imageLoadedURL, !progressState, !thumbLoadedURL)                    
 
                             });
                         });

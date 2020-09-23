@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Source, Layer } from '@urbica/react-map-gl'
 import * as firebase from 'firebase/app';
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { locationAtom, markersAtom, viewAtom, selectedAtom } from 'global/Atoms'
+import { markersAtom, viewAtom } from 'global/Atoms'
 import { useGeoFirestore } from 'global/Hooks'
 import { getFeatures } from 'global/Misc'
 import { Redirect, useLocation } from 'react-router-dom';
-import { useStorage, useStorageDownloadURL, useFirestore, useUser } from 'reactfire'
 
 export default () =>{
   const GeoFirestore = useGeoFirestore() 
@@ -17,7 +16,7 @@ export default () =>{
 
   const onClick = (event) => {
     if (event.features.length > 0) {
-      const nextClickedStateId = event.features[0].properties.id;
+      // const nextClickedStateId = event.features[0].properties.id;
       setRedirect(`/initiative/${event.features[0].properties.id}`)
     }
   };
@@ -30,7 +29,7 @@ export default () =>{
       radius: 1000 }).get().then((value) => {
       setMarkers({type:"FeatureCollection", features: getFeatures(value)})
     });
-  }, [GeoFirestore])
+  }, [GeoFirestore, setMarkers])
   
   useEffect(()=>{
     if(redirect!==null){

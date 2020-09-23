@@ -1,12 +1,10 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Paper, Divider, List, Typography, ListItem, ListItemText, FormControl, InputLabel, Select, MenuItem, Grid } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { makeStyles} from '@material-ui/core/styles';
+import { Paper, List, Typography, InputLabel, FormControl, Select, MenuItem, Grid } from '@material-ui/core';
 import addImage from 'assets/images/addImage.png'
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { resourceBarAtom, barAtom, selectedAtom, creatingAtom } from 'global/Atoms'
-import { useStorage, useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
-import { People, LocationOn, ExpandLess, Star, StarBorder } from '@material-ui/icons'
-import distance from '@turf/distance'
+import { useRecoilValue } from 'recoil';
+import { barAtom } from 'global/Atoms'
+import { useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
 import ResourceFab from './ResourceFab'
 import CreateResource from './CreateResource'
 import Resource from './Resource'
@@ -49,11 +47,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default ()=> {
   const classes = useStyles();
-  const theme = useTheme();
   const user = useUser()
   const bar = useRecoilValue(barAtom)
-  const [resourceBar, setResourceBar] = useRecoilState(resourceBarAtom)
-  const [selected, setSelected] = useRecoilState(selectedAtom)
   const [isCreating, setIsCreating] = useState(false)
   const [currentFilter, setCurrentFilter] = useState(null)
   const [selectedresource, setSelectedresource] = useState(null)
@@ -106,7 +101,7 @@ export default ()=> {
             id='categorySelect'
             value={currentFilter||"Всі категорії"}
             onChange={(e)=>{
-              setCurrentFilter(e.target.value=="Всі категорії"?null:e.target.value)
+              setCurrentFilter(e.target.value==="Всі категорії"?null:e.target.value)
             }}
             label='category'
           >
@@ -127,7 +122,7 @@ export default ()=> {
                         className={classes.img} 
                         alt="Cover of the resource"
                         onClick={()=>{
-                          if(selectedresource&&(selectedresource.id==resource.id)){
+                          if(selectedresource&&(selectedresource.id===resource.id)){
                             setSelectedresource(null)
                           }else{
                             setSelectedresource(resource)
@@ -144,7 +139,7 @@ export default ()=> {
                       </section>
                       <div className={classes.info}             
                         onClick={()=>{                          
-                          if(selectedresource&&(selectedresource.id==resource.id)){
+                          if(selectedresource&&(selectedresource.id===resource.id)){
                             setSelectedresource(null)
                           }else{
                             setSelectedresource(resource)

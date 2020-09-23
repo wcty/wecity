@@ -7,7 +7,6 @@ import ProjectFab from './ProjectFab'
 import Project from './Project'
 import ProjectLibrary from './ProjectLibrary'
 import { Redirect, Route } from 'react-router-dom'
-import { useTheme } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme)=>({
   root: {
     flexGrow: 1,
@@ -34,7 +33,6 @@ export default ()=> {
   const user = useUser()
   const bar = useRecoilValue(Atoms.barAtom)
   const [redirect, setRedirect] = useState()
-  const theme = useTheme()
   
   useEffect(()=>{
     if(redirect){
