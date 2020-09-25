@@ -13,11 +13,12 @@ import ImageViewer from 'react-simple-image-viewer'
 import { useI18n } from 'global/Hooks'
 import { DeleteObject } from 'global/Misc'
 import moment from 'moment'
-import { useParams, Redirect } from 'react-router-dom'
+import { useParams, Redirect, Route } from 'react-router-dom'
 import {Helmet} from "react-helmet"
 import { Share } from '@material-ui/icons'
 import SelectRole from './SelectRole'
 import InitiativeGroup from './InitiativeGroup'
+import InitiativeTopic from './InitiativeTopic'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -71,7 +72,7 @@ export default ({ mapRef, loaded })=> {
   const [markers, setMarkers] = useRecoilState(Atoms.markersAtom)
   const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const images = useStorage().ref().child('initiatives')
-  let { initiativeID } = useParams();
+  let { initiativeID, postID } = useParams();
   const initiativeRef = useFirestore().collection('initiatives').doc(initiativeID)
   const initiative = useFirestoreDocData(initiativeRef)
   const [redirect, setRedirect] = useState(null)
@@ -92,7 +93,6 @@ export default ({ mapRef, loaded })=> {
   //   console.log(initiativeID)
   // },[markers, initiativeID, setInitiative])
   useEffect(()=>{if(!initiative||!initiative.name){setRedirect('/')}},[initiative])
-
   useEffect(()=>{
     async function moveMap() {
       if(loaded&&initiative&&initiative.name){
@@ -124,7 +124,7 @@ export default ({ mapRef, loaded })=> {
   }, [mapRef, loaded, initiative, mapDimensions.width, mapDimensions.height])
 
   useEffect(()=>{
-    setExpanded(false)
+    if(postID){setExpanded(true)}else{setExpanded(false)}
   },[initiativeID, setExpanded])
 
   useEffect(()=>{
@@ -134,7 +134,12 @@ export default ({ mapRef, loaded })=> {
   },[redirect, setRedirect])
 
   return (<>
-    {redirect && <Redirect to={redirect} />}
+    { redirect && <Redirect to={redirect} />}
+    { user && initiative.members[user.uid] && (<>
+      <Route path={'/initiative/:initiativeID/post/:postID'} >
+        <InitiativeTopic initiative={initiative} />
+      </Route>
+    </>)}
     {alert && (
       <Collapse in={Boolean(alert)}>
         <Alert severity="info" className={classes.alert} onClose={() => {setAlert(null)}}>
@@ -169,6 +174,7 @@ export default ({ mapRef, loaded })=> {
     </>
     )}
     { /*selected &&*/ initiative && initiative.name && !isViewerOpen && (
+
         <Paper 
           className={classes.paper} 
           style={{
@@ -370,7 +376,7 @@ export default ({ mapRef, loaded })=> {
               }
               </Box> 
               { user && initiative.members[user.uid] && (<>
-                <InitiativeGroup/>
+                  <InitiativeGroup/>
               </>)}
             </Box>}
             

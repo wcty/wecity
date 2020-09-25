@@ -116,3 +116,8 @@ export const fileName = atom({
   key: 'fileName',
   default: null,
 })
+
+export const showBarAtom = atom({
+  key: 'showBar',
+  default: true,
+})

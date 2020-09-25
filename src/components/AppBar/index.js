@@ -5,10 +5,10 @@ import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
 import firebase from 'firebase'
 import useMeasure from "use-measure";
-import { barAtom, userAtom } from 'global/Atoms'
+import { barAtom, userAtom, showBarAtom } from 'global/Atoms'
 import Drawer from './drawer'
 import { useAuth, useUser, useFirestore } from 'reactfire';
-import { useSetRecoilState } from 'recoil';
+import { useSetRecoilState, useRecoilState } from 'recoil';
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
 import UserForm from './UserForm'
 import { useI18n } from 'global/Hooks'
@@ -134,21 +134,24 @@ const LogIn = ()=>{
  </>)
 }
 
-const Bar = (props)=>{
+export default (props)=>{
   const i18n = useI18n()
   const classes = Styles()
   const barRef = useRef()
   const barMeasure = useMeasure(barRef)
   const setBarDimensions = useSetRecoilState(barAtom)
+  const [showBar] = useRecoilState(showBarAtom)
+
   const [drawer, setDrawer] = useState(false)
   // const theme = useTheme()
   useEffect(()=>{
     setBarDimensions(barMeasure)
     //console.log(barMeasure)
   },[barMeasure, setBarDimensions])
+
   return (
     <>
-      <AppBar elevation={1} color="default" position="static" className={classes.appbar} ref={barRef}>
+      <AppBar elevation={1} style={{ visibility: showBar?'visible':'hidden' }} color="default" position="static" className={classes.appbar} ref={barRef}>
         <Toolbar >
         <IconButton onClick={()=>{setDrawer(!drawer)}} 
           edge="start" 
@@ -178,5 +181,3 @@ const Bar = (props)=>{
     </>
     )
 }
-
-export default Bar

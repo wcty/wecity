@@ -15,6 +15,7 @@ function TabPanel({ children, value, index, ...other }) {
       aria-labelledby={`full-width-tab-${index}`}
       style={{paddingTop: '0.25rem'}}
       {...other}
+      key={index}
     >
       {value === index && children}
     </div>

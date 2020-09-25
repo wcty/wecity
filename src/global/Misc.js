@@ -38,3 +38,19 @@ export const DeleteObject = async (object, objects, images, directory, close)=>{
   }else{console.log(object)}
 }
 
+export const toJSON = (date)=>{
+  var timezoneOffsetInHours = -(date.getTimezoneOffset() / 60); //UTC minus local time
+  var sign = timezoneOffsetInHours >= 0 ? '+' : '-';
+  var leadingZero = (Math.abs(timezoneOffsetInHours) < 10) ? '0' : '';
+
+  //It's a bit unfortunate that we need to construct a new Date instance 
+  //(we don't want _date_ Date instance to be modified)
+  var correctedDate = new Date(date.getFullYear(), date.getMonth(), 
+      date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), 
+      date.getMilliseconds());
+  correctedDate.setHours(date.getHours() + timezoneOffsetInHours);
+  var iso = correctedDate.toISOString().replace('Z', '');
+
+  return iso + sign + leadingZero + Math.abs(timezoneOffsetInHours).toString() + ':00';
+}
+

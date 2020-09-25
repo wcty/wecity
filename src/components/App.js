@@ -73,7 +73,9 @@ const Layout = ()=>{
         </Route> 
         <Route path="/resources" render={()=><Resources />} />
         <Route path='/feedback' render={()=><FeedbackForm />} />
+        
       </Suspense>
+
       <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>
         <Map />
       </Box>

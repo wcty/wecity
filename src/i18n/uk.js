@@ -142,5 +142,7 @@ export default {
     //Chat
     chatCreatedInitiative: "{0} created initiative",
     chatJoinedInitiative: "{0} joined initiative",
-    chatWriteYourMessage: "Write your message"
+    chatWriteYourMessage: "Write your message",
+    chatWriteYourComment: "Write your comment",
+    chatWriteReply: "Reply"
 };
