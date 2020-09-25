@@ -122,10 +122,10 @@ export default function FullWidthTabs() {
         onChangeIndex={handleChangeIndex}
         style={{paddingTop:0}}
       >
-        <TabPanel value={value} index={0} dir={theme.direction} className={classes.tab}>
+        <TabPanel key={0} value={value} index={0} dir={theme.direction} className={classes.tab}>
             <InitiativeChat/>
         </TabPanel>
-        <TabPanel value={value} index={1} dir={theme.direction} className={classes.tab}>
+        <TabPanel key={1} value={value} index={1} dir={theme.direction} className={classes.tab}>
             <Typography variant="h6"> 
               {i18n('initiativeGroupMembers')}
             </Typography>
@@ -133,7 +133,7 @@ export default function FullWidthTabs() {
               In active development
             </Typography>
         </TabPanel>
-        <TabPanel value={value} index={2} dir={theme.direction} className={classes.tab}>
+        <TabPanel key={2} value={value} index={2} dir={theme.direction} className={classes.tab}>
           <Typography variant="h6"> 
             {i18n('initiativeGroupProjects')}
           </Typography>
@@ -141,7 +141,7 @@ export default function FullWidthTabs() {
             In active development
           </Typography>
         </TabPanel>
-        <TabPanel value={value} index={3} dir={theme.direction} className={classes.tab}>
+        <TabPanel key={3} value={value} index={3} dir={theme.direction} className={classes.tab}>
           <Typography variant="h6"> 
             {i18n('initiativeGroupResources')}
           </Typography>
