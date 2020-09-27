@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 const useAddress = (coords)=>{
   const [address, setAddress] = useState(null)
   useEffect(()=>{
-    if(!address){
+    if(!address&&coords!=''){
       const request = async ()=>{
         const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${coords[0]},${coords[1]}.json?access_token=pk.eyJ1Ijoic3dpdGNoOSIsImEiOiJjamozeGV2bnkxajV2M3FvNnpod3h4ODlpIn0.CTt2IXV8II6finbTlxEddg`)
         const address = await response.json()

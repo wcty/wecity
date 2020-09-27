@@ -7,8 +7,10 @@ import { useParams, useHistory, Route } from 'react-router-dom'
 import { ArrowBack, Send, ThumbUpOutlined, ThumbUp, ThumbDownOutlined, ThumbDown, ModeCommentOutlined, RefreshRounded } from '@material-ui/icons'
 import Post from './InitiativePost'
 import * as Atoms from 'global/Atoms'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, atom } from 'recoil'
 import {toJSON} from 'global/Misc'
+
+
 
 const useStyles = makeStyles((theme)=>({
   post:{
@@ -55,9 +57,8 @@ const useStyles = makeStyles((theme)=>({
 }))
 
 
-const sendComment = (text, commentsRef, user, setText, type, commentsCount)=>{
+const sendComment = (text, commentsRef, user, type, commentsCount)=>{
   if(text){
-    setText('')
     const commentId = commentsRef.push().getKey()
     //console.log(text, user, messageId)
 
@@ -83,30 +84,31 @@ const sendComment = (text, commentsRef, user, setText, type, commentsCount)=>{
 }
 
 
-const Comment = ({initiative, m, n, key})=>{
+const Comment = ({initiative, m, n })=>{
 
   n = n || 0
   const classes = useStyles()
-  const [text, setText] = useState()
   const { initiativeID, postID } = useParams()
   const user = useUser()
   const i18n = useI18n()
-  const history = useHistory()
   const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
-  const [reply, setReply]= useState(null)
+  const [reply, setReply]= useState()
   const commentsRef = useDatabase().ref(`chats/${initiativeID}/comments/${postID}`)
   // const repliesData = useDatabaseListData(commentsRef.child('replies'), {startWithValue:[]})
+  console.log('comment rerender')
+  useEffect(()=>{
+    if(m.reply){
+      setReply(m.id)
+    }
+  },[m])
+
+  const AddReply = ({ r, n })=>{
 
 
-  const AddReply = ({reply, m})=>{
-    const [state, setState] = useState()
-    const [replyText, setReplyText] = useState()
+    const [replyText, setReplyText] = useRecoilState(Atoms.replyAtom)
     useEffect(()=>{
-      if(m.reply){
-        setReply(m.id)
-      }
-    },[m])
-    useEffect(()=>{if(reply&&reply==m.id){ setState(true) }},[reply])
+      if(replyText[r.id]==undefined) setReplyText(s=>({...s, [r.id]:''}))
+    },[]) 
 
     return <Box key={n} style={{display: 'block', width:"100%", marginTop: '0.5rem', padding: '0.5rem', position: 'relative', boxSizing: 'border-box'}}>
         <TextField 
@@ -115,18 +117,20 @@ const Comment = ({initiative, m, n, key})=>{
           style={{width:"100%", borderRadius: "100px"}}
           label={i18n('chatWriteReply')}
           onChange={(e)=>{
-            setReplyText(e.target.value)
+            if(e.target.value) setReplyText(s=>({...s, [r.id]: e.target.value}))
           }}
           onKeyDown={(e)=>{
             if(e.keyCode === 13){
-              sendComment(replyText, commentsRef.child(`${m.id}/replies`), user, setReplyText, 'reply', commentsCount)
+              sendComment(replyText[r.id], commentsRef.child(`${r.id}/replies`), user, 'reply', commentsCount)
+              setReplyText(s=>({...s, [r.id]:''}))
             }
           }}
-          value={replyText}
+          value={replyText[r.id]}
           InputProps={{
             endAdornment:<InputAdornment position="end">
               <IconButton onClick={()=>{
-                sendComment(replyText, commentsRef.child(`${m.id}/replies`), user, setReplyText, 'reply', commentsCount)
+                sendComment(replyText[r.id], commentsRef.child(`${r.id}/replies`), user, 'reply', commentsCount)
+                setReplyText(s=>({...s, [r.id]:''}))
               }}>
                 <Send fontSize="small"/>
               </IconButton>
@@ -136,67 +140,63 @@ const Comment = ({initiative, m, n, key})=>{
       </Box>
   }
 
-  const CommentBody = ({m, refDir})=>{
+  const CommentBody = ({c, refDir})=>{
     const ref = useDatabase().ref(refDir)
     return <>
-      <div style={{verticalAlign:"middle", marginTop:m.showAvatar?"1.5rem":"0.2rem", display:"flex", justifyContent: "start" }}>
+      <div style={{verticalAlign:"middle", marginTop:c.showAvatar?"1.5rem":"0.2rem", display:"flex", justifyContent: "start" }}>
       <ListItem disableGutters style={{padding:0}}>
         <ListItemText 
-          primary={m.user.name}
+          primary={c.user.name}
           secondary={
-            initiative.members[m.user.id].role + ' | ' + 
-            m.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")
+            initiative.members[c.user.id].role + ' | ' + 
+            c.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")
           }
         />
       </ListItem>
       </div>
       
       <Typography variant="body1">
-        {m.text}
+        {c.text}
       </Typography> 
       <Button onClick={()=>{
-        if(m.likes&&m.likes[user.id]){
+        if(c.likes&&c.likes[user.uid]){
           var updates = {};
-          updates['/likes/' + user.id] = null;
-          ref.child(m.id).update(updates)
+          updates['/likes/' + user.uid] = null;
+          ref.child(c.id).update(updates)
         }else{
           var updates = {};
-          if(m.dislikes&&m.dislikes[user.id]){
-            updates['/dislikes/' + user.id] = null;
+          if(c.dislikes&&c.dislikes[user.uid]){
+            updates['/dislikes/' + user.uid] = null;
           }
-          updates['/likes/' + user.id] = true;
-          ref.child(m.id).update(updates)
+          updates['/likes/' + user.uid] = true;
+          ref.child(c.id).update(updates)
         }
       }}>
-        {(m.likes&&m.likes[user.id])?<ThumbUp />:<ThumbUpOutlined />}
-        <span style={{marginLeft:'0.5rem'}}>{m.likes?Object.keys(m.likes).length:0}</span>
+        {(c.likes&&c.likes[user.uid])?<ThumbUp />:<ThumbUpOutlined />}
+        <span style={{marginLeft:'0.5rem'}}>{c.likes?Object.keys(c.likes).length:0}</span>
       </Button>
       <Button onClick={()=>{
-        if(m.dislikes&&m.dislikes[user.id]){
+        if(c.dislikes&&c.dislikes[user.uid]){
           var updates = {};
-          updates['/dislikes/' + user.id] = null;
-          ref.child(m.id).update(updates)
+          updates['/dislikes/' + user.uid] = null;
+          ref.child(c.id).update(updates)
         }else{
           var updates = {};
-          if(m.likes&&m.likes[user.id]){
-            updates['/likes/' + user.id] = null; 
+          if(c.likes&&c.likes[user.uid]){
+            updates['/likes/' + user.uid] = null; 
           }
-          updates['/dislikes/' + user.id] = true;
-          ref.child(m.id).update(updates)
+          updates['/dislikes/' + user.uid] = true;
+          ref.child(c.id).update(updates)
         }
       }}>
-        {(m.dislikes&&m.dislikes[user.id])?<ThumbDown />:<ThumbDownOutlined />}
-          <span style={{marginLeft:'0.5rem'}}>{m.dislikes?Object.keys(m.dislikes).length:0}</span>
+        {(c.dislikes&&c.dislikes[user.uid])?<ThumbDown />:<ThumbDownOutlined />}
+          <span style={{marginLeft:'0.5rem'}}>{c.dislikes?Object.keys(c.dislikes).length:0}</span>
       </Button>
-      <Button onClick={()=>{setReply(m.id)}}>
+      <Button onClick={()=>{setReply(c.id)}}>
         <span style={{marginLeft:'0.5rem'}}>Reply</span>
       </Button>
     </>
   }
-
-  // useEffect(()=>{
-  //   setReply(m.id)
-  // },[m.replies, m.id, setReply])
 
   return (
     <Box key={n} style={{display: 'flex'}}>
@@ -206,7 +206,7 @@ const Comment = ({initiative, m, n, key})=>{
         paddingLeft: "1rem",
         marginBottom:'0.2rem',
       }} >
-        <CommentBody m={m} n={n} refDir={`chats/${initiativeID}/comments/${postID}`}/>
+        <CommentBody c={m} n={n} refDir={`chats/${initiativeID}/comments/${postID}`}/>
         {m.replies && Object.values(m.replies).map((r,i)=>(<Box key={i} style={{display: 'flex'}}>
             <Avatar style={{marginLeft: '1rem', marginTop: '1.75rem' }} alt={r.user.name} src={r.user.avatar} >{r.user.name.split(' ').map(l=>l.slice(0,1).toUpperCase()).join('')}</Avatar>
             <Box style={{
@@ -214,11 +214,11 @@ const Comment = ({initiative, m, n, key})=>{
               paddingLeft: "1rem",
               marginBottom:'0.2rem',
             }} >
-              <CommentBody m={r} n={i} refDir={`chats/${initiativeID}/comments/${postID}/${m.id}/replies`}/>
+              <CommentBody c={r} n={i} refDir={`chats/${initiativeID}/comments/${postID}/${m.id}/replies`}/>
             </Box>
           </Box>
         ))}
-        {(m.replies || reply==m.id)&&<AddReply m={m} n={n}/>}
+        {(m.replies || reply==m.id)&&<AddReply r={m} n={n}/>}
 
       </Box>
     </Box>
@@ -239,7 +239,7 @@ export default ()=>{
   const initiativeRef = useFirestore().collection('initiatives').doc(initiativeID)
   const initiative = useFirestoreDocData(initiativeRef)
   const i18n = useI18n()
-  const [text, setText] = useState()
+  const [text, setText] = useState('')
   const user = useUser()
   const [expanded, setExpanded] = useRecoilState(Atoms.expanded)
   const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
@@ -282,13 +282,17 @@ export default ()=>{
         }}
         onKeyDown={(e)=>{
           if(e.keyCode === 13){
-            sendComment(text, commentsRef, user, setText, 'comment', commentsCount)
+            sendComment(text, commentsRef, user, 'comment', commentsCount)
+            setText('')
           }
         }}
         value={text}
         InputProps={{
           endAdornment:<InputAdornment position="end">
-            <IconButton onClick={()=>{sendComment(text, commentsRef, user, setText, 'comment', commentsCount)}} >
+            <IconButton onClick={()=>{
+              sendComment(text, commentsRef, user, 'comment', commentsCount)
+              setText('')
+            }} >
               <Send fontSize="small"/>
             </IconButton>
           </InputAdornment>

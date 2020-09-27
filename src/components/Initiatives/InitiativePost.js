@@ -42,7 +42,7 @@ export default ({initiative, m, n})=>{
       <div style={{verticalAlign:"middle", marginTop:m.showAvatar?"1.5rem":"0.2rem", display:"flex", justifyContent: "start" }}>
         {/* <Avatar alt={m.user.name} src={m.user.avatar} >{m.user.name.split(' ').map(l=>l.slice(0,1).toUpperCase()).join('')}</Avatar>
         <Typography variant="subtitle2" style={{marginRight:"0.5rem"}}>{m.user.name}</Typography>
-        <Typography variant="body2" style={{marginRight:"0.5rem"}}>{initiative.members[m.user.id].role}</Typography> */}
+        <Typography variant="body2" style={{marginRight:"0.5rem"}}>{initiative.members[m.user.uid].role}</Typography> */}
       <ListItem disableGutters style={{padding:0}}>
         <ListItemAvatar>
           <Avatar alt={m.user.name} src={m.user.avatar} >{m.user.name.split(' ').map(l=>l.slice(0,1).toUpperCase()).join('')}</Avatar>
@@ -62,37 +62,37 @@ export default ({initiative, m, n})=>{
       </Typography> 
       <Divider style={{margin:"0.5rem 0"}}/>
       <Button onClick={()=>{
-        if(m.likes&&m.likes[user.id]){
+        if(m.likes&&m.likes[user.uid]){
           var updates = {};
-          updates['/likes/' + user.id] = null;
+          updates['/likes/' + user.uid] = null;
           messages.child(m.id).update(updates)
         }else{
           var updates = {};
-          if(m.dislikes&&m.dislikes[user.id]){
-            updates['/dislikes/' + user.id] = null;
+          if(m.dislikes&&m.dislikes[user.uid]){
+            updates['/dislikes/' + user.uid] = null;
           }
-          updates['/likes/' + user.id] = true;
+          updates['/likes/' + user.uid] = true;
           messages.child(m.id).update(updates)
         }
       }}>
-        {(m.likes&&m.likes[user.id])?<ThumbUp />:<ThumbUpOutlined />}
+        {(m.likes&&m.likes[user.uid])?<ThumbUp />:<ThumbUpOutlined />}
         <span style={{marginLeft:'0.5rem'}}>{m.likes?Object.keys(m.likes).length:0}</span>
       </Button>
       <Button onClick={()=>{
-        if(m.dislikes&&m.dislikes[user.id]){
+        if(m.dislikes&&m.dislikes[user.uid]){
           var updates = {};
-          updates['/dislikes/' + user.id] = null;
+          updates['/dislikes/' + user.uid] = null;
           messages.child(m.id).update(updates)
         }else{
           var updates = {};
-          if(m.likes&&m.likes[user.id]){
-            updates['/likes/' + user.id] = null; 
+          if(m.likes&&m.likes[user.uid]){
+            updates['/likes/' + user.uid] = null; 
           }
-          updates['/dislikes/' + user.id] = true;
+          updates['/dislikes/' + user.uid] = true;
           messages.child(m.id).update(updates)
         }
       }}>
-        {(m.dislikes&&m.dislikes[user.id])?<ThumbDown />:<ThumbDownOutlined />}
+        {(m.dislikes&&m.dislikes[user.uid])?<ThumbDown />:<ThumbDownOutlined />}
           <span style={{marginLeft:'0.5rem'}}>{m.dislikes?Object.keys(m.dislikes).length:0}</span>
       </Button>
       <Button onClick={()=>{history.push(`/initiative/${initiativeID}/post/${m.id}`)}}>

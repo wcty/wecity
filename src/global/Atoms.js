@@ -121,3 +121,8 @@ export const showBarAtom = atom({
   key: 'showBar',
   default: true,
 })
+
+export const replyAtom = atom({
+  key: 'reply',
+  default: {},
+})

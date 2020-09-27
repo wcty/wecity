@@ -115,7 +115,7 @@ export default ({ mapRef, loaded })=> {
             }
           ]
         }, dist, 180)
-        console.log(newOffPoint.features[0].geometry.coordinates)
+        //console.log(newOffPoint.features[0].geometry.coordinates)
         newOffPoint.features[0].geometry.coordinates && map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
       }
     }
