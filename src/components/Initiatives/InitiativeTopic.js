@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Toolbar, IconButton, Button, Divider, InputAdornment, Avatar, Typography, Box, TextField, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
+import { AppBar, Menu, MenuItem, ListItemSecondaryAction, Toolbar, IconButton, Button, Divider, InputAdornment, Avatar, Typography, Box, TextField, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
 import { useI18n } from 'global/Hooks'
 import { useDatabase, useUser, useDatabaseListData, useFirestore, useFirestoreDocData, useDatabaseObjectData } from 'reactfire'
 import { useParams, useHistory, Route } from 'react-router-dom'
-import { ArrowBack, Send, ThumbUpOutlined, ThumbUp, ThumbDownOutlined, ThumbDown, ModeCommentOutlined, RefreshRounded } from '@material-ui/icons'
+import { ArrowBack, Send, MoreVert, ThumbUpOutlined, ThumbUp, ThumbDownOutlined, ThumbDown, ModeCommentOutlined, RefreshRounded } from '@material-ui/icons'
 import Post from './InitiativePost'
 import * as Atoms from 'global/Atoms'
 import { useRecoilState, atom } from 'recoil'
 import {toJSON} from 'global/Misc'
-
-
 
 const useStyles = makeStyles((theme)=>({
   post:{
@@ -134,13 +132,24 @@ const CommentBody = ({c, refDir, initiative})=>{
   const { initiativeID, postID } = useParams()
   const user = useUser()
   const i18n = useI18n()
-  const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
   const [reply, setReply]= useRecoilState(Atoms.replyFieldAtom)
-  const commentsRef = useDatabase().ref(`chats/${initiativeID}/comments/${postID}`)
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = (e) => {
+    if(e.target.innerText=='Delete'){
+      ref.child(c.id).remove()
+      commentsCount.child(c.id).remove()
+    }
+    setAnchorEl(null);
+  };
   return <>
-    <div style={{verticalAlign:"middle", marginTop:c.showAvatar?"1.5rem":"0.2rem", display:"flex", justifyContent: "start" }}>
-    <ListItem disableGutters style={{padding:0}}>
+    <div style={{verticalAlign:"middle", width:'100%', marginTop:c.showAvatar?"1.5rem":"0.2rem", display:"flex", justifyContent: "start" }}>
+    <ListItem disableGutters style={{padding:0}} component='div' ContainerComponent='div' ContainerProps={{style:{width: '100%'}}} style={{width:'100%'}}>
       <ListItemText 
         primary={c.user.name}
         secondary={
@@ -148,6 +157,20 @@ const CommentBody = ({c, refDir, initiative})=>{
           c.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")
         }
       />
+      {user.uid===c.user.id&& <ListItemSecondaryAction>
+        <IconButton edge="end" aria-label="more" style={{marginTop:'-1rem'}} aria-controls="more-menu" aria-haspopup="true" onClick={handleClick}>
+          <MoreVert fontSize='small'/>
+        </IconButton>
+        <Menu
+          id="more-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleClose}>Delete</MenuItem>
+        </Menu>
+      </ListItemSecondaryAction>}
     </ListItem>
     </div>
     
@@ -201,10 +224,8 @@ const Comment = ({initiative, m, n })=>{
   const { initiativeID, postID } = useParams()
   const user = useUser()
   const i18n = useI18n()
-  const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
   const [reply, setReply]= useRecoilState(Atoms.replyFieldAtom)
-  const commentsRef = useDatabase().ref(`chats/${initiativeID}/comments/${postID}`)
-  // const repliesData = useDatabaseListData(commentsRef.child('replies'), {startWithValue:[]})
+
   useEffect(()=>{
     if(m.reply && reply){
       setReply(m.id)
@@ -218,6 +239,7 @@ const Comment = ({initiative, m, n })=>{
         paddingTop:"0.2rem",
         paddingLeft: "1rem",
         marginBottom:'0.2rem',
+        width: '100%'
       }} >
         <CommentBody initiative={initiative} c={m} n={n} refDir={`chats/${initiativeID}/comments/${postID}`}/>
         {m.replies && Object.values(m.replies).map((r,i)=>(<Box key={i} style={{display: 'flex'}}>
@@ -226,6 +248,7 @@ const Comment = ({initiative, m, n })=>{
               paddingTop:"0.2rem",
               paddingLeft: "1rem",
               marginBottom:'0.2rem',
+              width: '100%'
             }} >
               <CommentBody initiative={initiative} c={r} n={Number(String(n)+ "0" + String(i))} refDir={`chats/${initiativeID}/comments/${postID}/${m.id}/replies`}/>
             </Box>
