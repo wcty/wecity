@@ -126,3 +126,8 @@ export const replyAtom = atom({
   key: 'reply',
   default: {},
 })
+
+export const replyFieldAtom = atom({
+  key: 'replyField',
+  default: undefined,
+})

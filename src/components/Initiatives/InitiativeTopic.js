@@ -83,6 +83,116 @@ const sendComment = (text, commentsRef, user, type, commentsCount)=>{
   }
 }
 
+const AddReply = ({ r, n })=>{
+  const classes = useStyles()
+  const { initiativeID, postID } = useParams()
+  const user = useUser()
+  const i18n = useI18n()
+  const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
+  const [reply, setReply]= useRecoilState(Atoms.replyFieldAtom)
+  const commentsRef = useDatabase().ref(`chats/${initiativeID}/comments/${postID}`)
+
+  const [replyText, setReplyText] = useRecoilState(Atoms.replyAtom)
+  useEffect(()=>{
+    if(replyText[r.id]==undefined) {setReplyText(s=>({...s, [r.id]:''}))}
+  },[]) 
+
+  return <Box key={n} style={{display: 'block', width:"100%", marginTop: '0.5rem', padding: '0.5rem', position: 'relative', boxSizing: 'border-box'}}>
+      <TextField 
+        variant="outlined"
+        className={classes.textField}
+        style={{width:"100%", borderRadius: "100px"}}
+        label={i18n('chatWriteReply')}
+        onChange={(e)=>{
+          setReplyText(s=>({...s, [r.id]: e.target.value}))
+        }}
+        onSubmit={()=>{console.log('submit')}}
+        onKeyDown={(e)=>{
+          if(e.keyCode === 13){
+            sendComment(replyText[r.id], commentsRef.child(`${r.id}/replies`), user, 'reply', commentsCount)
+            setReplyText(s=>({...s, [r.id]:''}))
+          }
+        }}
+        value={replyText[r.id]||''}
+        InputProps={{
+          endAdornment:<InputAdornment position="end">
+            <IconButton onClick={()=>{
+              sendComment(replyText[r.id], commentsRef.child(`${r.id}/replies`), user, 'reply', commentsCount)
+              setReplyText(s=>({...s, [r.id]:''}))
+            }}>
+              <Send fontSize="small"/>
+            </IconButton>
+          </InputAdornment>
+        }}
+      />
+    </Box>
+}
+
+const CommentBody = ({c, refDir, initiative})=>{
+  const ref = useDatabase().ref(refDir)
+  const classes = useStyles()
+  const { initiativeID, postID } = useParams()
+  const user = useUser()
+  const i18n = useI18n()
+  const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
+  const [reply, setReply]= useRecoilState(Atoms.replyFieldAtom)
+  const commentsRef = useDatabase().ref(`chats/${initiativeID}/comments/${postID}`)
+
+  return <>
+    <div style={{verticalAlign:"middle", marginTop:c.showAvatar?"1.5rem":"0.2rem", display:"flex", justifyContent: "start" }}>
+    <ListItem disableGutters style={{padding:0}}>
+      <ListItemText 
+        primary={c.user.name}
+        secondary={
+          initiative.members[c.user.id].role + ' | ' + 
+          c.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")
+        }
+      />
+    </ListItem>
+    </div>
+    
+    <Typography variant="body1">
+      {c.text}
+    </Typography> 
+    <Button onClick={()=>{
+      if(c.likes&&c.likes[user.uid]){
+        var updates = {};
+        updates['/likes/' + user.uid] = null;
+        ref.child(c.id).update(updates)
+      }else{
+        var updates = {};
+        if(c.dislikes&&c.dislikes[user.uid]){
+          updates['/dislikes/' + user.uid] = null;
+        }
+        updates['/likes/' + user.uid] = true;
+        ref.child(c.id).update(updates)
+      }
+    }}>
+      {(c.likes&&c.likes[user.uid])?<ThumbUp />:<ThumbUpOutlined />}
+      <span style={{marginLeft:'0.5rem'}}>{c.likes?Object.keys(c.likes).length:0}</span>
+    </Button>
+    <Button onClick={()=>{
+      if(c.dislikes&&c.dislikes[user.uid]){
+        var updates = {};
+        updates['/dislikes/' + user.uid] = null;
+        ref.child(c.id).update(updates)
+      }else{
+        var updates = {};
+        if(c.likes&&c.likes[user.uid]){
+          updates['/likes/' + user.uid] = null; 
+        }
+        updates['/dislikes/' + user.uid] = true;
+        ref.child(c.id).update(updates)
+      }
+    }}>
+      {(c.dislikes&&c.dislikes[user.uid])?<ThumbDown />:<ThumbDownOutlined />}
+        <span style={{marginLeft:'0.5rem'}}>{c.dislikes?Object.keys(c.dislikes).length:0}</span>
+    </Button>
+    <Button onClick={()=>{setReply(c.id)}}>
+      <span style={{marginLeft:'0.5rem'}}>Reply</span>
+    </Button>
+  </>
+}
 
 const Comment = ({initiative, m, n })=>{
 
@@ -92,111 +202,14 @@ const Comment = ({initiative, m, n })=>{
   const user = useUser()
   const i18n = useI18n()
   const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
-  const [reply, setReply]= useState()
+  const [reply, setReply]= useRecoilState(Atoms.replyFieldAtom)
   const commentsRef = useDatabase().ref(`chats/${initiativeID}/comments/${postID}`)
   // const repliesData = useDatabaseListData(commentsRef.child('replies'), {startWithValue:[]})
-  console.log('comment rerender')
   useEffect(()=>{
-    if(m.reply){
+    if(m.reply && reply){
       setReply(m.id)
     }
   },[m])
-
-  const AddReply = ({ r, n })=>{
-
-
-    const [replyText, setReplyText] = useRecoilState(Atoms.replyAtom)
-    useEffect(()=>{
-      if(replyText[r.id]==undefined) setReplyText(s=>({...s, [r.id]:''}))
-    },[]) 
-
-    return <Box key={n} style={{display: 'block', width:"100%", marginTop: '0.5rem', padding: '0.5rem', position: 'relative', boxSizing: 'border-box'}}>
-        <TextField 
-          variant="outlined"
-          className={classes.textField}
-          style={{width:"100%", borderRadius: "100px"}}
-          label={i18n('chatWriteReply')}
-          onChange={(e)=>{
-            if(e.target.value) setReplyText(s=>({...s, [r.id]: e.target.value}))
-          }}
-          onKeyDown={(e)=>{
-            if(e.keyCode === 13){
-              sendComment(replyText[r.id], commentsRef.child(`${r.id}/replies`), user, 'reply', commentsCount)
-              setReplyText(s=>({...s, [r.id]:''}))
-            }
-          }}
-          value={replyText[r.id]}
-          InputProps={{
-            endAdornment:<InputAdornment position="end">
-              <IconButton onClick={()=>{
-                sendComment(replyText[r.id], commentsRef.child(`${r.id}/replies`), user, 'reply', commentsCount)
-                setReplyText(s=>({...s, [r.id]:''}))
-              }}>
-                <Send fontSize="small"/>
-              </IconButton>
-            </InputAdornment>
-          }}
-        />
-      </Box>
-  }
-
-  const CommentBody = ({c, refDir})=>{
-    const ref = useDatabase().ref(refDir)
-    return <>
-      <div style={{verticalAlign:"middle", marginTop:c.showAvatar?"1.5rem":"0.2rem", display:"flex", justifyContent: "start" }}>
-      <ListItem disableGutters style={{padding:0}}>
-        <ListItemText 
-          primary={c.user.name}
-          secondary={
-            initiative.members[c.user.id].role + ' | ' + 
-            c.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")
-          }
-        />
-      </ListItem>
-      </div>
-      
-      <Typography variant="body1">
-        {c.text}
-      </Typography> 
-      <Button onClick={()=>{
-        if(c.likes&&c.likes[user.uid]){
-          var updates = {};
-          updates['/likes/' + user.uid] = null;
-          ref.child(c.id).update(updates)
-        }else{
-          var updates = {};
-          if(c.dislikes&&c.dislikes[user.uid]){
-            updates['/dislikes/' + user.uid] = null;
-          }
-          updates['/likes/' + user.uid] = true;
-          ref.child(c.id).update(updates)
-        }
-      }}>
-        {(c.likes&&c.likes[user.uid])?<ThumbUp />:<ThumbUpOutlined />}
-        <span style={{marginLeft:'0.5rem'}}>{c.likes?Object.keys(c.likes).length:0}</span>
-      </Button>
-      <Button onClick={()=>{
-        if(c.dislikes&&c.dislikes[user.uid]){
-          var updates = {};
-          updates['/dislikes/' + user.uid] = null;
-          ref.child(c.id).update(updates)
-        }else{
-          var updates = {};
-          if(c.likes&&c.likes[user.uid]){
-            updates['/likes/' + user.uid] = null; 
-          }
-          updates['/dislikes/' + user.uid] = true;
-          ref.child(c.id).update(updates)
-        }
-      }}>
-        {(c.dislikes&&c.dislikes[user.uid])?<ThumbDown />:<ThumbDownOutlined />}
-          <span style={{marginLeft:'0.5rem'}}>{c.dislikes?Object.keys(c.dislikes).length:0}</span>
-      </Button>
-      <Button onClick={()=>{setReply(c.id)}}>
-        <span style={{marginLeft:'0.5rem'}}>Reply</span>
-      </Button>
-    </>
-  }
 
   return (
     <Box key={n} style={{display: 'flex'}}>
@@ -206,7 +219,7 @@ const Comment = ({initiative, m, n })=>{
         paddingLeft: "1rem",
         marginBottom:'0.2rem',
       }} >
-        <CommentBody c={m} n={n} refDir={`chats/${initiativeID}/comments/${postID}`}/>
+        <CommentBody initiative={initiative} c={m} n={n} refDir={`chats/${initiativeID}/comments/${postID}`}/>
         {m.replies && Object.values(m.replies).map((r,i)=>(<Box key={i} style={{display: 'flex'}}>
             <Avatar style={{marginLeft: '1rem', marginTop: '1.75rem' }} alt={r.user.name} src={r.user.avatar} >{r.user.name.split(' ').map(l=>l.slice(0,1).toUpperCase()).join('')}</Avatar>
             <Box style={{
@@ -214,7 +227,7 @@ const Comment = ({initiative, m, n })=>{
               paddingLeft: "1rem",
               marginBottom:'0.2rem',
             }} >
-              <CommentBody c={r} n={i} refDir={`chats/${initiativeID}/comments/${postID}/${m.id}/replies`}/>
+              <CommentBody initiative={initiative} c={r} n={Number(String(n)+ "0" + String(i))} refDir={`chats/${initiativeID}/comments/${postID}/${m.id}/replies`}/>
             </Box>
           </Box>
         ))}
