@@ -133,15 +133,16 @@ const CommentBody = ({c, refDir, initiative})=>{
   const user = useUser()
   const i18n = useI18n()
   const [reply, setReply]= useRecoilState(Atoms.replyFieldAtom)
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = (e) => {
-    if(e.target.innerText=='Delete'){
+  const handleClose = (event) => {
+    event.preventDefault();
+    if(event.target.innerText=='Delete'){
       ref.child(c.id).remove()
       commentsCount.child(c.id).remove()
     }

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { IconButton, Button, Divider, InputAdornment, Avatar, Typography, Box, TextField, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
+import { IconButton, ListItemSecondaryAction, Menu, MenuItem, Button, Divider, InputAdornment, Avatar, Typography, Box, TextField, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
 import { useI18n } from 'global/Hooks'
 import { useDatabase, useUser, useDatabaseListData, useFirestore, useFirestoreDocData, useDatabaseObjectData } from 'reactfire'
 import { useParams, useHistory, Route } from 'react-router-dom'
-import { Send, ThumbUpOutlined, ThumbUp, ThumbDownOutlined, ThumbDown, ModeCommentOutlined } from '@material-ui/icons'
+import { Send, MoreVert, ThumbUpOutlined, ThumbUp, ThumbDownOutlined, ThumbDown, ModeCommentOutlined } from '@material-ui/icons'
 
 const DateComponent = (props)=>{
   return <Typography style={{textAlign:"center", margin: "0.5rem", marginTop:"1rem"}} variant="body2">{props.children}</Typography>
@@ -22,9 +22,27 @@ export default ({initiative, m, n})=>{
   const i18n = useI18n()
   const history = useHistory()
   const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
+  
   useEffect(()=>{
     if(Object.keys(m).length===0) history.replace(`/initiative/${initiativeID}`)
   },[m])
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${m.id}/commentsCount`)
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = (event) => {
+    event.preventDefault();
+    if(event.target.innerText=='Delete'){
+      messages.child(m.id).remove()
+      commentsCount.child(m.id).remove()
+    }
+    setAnchorEl(null);
+  };
+  
   return Object.keys(m).length!=0 && <Box key={n}>
     {(m.type!=='message') && <>
       <DateComponent>{m.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")}</DateComponent>
@@ -43,7 +61,7 @@ export default ({initiative, m, n})=>{
         {/* <Avatar alt={m.user.name} src={m.user.avatar} >{m.user.name.split(' ').map(l=>l.slice(0,1).toUpperCase()).join('')}</Avatar>
         <Typography variant="subtitle2" style={{marginRight:"0.5rem"}}>{m.user.name}</Typography>
         <Typography variant="body2" style={{marginRight:"0.5rem"}}>{initiative.members[m.user.uid].role}</Typography> */}
-      <ListItem disableGutters style={{padding:0}}>
+      <ListItem disableGutters style={{padding:0, width:'100%'}} component='div' ContainerComponent='div' ContainerProps={{style:{width: '100%'}}} >
         <ListItemAvatar>
           <Avatar alt={m.user.name} src={m.user.avatar} >{m.user.name.split(' ').map(l=>l.slice(0,1).toUpperCase()).join('')}</Avatar>
         </ListItemAvatar>
@@ -54,6 +72,20 @@ export default ({initiative, m, n})=>{
             m.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")
           }
         />
+        {user.uid===m.user.id&& <ListItemSecondaryAction>
+          <IconButton edge="end" aria-label="more" style={{marginTop:'-1rem'}} aria-controls="more-menu" aria-haspopup="true" onClick={handleClick}>
+            <MoreVert fontSize='small'/>
+          </IconButton>
+          <Menu
+            id="more-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={handleClose}>Delete</MenuItem>
+          </Menu>
+        </ListItemSecondaryAction>}
       </ListItem>
       </div>
       
