@@ -83,7 +83,7 @@ export default ({initiative, m, n})=>{
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>Delete</MenuItem>
+            <MenuItem component='button' onClick={handleClose} >Delete</MenuItem>
           </Menu>
         </ListItemSecondaryAction>}
       </ListItem>
