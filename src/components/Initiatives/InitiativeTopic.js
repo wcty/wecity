@@ -11,15 +11,17 @@ import { useRecoilState, atom } from 'recoil'
 import {toJSON} from 'global/Misc'
 
 const useStyles = makeStyles((theme)=>({
+
   post:{
     zIndex: 11,
     position: 'fixed',
-    left: 0,
+    width: '100%',
+    maxWidth: 400,
     top: 0,
     right: 0,
     bottom: 0,
     backgroundColor: 'white',
-    overflowY: 'auto'
+    overflowY: 'auto',
   },
   small: {
     width: theme.spacing(3),
@@ -169,7 +171,7 @@ const CommentBody = ({c, refDir, initiative})=>{
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem component='button' onClick={handleClose}>Delete</MenuItem>
+          <MenuItem component='button' onMouseDown={handleClose} onClick={handleClose} >Delete</MenuItem>
         </Menu>
       </ListItemSecondaryAction>}
     </ListItem>
