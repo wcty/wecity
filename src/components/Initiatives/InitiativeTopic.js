@@ -171,7 +171,7 @@ const CommentBody = ({c, refDir, initiative})=>{
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem component='button' onMouseDown={handleClose} onClick={handleClose} >Delete</MenuItem>
+          <MenuItem component='button' onPointerDown={handleClose} onTouchEnd={handleClose} onMouseDown={handleClose} onClick={handleClose} >Delete</MenuItem>
         </Menu>
       </ListItemSecondaryAction>}
     </ListItem>
