@@ -44,6 +44,7 @@ export default {
     addAndJoin: "Add and join",
     addToInitiative: "Add to Initiative",
     join: "Join",
+    leave: "Leave",
     delete: "Delete",
     cancel: "Cancel",
     back: "Back",

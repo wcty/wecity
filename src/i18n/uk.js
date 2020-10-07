@@ -44,6 +44,7 @@ export default {
     addAndJoin: "Додати та приєднатися",
     addToInitiative: "Додати проект в ініціативу",
     join: "Приєднатися",
+    leave: "Залишити",
     delete: "Видалити",
     cancel: "Відмінити",
     back: "Назад",

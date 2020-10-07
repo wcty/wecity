@@ -1,3 +1,5 @@
+// const dev = process.env.NODE_ENV !== 'production'
+
 export const firebaseConfig = {
   apiKey: "AIzaSyC0R35s-u9bZCZOpwg8jVIzYg77HeKgr0Y",
   authDomain: "weee.city",

@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme)=>({
   }
 }))
 
-export default ()=>{
+export default ({initiative})=>{
   const { initiativeID } = useParams()
   // const chatDatabase = useDatabase().ref(`chats/${initiativeID}/`)
   const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
@@ -53,7 +53,6 @@ export default ()=>{
   const [text, setText] = useState()
   const user = useUser()
   const initiativeRef = useFirestore().collection('initiatives').doc(initiativeID)
-  const initiative = useFirestoreDocData(initiativeRef)
 
   const sendMessage = ()=>{
     if(text){

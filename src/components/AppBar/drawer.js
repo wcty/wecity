@@ -3,8 +3,8 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { SwipeableDrawer, List, Divider, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { MapOutlined, LibraryBooksOutlined, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined } from '@material-ui/icons';
-import {  useUser } from 'reactfire';
-import { Redirect } from 'react-router-dom';
+import { useUser } from 'reactfire';
+import { useHistory } from 'react-router-dom';
 import LangSelect from './LangSelect'
 import { useI18n } from 'global/Hooks'
 
@@ -21,24 +21,19 @@ const useStyles = makeStyles({
 export default ({ state, setState })=>{
   const classes = useStyles();
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const history = useHistory()
+  const user = useUser()
+  
   const toggleDrawer = (open) => (event) => {
-    
     if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
     setState(open);
   };
-  const [redirect, setRedirect] = useState(null)
+  
   const i18n = useI18n()
 
-  const user = useUser();
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect])
-
-  const menuTop = user?
+  const menuTop = !user.isAnonymous?
     [
       {
         id:'map',
@@ -72,7 +67,7 @@ export default ({ state, setState })=>{
       // }
     ]
 
-  const menuBottom = user?
+  const menuBottom = !user.isAnonymous?
     [
       {
         id: 'settings',
@@ -106,13 +101,13 @@ export default ({ state, setState })=>{
           {menuTop.map((val, index) => (
             <ListItem button key={val.id} onClick={()=>{
               if(val.id==='map'){
-                setRedirect('/')
+                history.push('/')
               }else if(val.id==='initiatives'){
-                setRedirect('/initiatives')
+                history.push('/initiatives')
               }else if(val.id==='projects'){
-                setRedirect('/projects')
+                history.push('/projects')
               }else if(val.id==='resources'){
-                setRedirect('/resources')
+                history.push('/resources')
               }
             }}>
               <ListItemIcon>
@@ -134,9 +129,9 @@ export default ({ state, setState })=>{
           {menuBottom.map((val, index) => (
             <ListItem button key={val.id} onClick={()=>{
               if(val.id==='settings'){
-                //setRedirect('/settings')
+                //history.push('/settings')
               }else if(val.id==='feedback'){
-                setRedirect('/feedback')
+                history.push('/feedback')
                 console.log('feedback')
               }
             }}
@@ -158,7 +153,6 @@ export default ({ state, setState })=>{
   return (
     //<div>
     <>          
-        {redirect && <Redirect to={redirect} />}
         <SwipeableDrawer
           open={state}
           onClose={toggleDrawer(false)}

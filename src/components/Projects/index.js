@@ -32,22 +32,14 @@ export default ()=> {
   const classes = useStyles()
   const user = useUser()
   const bar = useRecoilValue(Atoms.barAtom)
-  const [redirect, setRedirect] = useState()
-  
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect])
 
   return (<>
-    {redirect && <Redirect to={redirect}/>}
     <Paper elevation={1} className={classes.root}
       style={{
         height: `calc(100% - ${bar.height}px)`,
       }}
     > 
-      {user && <ProjectFab/>}
+      { !user.isAnonymous && <ProjectFab/>}
       <ProjectLibrary />
       <Route path="/projects/:projectId">
         <Project/>

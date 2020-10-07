@@ -6,7 +6,7 @@ import { barAtom, mapAtom } from 'global/Atoms'
 import {  useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
 import InitiativeFab from 'components/Initiatives/InitiativeFab'
 import { useI18n } from 'global/Hooks'
-import { Redirect } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,13 +43,7 @@ export default ({ mapRef })=> {
   const bar = useRecoilValue(barAtom)
   const mapDimensions = useRecoilValue(mapAtom)
   const i18n = useI18n()
-  const [redirect, setRedirect] = useState()
-
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect])
+  const history = useHistory()
 
   const initiativesRef = useFirestore()
     .collection('initiatives')
@@ -64,7 +58,6 @@ export default ({ mapRef })=> {
   }
 
   return (<>
-        {redirect && <Redirect to={redirect}/>}
         <Paper elevation={1} className={classes.root} 
           style={{
             height: `calc(100% - ${bar.height}px)`, 
@@ -91,7 +84,7 @@ export default ({ mapRef })=> {
               <div key={i}>
               <ListItem button onClick={()=>{
                 console.log(initiative)
-                setRedirect(`/initiative/${initiative.id}`)
+                history.push(`/initiative/${initiative.id}`)
                 // setIsCreating(null)  
                 // setInitiativeBar(false)
               }}>

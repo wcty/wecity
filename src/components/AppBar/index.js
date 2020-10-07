@@ -70,7 +70,7 @@ const LogIn = ()=>{
           });
         } else {
           console.log('no data')
-          setNewUser(user.uid)
+          if(!user.isAnonymous) setNewUser(user.uid)
           //users.set({...}) // create the document
         }
       });
@@ -105,7 +105,7 @@ const LogIn = ()=>{
       <UserForm isCreating={newUser} setIsCreating={setNewUser} /*setContactData={setContactData}*//>
     </Box>)}
     <Route path='/settings'><UserForm isCreating={newUser} setIsCreating={setNewUser} /*setContactData={setContactData}*/ /></Route>
-    {user?  
+    {!user.isAnonymous?  
             <div className={classes.userProfileContainer}>
 
               {/* <Typography className={classes.progress}  type="body1" component="p">

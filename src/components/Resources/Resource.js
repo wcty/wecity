@@ -184,7 +184,7 @@ export default ({ resource, setResource })=> {
           </div>
           <Suspense fallback={null}>
           
-            { user && <Button 
+            { !user.isAnonymous && <Button 
               elevation={15} 
               variant="contained" 
               style={{zIndex: 200, marginLeft:"1rem",marginBottom:"1rem", color:'white',backgroundColor:'grey'}} 

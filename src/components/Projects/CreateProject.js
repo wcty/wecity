@@ -9,7 +9,7 @@ import { useGeoFirestore } from 'global/Hooks'
 import firebase from 'firebase'
 import FormExpanded from 'global/FormExpanded'
 import createProjectForm from 'global/forms/createProjectForm'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -45,12 +45,7 @@ export default ({ submit, cancel, variant, submitText, cancelText })=>{
   const [expanded] = useRecoilState(Atoms.expanded)
   const [finished, setFinished] = useState(false)
   const bar = useRecoilValue(Atoms.barAtom)
-  const [redirect, setRedirect] = useState()
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect])
+  const history = useHistory()
 
 return <Paper elevation={1} className={classes.root}
         style={{
@@ -58,7 +53,6 @@ return <Paper elevation={1} className={classes.root}
           marginBottom: "1rem",
         }}
       > 
-      {redirect && <Redirect to={redirect}/>}
       <FormExpanded 
         directory="projects"
         isFilling={expanded} 
@@ -101,7 +95,7 @@ return <Paper elevation={1} className={classes.root}
               .catch(function(error) {
                   console.error("Error adding document: ", error);
               });
-              setRedirect('/projects')
+              history.push('/projects')
 
             }}>
               {submitText?submitText:'Додати і приєднатися'}

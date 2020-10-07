@@ -5,7 +5,7 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {  selectedAtom, initiativeBarAtom, creatingAtom, userAtom } from 'global/Atoms'
 import { AddLocation } from '@material-ui/icons'
-import { Redirect } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { useI18n } from 'global/Hooks'
 
 const useStyles = makeStyles(theme => ({
@@ -30,23 +30,16 @@ export default ({ active, getMarker })=>{
   const fabRef = useRef()
   const setSelected = useSetRecoilState(selectedAtom)
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
-  const [redirect, setRedirect] = useState(null)
   const i18n = useI18n()
-
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect])
+  const history = useHistory()
 
   return (
     <>
-    {redirect && <Redirect to={redirect} />}
       <>
         <Fab 
           onClick={()=>{
             if(active){
-              setRedirect('/create-initiative')
+              history.push('/create-initiative')
               setIsCreating(true)
               setSelected(null)
               setInitiativeBar(false)
@@ -67,7 +60,7 @@ export default ({ active, getMarker })=>{
           <AddLocation />
         </Fab>
       </>
-    { alert && !user && (
+    { alert && user.isAnonymous && (
       <Collapse in={Boolean(alert)}>
         <Alert severity="info" className={classes.alert} onClose={() => {setAlert(null)}}>
           <AlertTitle>Info</AlertTitle>

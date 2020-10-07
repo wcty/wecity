@@ -1,24 +1,26 @@
-import React, { useState, useEffect, Suspense } from 'react'
+import React, { useState, useEffect, useMemo, Suspense } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Collapse, Paper, Typography, IconButton, Box, List, ListItem, ListItemText, Button, TextField } from '@material-ui/core'
+import { Collapse, Paper, Typography, IconButton, Box,Fab, List, ListItem, ListItemText, Button, TextField } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import addImage from 'assets/images/addImage.png'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
 import { useStorage, useFirestore, useUser, useFirestoreDocData } from 'reactfire'
-import { People, LocationOn, ExpandLess, Close } from '@material-ui/icons'
+import { People, LocationOn, ExpandLess, Close, ArrowBack, ArrowForward } from '@material-ui/icons'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
 import ImageViewer from 'react-simple-image-viewer'
 import { useI18n } from 'global/Hooks'
 import { DeleteObject } from 'global/Misc'
 import moment from 'moment'
-import { useParams, Redirect, Route } from 'react-router-dom'
+import { useParams, Route, useHistory } from 'react-router-dom'
 import {Helmet} from "react-helmet"
 import { Share } from '@material-ui/icons'
 import SelectRole from './SelectRole'
 import InitiativeGroup from './InitiativeGroup'
 import InitiativeTopic from './InitiativeTopic'
+import { useQuery, useMutation } from '@apollo/client'
+import { getInitiative, updateInitiativeMember, deleteInitiative } from 'global/Queries'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -60,9 +62,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default ({ mapRef, loaded })=> {
   const classes = useStyles();
-  const initiatives = useFirestore().collection('initiatives')
-  // const [initiative, setInitiative] = useRecoilState(Atoms.initiative)
-  const [selected] = useRecoilState(Atoms.selectedAtom)
+  const initiatives = useRecoilValue(Atoms.markersAtom)?.features
+  let { initiativeID, postID } = useParams();
+  const vars = {variables: {UID: initiativeID}}
+  const { loading, error, data, refetch } = useQuery(getInitiative, vars);
+  const initiative = useMemo(()=>data?.initiative, [data])
+  if (loading) console.log('loading');
+  if (error) console.log('error', error);
+
   const [location] = useRecoilState(Atoms.locationAtom)
   const [expanded, setExpanded] = useRecoilState(Atoms.expanded)
   const mapDimensions = useRecoilValue(Atoms.mapAtom)
@@ -72,32 +79,37 @@ export default ({ mapRef, loaded })=> {
   const [markers, setMarkers] = useRecoilState(Atoms.markersAtom)
   const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const images = useStorage().ref().child('initiatives')
-  let { initiativeID, postID } = useParams();
-  const initiativeRef = useFirestore().collection('initiatives').doc(initiativeID)
-  const initiative = useFirestoreDocData(initiativeRef)
-  const [redirect, setRedirect] = useState(null)
   const i18n = useI18n()
   const [alert, setAlert] = useState(null)
+  const [sp, setSP] = useRecoilState(Atoms.swipePosition)
+  const history = useHistory()
+  const [updateMember, memberData] = useMutation(updateInitiativeMember)
+  const [deleteInitiativeMutation, removeData] = useMutation(deleteInitiative)
 
-  //const in = markers.features.find(f=>f.properties.id==id).properties
-  // useEffect(()=>{
+  useEffect(()=>{
+    if(markers.features.length>0&&sp!==0){
+      if(sp<=(markers.features.length-1) ){
+        console.log('sp1')
 
-  //   if(markers && initiativeID){
-  //     const selectedInitiative = markers.features.find(f=>f.properties.id==initiativeID)
-  //     if(selectedInitiative){
-  //       setSelected(initiativeID);
-  //       setInitiative( selectedInitiative.properties )
-  //     }
-  //   }
-  //   console.log(match)
-  //   console.log(initiativeID)
-  // },[markers, initiativeID, setInitiative])
-  useEffect(()=>{if(!initiative||!initiative.name){setRedirect('/')}},[initiative])
+        history.push(`/initiative/${markers.features[sp].properties.uid}`)
+      }else{
+        setSP(markers.features.length-1)
+      }
+    }
+  },[sp, markers.features, initiativeID])
+
+  useEffect(()=>{
+    console.log('here', initiative)
+    if((!initiative||!initiative.properties)&&!loading){
+      history.push('/')
+    }
+  }, [initiative])
+  
   useEffect(()=>{
     async function moveMap() {
-      if(loaded&&initiative&&initiative.name){
+      if(loaded&&initiative&&initiative.properties){
         const map = mapRef.current.getMap()
-        const center = Object.values(initiative.coordinates)
+        const center = Object.values(initiative.geometry.coordinates)
         const w = mapDimensions.width/2
         const h = (mapDimensions.height - 350)/2
         const offPoint = Object.values(map.unproject([w,h]))
@@ -127,15 +139,8 @@ export default ({ mapRef, loaded })=> {
     if(postID){setExpanded(true)}else{setExpanded(false)}
   },[initiativeID, setExpanded])
 
-  useEffect(()=>{
-    if(redirect!==null){
-      setRedirect(null)
-    }
-  },[redirect, setRedirect])
-
   return (<>
-    { redirect && <Redirect to={redirect} />}
-    { user && initiative.members[user.uid] && (<>
+    { !user.isAnonymous && initiative && initiative.properties && initiative.properties.members.find(m=>m.uid===user.uid) && (<>
       <Route path={'/initiative/:initiativeID/post/:postID'} >
         <InitiativeTopic initiative={initiative} />
       </Route>
@@ -165,7 +170,7 @@ export default ({ mapRef, loaded })=> {
       <Close  color="primary" />
     </IconButton>
     <ImageViewer
-      src={ [initiative.imageURL.l] }
+      src={ [initiative.properties.imageURL.l] }
       currentIndex={ 0 }
       onClose={ ()=>{ setIsViewerOpen(false) } }
       zIndex={9}
@@ -173,7 +178,7 @@ export default ({ mapRef, loaded })=> {
     />
     </>
     )}
-    { /*selected &&*/ initiative && initiative.name && !isViewerOpen && (
+    { initiative && initiative.properties && !isViewerOpen && (
 
         <Paper 
           className={classes.paper} 
@@ -189,28 +194,22 @@ export default ({ mapRef, loaded })=> {
             right: expanded?'0':"1rem",
             willChange: 'height, min-height, width, bottom, right'  
           }}
-        >
+        > 
+          {
+            !expanded && <>
+              <Fab onClick={()=>{setSP(prev=>prev>0?prev-1:0)}} style={{position: "fixed", transform: "translate( 50%, -50% )", zIndex: 15}}><ArrowBack/></Fab>
+              <Fab onClick={()=>{setSP(prev=>prev+1)}} style={{position: "fixed", right:0, transform: "translate( -50%, -50% )", zIndex: 15}}><ArrowForward/></Fab>
+            </>
+          }
           <div id="wrapper">
           <Helmet>
-            <title>{"We.city: "+initiative.name}</title>
-            <meta property="og:title" content={initiative.name} />
+            <title>{"We.city: "+initiative.properties.name}</title>
+            <meta property="og:title" content={initiative.properties.name} />
             <meta property="og:site_name" content="We.city" />
-            <meta property="og:description" content={initiative.problem} />
-            <meta property="og:url" content={"https://weee.city/initiative/"+initiative.id} />
-            <meta property="og:image" content={initiative.imageURL?initiative.imageURL.l: addImage} />
+            <meta property="og:description" content={initiative.properties.problem} />
+            <meta property="og:url" content={"https://weee.city/initiative/"+initiative.properties.uid} />
+            <meta property="og:image" content={initiative.properties.imageURL?initiative.properties.imageURL.l: addImage} />
           </Helmet>
-          <IconButton 
-            aria-label="return"
-            style={{position:"absolute", right:"1rem", top:"0.5rem", zIndex: 30}}
-            onClick={()=>{
-              setRedirect('/')
-              //setSelected(null)
-              setExpanded(false)
-              setJoining(false)
-            }}
-          >
-            <Close  color="primary" />
-          </IconButton>
 
           {/* Header Image */}
           <section 
@@ -218,7 +217,7 @@ export default ({ mapRef, loaded })=> {
             alt="Cover of the initiative"
             onClick={()=>{
               console.log('clicked on img')
-              if(expanded&&selected){
+              if(expanded&&initiativeID){
                 setIsViewerOpen(true)
               }else{
                 setExpanded(true)
@@ -226,7 +225,7 @@ export default ({ mapRef, loaded })=> {
             }}
             style={{
               position:'relative',
-              backgroundImage: `url(${initiative.imageURL?initiative.imageURL.s: addImage})`,
+              backgroundImage: `url(${initiative.properties.imageURL?initiative.properties.imageURL.s: addImage})`,
               backgroundPosition: 'center',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
@@ -242,24 +241,24 @@ export default ({ mapRef, loaded })=> {
               console.log('clicked on card')
               setExpanded(!expanded)
             }}>
-            {location && initiative.coordinates && (
+            {location && initiative.geometry.coordinates && (
             <span className={classes.span}>
               <LocationOn style={{fontSize: 'large'}} />
               {
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<1 ? 
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))*1000).toFixed(0) +i18n('initiativeDistanceFromMeM'):
-                ((distance([location.longitude, location.latitude], Object.values(initiative.coordinates)))<10 ? 
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(1) +i18n('initiativeDistanceFromMeKM'):
-                (distance([location.longitude, location.latitude], Object.values(initiative.coordinates))).toFixed(0) +i18n('initiativeDistanceFromMeKM'))
+                (distance([location.longitude, location.latitude], Object.values(initiative.geometry.coordinates)))<1 ? 
+                (distance([location.longitude, location.latitude], Object.values(initiative.geometry.coordinates))*1000).toFixed(0) +i18n('initiativeDistanceFromMeM'):
+                ((distance([location.longitude, location.latitude], Object.values(initiative.geometry.coordinates)))<10 ? 
+                (distance([location.longitude, location.latitude], Object.values(initiative.geometry.coordinates))).toFixed(1) +i18n('initiativeDistanceFromMeKM'):
+                (distance([location.longitude, location.latitude], Object.values(initiative.geometry.coordinates))).toFixed(0) +i18n('initiativeDistanceFromMeKM'))
               } 
             </span>)}
             {/* <span style={{float:'right'}}> <ExpandLess /></span> */}
             <span style={{marginLeft: location?"2rem":undefined}}>
               <People style={{fontSize: 'large'}} /> 
-              {initiative.members?Object.keys(initiative.members).length-1:0}
+              {initiative.properties.members?initiative.properties.members.length:0}
             </span>
             <Typography variant="h6">
-              {initiative.name? initiative.name: "Name is not set"}
+              {initiative.properties.name? initiative.properties.name: "Name is not set"}
             </Typography>
             <IconButton 
               aria-label="return"
@@ -282,29 +281,29 @@ export default ({ mapRef, loaded })=> {
           
             { expanded && !joining && <Box style={{padding: '2rem', paddingTop: 0, paddingBottom: 0 }}><List key='elements' disablePadding>
 
-              {initiative.problem&& (<ListItem className={classes.item} disableGutters>
+              {initiative.properties.problem&& (<ListItem className={classes.item} disableGutters>
                 <ListItemText
                   primary={i18n('initiativeProblem')}
-                  secondary={initiative.problem}
+                  secondary={initiative.properties.problem}
                 />
               </ListItem>)}
               
-              {initiative.outcome&& (<ListItem className={classes.item} disableGutters>
+              {initiative.properties.outcome&& (<ListItem className={classes.item} disableGutters>
                 <ListItemText
                   primary={i18n('initiativeExpectedResult')}
-                  secondary={initiative.outcome}
+                  secondary={initiative.properties.outcome}
                 />
               </ListItem>)}
-              {initiative.context && (<ListItem className={classes.item} disableGutters>
+              {initiative.properties.context && (<ListItem className={classes.item} disableGutters>
                 <ListItemText
                   primary={i18n('initiativeCurrentState')}
-                  secondary={initiative.context}
+                  secondary={initiative.properties.context}
                 />
               </ListItem>)}
-              {initiative.timestamp && (<ListItem className={classes.item} disableGutters>
+              {initiative.properties.timestamp && (<ListItem className={classes.item} disableGutters>
                 <ListItemText
                   primary={i18n('initiativeDateAdded')}
-                  secondary={moment(initiative.timestamp.toDate()).format('DD.MM.YYYY')}
+                  secondary={moment(initiative.properties.timestamp.toDate()).format('DD.MM.YYYY')}
                 />
               </ListItem>)}
             </List>
@@ -323,11 +322,11 @@ export default ({ mapRef, loaded })=> {
                       body: JSON.stringify({
                         "dynamicLinkInfo": {
                           "domainUriPrefix": "https://weee.city/in",
-                          "link": `https://weee.city/initiative/${initiative.id}`,
+                          "link": `https://weee.city/initiative/${initiative.properties.uid}`,
                           "socialMetaTagInfo": {
-                            "socialTitle": initiative.name,
-                            "socialDescription": initiative.problem,
-                            "socialImageLink": initiative.imageURL.l,
+                            "socialTitle": initiative.properties.name,
+                            "socialDescription": initiative.properties.problem,
+                            "socialImageLink": initiative.properties.imageURL.l,
                           }
                         },
                         "suffix": {
@@ -339,7 +338,7 @@ export default ({ mapRef, loaded })=> {
                     }).then(function(text) {
                       console.log(text)
                       var dummy = document.createElement('input')
-                      //text = `https://wecity.page.link/?link=https://weee.city/initiative/${initiative.id}&st=${initiative.name}&sd=${initiative.problem}&si=${encodeURI(initiative.imageURL.l)}`;
+                      //text = `https://wecity.page.link/?link=https://weee.city/initiative/${initiative.properties.uid}&st=${initiative.properties.name}&sd=${initiative.properties.problem}&si=${encodeURI(initiative.properties.imageURL.l)}`;
       
                       document.body.appendChild(dummy);
                       dummy.value = text.shortLink;
@@ -352,7 +351,7 @@ export default ({ mapRef, loaded })=> {
                   }}>
                   <Share style={{paddingRight:"0.5rem"}} /> {i18n('initiativeShare')}
                 </Button>
-              { user && initiative && !initiative.members[user.uid] && <Button 
+              { !user.isAnonymous && initiative && !initiative.properties.members.find(u=>u.uid===user.uid) && <Button 
                 size="small" 
                 variant="contained"  
                 color="secondary"
@@ -362,28 +361,52 @@ export default ({ mapRef, loaded })=> {
               }}>
                 {i18n('join')}
               </Button>}
-              { user && initiative && initiative.members[user.uid] && (<>
-                  {Object.keys(initiative.members).length<=2 && 
+              { !user.isAnonymous && initiative && initiative.properties.members.find(u=>u.uid===user.uid) && (<>
+                  {initiative.properties.members.length<2 ?
                   <Button 
                     size="small" 
                     variant="outlined"  
                     color="secondary"
-                    onClick={()=>DeleteObject(initiative, initiatives, images, 'initiatives', ()=>{setMarkers({type: "FeatureCollection", features: markers.features.filter(m=>m.properties.id!==initiative.id)}); /*setInitiative(null)*/;})}
+                    onClick={()=>DeleteObject(initiative, null, images, 'initiatives', ()=>{
+                      deleteInitiativeMutation({variables: { UID:initiative.properties.uid }})
+                      setMarkers(prev=>({type: "FeatureCollection", features: prev.features.filter(m=>m.properties.uid!==initiative.properties.uid)}))
+                      history.push('/')
+                    })}
                   >
                     {i18n('delete')}
+                  </Button>:
+                  <Button 
+                    size="small" 
+                    variant="outlined"  
+                    color="secondary"
+                    onClick={()=>{
+                      updateMember({variables: { UID:initiative.properties.uid, member:{uid: user.uid} }})
+                      refetch()
+                      const newMarkers = markers.features.map(marker=>{
+                        if(marker.properties.uid===initiative.properties.uid){
+                          const nProps = {...marker.properties, ...{ members: marker.properties.members.filter(mem=>mem.uid!==user.uid)}}
+                          const nMarker = { ...marker, properties: nProps}
+                          return nMarker
+                        }
+                        return marker
+                      })
+                      setMarkers({type: "FeatureCollection", features: newMarkers })
+                    }}
+                  >
+                    {i18n('leave')}
                   </Button>}
                 </>)
               }
               </Box> 
-              { user && initiative.members[user.uid] && (<>
-                  <InitiativeGroup/>
+              { !user.isAnonymous && initiative.properties.members.find(m=>m.uid===user.uid) && (<>
+                  <InitiativeGroup initiative={initiative}/>
               </>)}
             </Box>}
             
 
             <Suspense fallback={null}>
             { expanded && joining && <Box style={{padding: '2rem', paddingTop:0}}>
-              <SelectRole />
+              <SelectRole refetch={refetch} />
             </Box>}
             </Suspense>
           

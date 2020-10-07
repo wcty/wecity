@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, Suspense, useState } from 'react'
 // import * as serviceWorker from '../serviceWorker';
 import { makeStyles } from '@material-ui/core/styles'
-import { Box } from '@material-ui/core'
+import { Box, useEventCallback } from '@material-ui/core'
 import AppBar from './AppBar'
 import Projects from './Projects'
 import Resources from './Resources'
@@ -12,10 +12,63 @@ import useMeasure from "use-measure";
 import { theme } from 'global/Theme'
 import { firebaseConfig } from 'config'
 import { ThemeProvider } from '@material-ui/core/styles'
-import { FirebaseAppProvider } from 'reactfire'
+import { FirebaseAppProvider, useUser, useAuth } from 'reactfire'
 import FeedbackForm from './AppBar/FeedbackForm'
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, useHistory } from "react-router-dom";
 import CreateProject from './Projects/CreateProject'
+import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, gql } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+
+const useClient = () => {
+  const [state, setState]= useState()
+  const user = useUser()
+  const auth = useAuth()
+
+  useEffect(()=>{
+    
+      if(!user) {
+        auth.signInAnonymously()
+      }else{
+        localStorage.setItem('token', user.uid);
+        const httpLink = createHttpLink({
+          uri: 'https://wecity.westeurope.azurecontainer.io/graphql',
+          //uri: 'http://localhost:4000/graphql',
+
+        });
+        
+        const authLink = setContext((_, { headers }) => {
+          // get the authentication token from local storage if it exists
+          const token = localStorage.getItem('token');
+          // return the headers to the context so httpLink can read them
+          return {
+            headers: {
+              ...headers,
+              authorization: token ? `Bearer ${token}` : "",
+            }
+          }
+        });
+        const client = new ApolloClient({
+          link: authLink.concat(httpLink),
+          cache: new InMemoryCache({
+            addTypename: false
+          })
+        });
+        console.log(user)
+        setState(client)
+      }
+      
+  },[user, auth])
+
+  return state
+};
+
+const Apollo = ({children})=>{
+  const client = useClient()
+
+  return client ? <ApolloProvider client={client}>
+    {children}
+  </ApolloProvider> : null
+}
 
 const useStyles = makeStyles(theme => ({
 
@@ -53,43 +106,45 @@ const Layout = ()=>{
   const mapRef = useRef()
   const mapMeasure = useMeasure(mapRef)
   const setMapDimensions = useSetRecoilState(mapAtom)
-  const [redirect, setRedirect] = useState()
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect])
+  const history = useHistory()
+
   useEffect(()=>{
     setMapDimensions(mapMeasure)
   }, [mapMeasure, setMapDimensions])
-
+  
   return (
-    <Box className={classes.root}>
-      <AppBar />
-      <Suspense fallback={null}>
-        <Route path="/projects" render={()=><Projects />} />
-        <Route path="/create-project">
-          <CreateProject cancel={()=>setRedirect('/projects')} submit={(docRef, doc)=>{setRedirect(`/projects/${docRef.id}`)}} variant='text' submitText='Додати' />
-        </Route> 
-        <Route path="/resources" render={()=><Resources />} />
-        <Route path='/feedback' render={()=><FeedbackForm />} />
-        
-      </Suspense>
+      <Box className={classes.root}>
+        <AppBar />
+        <Suspense fallback={null}>
+          <Route path="/projects" render={()=><Projects />} />
+          <Route path="/create-project">
+            <CreateProject cancel={()=>history.push('/projects')} submit={(docRef, doc)=>{history.push(`/projects/${docRef.id}`)}} variant='text' submitText='Додати' />
+          </Route> 
+          <Route path="/resources" render={()=><Resources />} />
+          <Route path='/feedback' render={()=><FeedbackForm />} />
+          
+        </Suspense>
 
-      <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>
-        <Map />
+        <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>
+          <Map />
+        </Box>
       </Box>
-    </Box>
   )
 }
 
 export default () => {
+  
   return (
     <Router>
+      
       <FirebaseAppProvider firebaseConfig={firebaseConfig}>
         <ThemeProvider theme={theme}>
           <RecoilRoot>
-            <Layout />
+            <Suspense fallback={null} >
+              <Apollo>
+                <Layout />
+              </Apollo>
+            </Suspense>
           </RecoilRoot>
         </ThemeProvider>
       </FirebaseAppProvider>

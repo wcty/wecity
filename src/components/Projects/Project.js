@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 import ImageViewer from 'react-simple-image-viewer';
 import { categories } from 'global/forms/projectCategories'
 import { useI18n } from 'global/Hooks'
-import { Redirect } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -82,16 +82,9 @@ export default ()=> {
   const projectRef = useFirestore()
     .collection('projects').doc( projectId )
   const project = useFirestoreDocData(projectRef, {startWithValue: null})
-  
-  const [redirect, setRedirect] = useState()
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect])
+  const history = useHistory()
 
   return project && (<>
-    {redirect && <Redirect to={redirect} />}
     {isViewerOpen && (
       <>
         <IconButton 
@@ -150,7 +143,7 @@ export default ()=> {
               aria-label="return"
               style={{position:"absolute", display:'block', right:"1.5rem", top:"0.5rem"}}
               onClick={()=>{
-                setRedirect('/projects')
+                history.push('/projects')
               }}
             >
               <ArrowBack color="primary"/>
@@ -232,7 +225,7 @@ export default ()=> {
           </div>
           <Suspense fallback={null}>
           
-            {user&&<>
+            {!user.isAnonymous&&<>
               <Button 
                 elevation={15} 
                 variant="contained" 
@@ -262,7 +255,7 @@ export default ()=> {
                         console.log('Errored at image deletion', error)
                       });
                     })
-                    setRedirect('/projects')
+                    history.push('/projects')
                   }).catch(function(error) {
                       console.error("Error removing document: ", error);
                   });

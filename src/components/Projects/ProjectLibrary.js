@@ -7,7 +7,7 @@ import * as Atoms from 'global/Atoms'
 import { useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
 import { categories } from 'global/forms/projectCategories'
 import { useI18n } from 'global/Hooks'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,11 +58,11 @@ export default ({ onlyMine, select })=>{
     .where("category", "==", currentFilter):
     useFirestore()
     .collection('projects')
-  const projectsRef = filterMine&&user? projectsRefPre.where("contractors", "array-contains", user.uid): projectsRefPre
+  const projectsRef = filterMine&&!user.isAnonymous? projectsRefPre.where("contractors", "array-contains", user.uid): projectsRefPre
   const projects = useFirestoreCollectionData(projectsRef)
   const i18n = useI18n()
-  const [redirect, setRedirect] = useState()
-
+  const history = useHistory()
+  
   return (
     <div id="wrapper">
       <Typography variant="h6" style={{
@@ -70,7 +70,6 @@ export default ({ onlyMine, select })=>{
         marginBottom: '1rem',
         textAlign: 'center'
       }}>{onlyMine?i18n('myProjectsTitle'):i18n('projectsLibraryTitle')}</Typography>
-      {redirect && <Redirect to={redirect}/>}
       <FormControl variant="outlined"
         style={{width: '100%'}}>
         <InputLabel id='category' >{i18n('chooseCategory')}</InputLabel>
@@ -86,7 +85,7 @@ export default ({ onlyMine, select })=>{
           {categories(i18n).map(opt=><MenuItem key={opt.name} value={opt.name}>{opt.label}</MenuItem>)}
         </Select>
       </FormControl>
-      {!onlyMine && user && <FormControl >
+      {!onlyMine && !user.isAnonymous && <FormControl >
         <FormControlLabel
           control={
             <Checkbox
@@ -135,7 +134,7 @@ export default ({ onlyMine, select })=>{
                     <div className={classes.info}             
                       onClick={()=>{  
                         console.log('clicked')  
-                        setRedirect(`/projects/${project.id}`)
+                        history.push(`/projects/${project.id}`)
                         if(select){
                           select(project)
                         }else{                      

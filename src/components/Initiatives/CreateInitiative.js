@@ -13,9 +13,11 @@ import createInitiativeForm from 'global/forms/createInitiativeForm'
 import FormExpanded from 'global/FormExpanded'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
-import {  Redirect } from 'react-router-dom';
+import {  Redirect, useHistory } from 'react-router-dom';
 import MarkerActive from 'assets/images/markerActive.svg'
-
+import randomstring from 'randomstring'
+import { useMutation } from '@apollo/client';
+import { createInitiativeMutation } from 'global/Queries'
 
 //1920x1080,851x315,484x252,180x180
 
@@ -56,11 +58,16 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
   const user = useUser()
   const [location] = useRecoilState(Atoms.locationAtom)
   const mapDimensions = useRecoilValue(Atoms.mapAtom)
-  const [redirect, setRedirect] = useState(null)
   const [finished, setFinished] = useState(false)
-
+  const history = useHistory()
+  const [addInitiative, addedData] = useMutation(createInitiativeMutation, {onCompleted:(data)=>{
+    setFinished(true)
+    setMarkers(prev=>({type:"FeatureCollection", features: [data.createInitiative, ...prev.features] }))
+    setIsCreating(false)
+    setMarker(null)
+    history.push(`/initiative/${data.createInitiative.properties.uid}`)
+  }})
   useEffect(()=>{
-    //console.log(match)
     if( loaded && location ){
       const map = mapRef.current.getMap()
       const w = mapDimensions.width/2
@@ -85,14 +92,7 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
     }
   }, [mapRef, loaded, isCreating, mapDimensions.height, mapDimensions.width])
 
-  useEffect(()=>{
-    if(redirect!==null){
-      setRedirect(null)
-    }
-  },[redirect, setRedirect])
-
   return <>
-  {redirect && <Redirect to={redirect} />}
   <img alt="Marker for new initiative" src={MarkerActive} className={classes.marker} width={42} height={42} />
   <div className={classes.root}>
     <Paper elevation={1} className={classes.paper}>  
@@ -121,31 +121,25 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
         nextButton={(activeStep, setActiveStep, maxSteps, valid, imageLoadedURL, project)=>
           activeStep === (maxSteps - 1) ? (
             <Button color="secondary" disabled={!valid} variant="contained" size="small" onClick={async ()=>{     
-              console.log(project)
-              markersCollection.add({
-                ...project,
-                timestamp: new Date(),
-                imageURL: imageLoadedURL,
-                members: {ids:[user.uid], [user.uid]:{role: "Initiator"}},
-                coordinates: new firebase.firestore.GeoPoint(...getMarker().toArray())
-              }).then(function(docRef) {
-                setFinished(true)
-                console.log("Document written with ID: ", docRef.id);
-                docRef.update({id:docRef.id})
-                setRedirect(`/initiative/${docRef.id}`)
-              })
-              .catch(function(error) {
-                  console.error("Error adding document: ", error);
-              });
-
-              const query = markersCollection.near({ center: new firebase.firestore.GeoPoint(...getMarker().toArray()), radius: 1000 });
-              query.get().then((value) => {
-                setMarkers({type:"FeatureCollection", features: getFeatures(value) })
-                setFinished(true)
-                setIsCreating(false)
-                setMarker(null)
-              });
-
+              const submission = {
+                variables: { 
+                  initiative:{
+                    properties:{
+                      ...project,
+                      type: "Initiative",
+                      uid: randomstring.generate(20),
+                      timestamp: (new Date()).toISOString(),
+                      imageURL: imageLoadedURL,
+                      members: [{uid:user.uid, roles: {Initiator:true}}]
+                    },
+                    geometry: {
+                      type: "Point",
+                      coordinates: getMarker().toArray()
+                    }
+                  }
+                }
+              }
+              addInitiative(submission)
             }}>
               {submitText?submitText:'Додати'}
             </Button>

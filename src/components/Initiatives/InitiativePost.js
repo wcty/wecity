@@ -22,7 +22,7 @@ export default ({initiative, m, n})=>{
   const i18n = useI18n()
   const history = useHistory()
   const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
-  
+  useEffect(()=>{console.log(initiative)},[initiative])
   useEffect(()=>{
     if(Object.keys(m).length===0) history.replace(`/initiative/${initiativeID}`)
   },[m])
@@ -68,7 +68,7 @@ export default ({initiative, m, n})=>{
         <ListItemText 
           primary={m.user.name}
           secondary={
-            initiative.members[m.user.id].role + ' | ' + 
+            initiative.properties?Object.entries(initiative.properties.members.find(mem=>mem.uid===m.user.id).roles).filter(r=>r[1]).map(r=>r[0]).join(', '):'' + ' | ' + 
             m.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")
           }
         />

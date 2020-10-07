@@ -20,10 +20,9 @@ export const getFeatures = (value) => {
 }
 
 export const DeleteObject = async (object, objects, images, directory, close)=>{
-  // console.log(object, objects, images, directory, close)
-  if(object.id){
-    objects.doc(object.id).delete().then(function() {
-      Object.values(object.imageURL).forEach((url)=>{
+
+    const deleteImages = ()=>{
+      Object.values(object.imageURL?object.imageURL:object.properties.imageURL).forEach((url)=>{
         const fileName = url.split('?')[0].split((directory==="markers"?"initiatives":directory) + '%2F').reverse()[0]
         images.child(fileName).delete().then(function() {
         }).catch(function(error) {
@@ -31,11 +30,15 @@ export const DeleteObject = async (object, objects, images, directory, close)=>{
         });
       })
       close()
-    }).catch(function(error) {
-        console.error("Error removing document: ", error);
-    });
+    }
+    if(objects&&object.id){
+      objects.doc(object.id).delete().then(function() {
+        deleteImages()
+      }).catch(function(error) {
+          //console.error("Error removing document: ", error);
+      });
+    }else{deleteImages()}
     console.log('deleted')
-  }else{console.log(object)}
 }
 
 export const toJSON = (date)=>{

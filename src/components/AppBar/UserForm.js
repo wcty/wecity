@@ -3,7 +3,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, FormControl, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import { useFirestore } from 'reactfire';
+import { useFirestore, useUser } from 'reactfire';
 import { useI18n } from 'global/Hooks'
 
 //1920x1080,851x315,484x252,180x180
@@ -91,7 +91,7 @@ export default ({ isCreating, setIsCreating, setContactData })=> {
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = formSteps.length;
   const [resource, setResource] = useState(null)
-
+  const user = useUser()
   const [finished] = useState(null)
 
   const handleNext = () => {
@@ -197,11 +197,13 @@ export default ({ isCreating, setIsCreating, setContactData })=> {
         backButton={
           activeStep === 0 ? (
             <Button className={classes.button} variant="contained" size="small" onClick={()=>{
-              setContactData({contact:'No response', id:isCreating})
+              if(!user.isAnonymous) {
+                setContactData({contact:'No response', id:isCreating})
+              }
               setIsCreating(false)
 
             }} >
-              Не відповідати
+              {user.isAnonymous? 'Не реєструватись': 'Не відповідати'}
             </Button>
           ):(
             <Button size="small" className={classes.button} onClick={handleBack} >

@@ -84,7 +84,7 @@ const AntTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab {...props} />);
 
-export default function FullWidthTabs() {
+export default function FullWidthTabs({initiative}) {
   const classes = useStyles();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
@@ -123,7 +123,7 @@ export default function FullWidthTabs() {
         style={{paddingTop:0}}
       >
         <TabPanel key={0} value={value} index={0} dir={theme.direction} className={classes.tab}>
-            <InitiativeChat/>
+            <InitiativeChat initiative={initiative}/>
         </TabPanel>
         <TabPanel key={1} value={value} index={1} dir={theme.direction} className={classes.tab}>
             <Typography variant="h6"> 

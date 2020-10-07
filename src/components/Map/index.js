@@ -18,7 +18,10 @@ import LocateFab from './Interfaces/LocateFab.js'
 import Markers from './Layers/Markers.js'
 import Satellite from './Layers/Satellite.js'
 import LayersFab from './Interfaces/LayersFab.js'
-import { Redirect, Route } from 'react-router-dom'
+import { Redirect, Route, useHistory } from 'react-router-dom'
+import SwipeableViews from 'react-swipeable-views';
+
+import offlineStyle from 'assets/style.json'
 
 const useStyles = makeStyles(theme => ({
   mapContainer: {
@@ -55,7 +58,7 @@ export default ()=>{
   const mapDimensions = useRecoilValue(mapAtom)
   const [loaded, setLoaded] = useState(false)
   const [satellite, setSatellite] = useState(false)
-  const [redirect, setRedirect] = useState(null)
+  const history = useHistory()
 
   const getMarker = ()=>{
     const w = mapDimensions.width/2
@@ -85,15 +88,8 @@ export default ()=>{
     }
   }, [viewport, setView])
   
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect, setRedirect])
-
   return (
       <>
-        {redirect && <Redirect to={redirect} />}
         <Suspense fallback={null}>
           <Route path='/initiatives' render={()=><Initiatives mapRef={mapRef}/>} />
         </Suspense>
@@ -115,6 +111,7 @@ export default ()=>{
         <LayersFab satellite={satellite} setSatellite={setSatellite} />
         <MapGL
           style={{  width: '100%', height: '100%', border:"none", outline: "none" }}
+          //mapStyle={process.env.NODE_ENV == 'production'?"mapbox://styles/switch9/ckahu5spr0amr1ik3n1fg0fvt": offlineStyle}
           mapStyle="mapbox://styles/switch9/ckahu5spr0amr1ik3n1fg0fvt"
           //mapStyle='mapbox://styles/mapbox/satellite-v9'
           accessToken={mapboxConfig.accessToken}
@@ -124,7 +121,7 @@ export default ()=>{
           //hash={true}
           {...viewport}
           onClick={()=>{
-            setRedirect('/')
+            history.push('/')
             console.log('mapclick')
             //setSelected(null)
           }}
@@ -147,7 +144,7 @@ export default ()=>{
                 getMarker={getMarker} 
                 loaded={loaded} 
                 mapRef={mapRef} 
-                cancel={()=>{setIsCreating(false); setRedirect('/') }} 
+                cancel={()=>{setIsCreating(false); history.push('/') }} 
               />}
             />
             

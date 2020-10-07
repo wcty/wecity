@@ -83,7 +83,7 @@ export default ()=> {
         overflowY: 'scroll'
       }}
     > 
-      {user&&<ResourceFab isCreating={isCreating} setIsCreating={setIsCreating} active />}
+      {!user.isAnonymous&&<ResourceFab isCreating={isCreating} setIsCreating={setIsCreating} active />}
       <CreateResource isCreating={isCreating} setIsCreating={setIsCreating} />
       {selectedresource&& <Resource resource={selectedresource} setResource={setSelectedresource} />}
       {!isCreating && <div id="wrapper">

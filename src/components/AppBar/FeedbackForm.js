@@ -3,7 +3,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, FormControl, IconButton, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, Box } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons';
 import { useUser, useFirestore } from 'reactfire';
-import { Redirect } from 'react-router-dom'
+import { Redirect, useHistory } from 'react-router-dom'
 import { useI18n } from 'global/Hooks'
 
 //1920x1080,851x315,484x252,180x180
@@ -83,7 +83,7 @@ export default ()=> {
   const [resource, setResource] = useState(null)
   const [imageLoadedURL] = useState(null)
   const [valid, setValid] = useState(false)
-  const [redirect, setRedirect] = useState(null)
+  const history = useHistory()
 
   useEffect(()=>{
     let bool = true
@@ -118,7 +118,6 @@ export default ()=> {
     zIndex: 999,
     overflowY: "auto",  
   }}>
-    {redirect && <Redirect to={redirect}/> }
     <form className={classes.root} noValidate autoComplete="off" style={{textAlign:'start', padding:'1rem', margin:'auto'}} >
       <Paper elevation={1} className={classes.paper} style={{paddingTop:'2rem', paddingBottom:'1rem', position:'relative'}} >  
         <Typography variant="h6" style={{textAlign:'start', margin:'1rem'}}>
@@ -127,18 +126,18 @@ export default ()=> {
         <Typography variant="body1" component="div" style={{textAlign:'start', margin:'1.2rem'}}>
           {i18n('feedbackDescription')}
         </Typography>
-    {!user && (
+    {user.isAnonymous && (
       <IconButton 
         aria-label="return"
         style={{position:"absolute", display:'block', right:"1.5rem", bottom:"0.5rem"}}
         onClick={()=>{
-          setRedirect('/')
+          history.push('/')
         }}
       >
         <Close />
       </IconButton>
     )}
-    {user && <>  
+    {!user.isAnonymous && <>  
         {
           formSteps[activeStep].map(( input, i )=>{
             switch (input.type){
@@ -219,7 +218,7 @@ export default ()=> {
                         console.error("Error writing document: ", error);
                     });
                   }
-                  setRedirect('/')
+                  history.push('/')
               }}>
                 {i18n('send')}
               </Button>
@@ -233,7 +232,7 @@ export default ()=> {
           backButton={
             activeStep === 0 ? (
               <Button className={classes.button} variant="contained" size="small" onClick={()=>{
-                setRedirect('/')
+                history.push('/')
               }} >
                 {i18n('cancel')}
               </Button>

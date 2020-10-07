@@ -156,7 +156,7 @@ const CommentBody = ({c, refDir, initiative})=>{
       <ListItemText 
         primary={c.user.name}
         secondary={
-          initiative.members[c.user.id].role + ' | ' + 
+          Object.entries(initiative.properties.members.find(mem=>mem.uid===c.user.id).roles).filter(r=>r[1]).map(r=>r[0]).join(', ') + ' | ' + 
           c.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")
         }
       />
@@ -265,7 +265,7 @@ const Comment = ({initiative, m, n })=>{
 }
 
 
-export default ()=>{
+export default ({initiative})=>{
   const { initiativeID, postID } = useParams()
   const classes = useStyles()
   const [bar] = useRecoilState(Atoms.barAtom)
@@ -276,7 +276,6 @@ export default ()=>{
   const commentsRef = useDatabase().ref(`chats/${initiativeID}/comments/${postID}`)
   const commentsData = useDatabaseListData(commentsRef, {startWithValue:[]})
   const initiativeRef = useFirestore().collection('initiatives').doc(initiativeID)
-  const initiative = useFirestoreDocData(initiativeRef)
   const i18n = useI18n()
   const [text, setText] = useState('')
   const user = useUser()

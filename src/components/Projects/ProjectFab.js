@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Fab } from '@material-ui/core'
 import { Add } from '@material-ui/icons'
-import { Redirect } from 'react-router-dom'
+import { useHistory} from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   CreateInitiative: {
@@ -14,18 +14,12 @@ const useStyles = makeStyles(theme => ({
 
 export default ()=>{
   const classes = useStyles()
-  const [redirect, setRedirect] = useState()
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect])
+  const history = useHistory()
 
   return <>
-        {redirect && <Redirect to={redirect}/>}
         <Fab 
           onClick={()=>{
-            setRedirect('/create-project')
+            history.push('/create-project')
           }}
           style={{
             zIndex:200

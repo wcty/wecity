@@ -131,3 +131,13 @@ export const replyFieldAtom = atom({
   key: 'replyField',
   default: undefined,
 })
+
+export const swipePosition = atom({
+  key: 'swipePosition',
+  default: 0,
+})
+
+export const minDistance = atom({
+  key: 'minDistance',
+  default: 0,
+})

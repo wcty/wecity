@@ -3,12 +3,15 @@ import { makeStyles } from '@material-ui/core/styles'
 import {  Typography, Card, CardActionArea, CardMedia, CardContent, CardActions,  Box, Button, Radio, RadioGroup, FormControlLabel, FormControl, TextField, InputAdornment, Checkbox } from '@material-ui/core'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import * as Atoms from 'global/Atoms'
-import { useStorage, useFirestore, useUser } from 'reactfire'
+import { useStorage, useFirestore, useUser, useDatabase } from 'reactfire'
 import { DeleteObject } from 'global/Misc'
 import CreateProject from 'components/Projects/CreateProject'
 import ProjectLibrary from 'components/Projects/ProjectLibrary'
 import BackFab from 'components/Projects/BackFab'
-import { useParams, Redirect } from 'react-router-dom'
+import { useParams, Redirect, useHistory } from 'react-router-dom'
+import { useMutation } from '@apollo/client'
+import { addInitiativeMember } from 'global/Queries'
+import {toJSON} from 'global/Misc'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -120,7 +123,7 @@ const roleLookup = {
   project: "Contractor",
   resource: "Provider"
 }
-export default ()=>{
+export default ({refetch})=>{
   const [value, setValue] = useState({type:'donate'});
   const [periodic, setPeriodic] = useState(false);
   const [sum, setSum] = useState(200);
@@ -131,23 +134,23 @@ export default ()=>{
   const { initiativeID } = useParams()
   const initiativeRef = useFirestore().collection("initiatives").doc( initiativeID )
   const user = useUser()
-  const [redirect, setRedirect] = useState()
-  useEffect(()=>{
-    if(redirect){
-      setRedirect(null)
-    }
-  },[redirect])
   const classes = useStyles()
+  const history = useHistory()
+  const [addMember, memberData] = useMutation(addInitiativeMember)
+
+///
+// const chatDatabase = useDatabase().ref(`chats/${initiativeID}/`)
+const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
+
   const handleChange = (event) => {
     setValue({type: event.target.value});
   };
   useEffect(()=>console.log(selectType),[selectType])
 
   return (<>
-    {redirect && <Redirect to={redirect} />}
     <FormControl component="fieldset" style={{display: (!selectType || selectType.object ) ? 'block': 'none'}}>
       <Typography variant="subtitle2">Приєднатися до ініціативи</Typography>
-      <RadioGroup aria-label="gender" name="gender1" value={value.type} onChange={handleChange}>
+      <RadioGroup aria-label="role" name="role" value={value.type} onChange={handleChange}>
         <Box id='donate' className={classes.selectGroup}>
           <FormControlLabel value="donate" control={<Radio />} label="Я готова/ий пожертвувати гроші" />
           {value.type==="donate" && <><TextField 
@@ -267,24 +270,39 @@ export default ()=>{
         variant="contained"  
         color="secondary"
         style={{marginTop: '1rem', float: 'right'}}
-        onClick={async ()=>{    
+        onClick={()=>{    
           console.log('Приєднатися')
-          initiativeRef.set({ 
-            members: {[user.uid]:{ 
-              role: roleLookup[value.type], 
-              name: user.displayName,
-              avatar: user.photoURL,
-              info: {
-              ...(value.type==="donate" && {sum, periodic}),
-              ...(value.type==="volunteer" && {job}),
-            } }, ids:[user.uid]},
-            projects: {},
-            resources: {
-              ...(value.type==="donate" && {finance: {[user.uid]:{sum, periodic}}}),
-              ...(value.type==="volunteer" && {volunteers: {[user.uid]:{job}}}),
-            },
-          }, {merge: true})
-          setRedirect(`/initiative/${ initiativeID }`)
+          const vars = {
+            variables: {
+              UID: initiativeID,
+              member: {uid:user.uid, roles: {[roleLookup[value.type]]:true} } 
+            }
+          }
+          console.log(vars)
+          addMember(vars)
+          refetch()
+          const sendMessage = ()=>{
+              const messageId = messages.push().getKey()          
+              const message = {
+                text:value.type==='volunteer'?job:`${sum},${periodic}`, 
+                type: value.type, 
+                timestamp: toJSON(new Date()),
+                id: messageId,
+                user: {
+                  avatar: user.photoURL,
+                  id: user.uid,
+                  name: user.displayName,
+                },
+                likes: {},
+                dislikes: {}
+              }
+              messages.child(messageId).set(message).catch(function(error) {
+                console.error("Error saving message to Database:", error);
+              });
+              console.log(message)
+          }
+          sendMessage()
+          history.push(`/initiative/${ initiativeID }`)
           setJoining(false)
       }}>
         Приєднатися

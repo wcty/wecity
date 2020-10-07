@@ -1,0 +1,42 @@
+{
+  "version": 8,
+  "name": "Offline",
+  "metadata": {},
+  "sources": {
+    "data": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection", 
+        "features":[
+          {
+            "type": "Feature", 
+            "geometry": {
+              "type":"Polygon",
+              "coordinates":[[0,0],[0,1],[1,1],[1,0]]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sprite": "https://maputnik.github.io/osm-liberty/sprites/osm-liberty",
+  "glyphs": "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key={key}",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {"background-color": "rgb(239,239,239)"}
+    },
+    {
+      "id": "square",
+      "type": "fill",
+      "source": "data",
+      "paint": {
+        "fill-color": "#d8e8c8",
+        "fill-opacity": 0.7,
+        "fill-outline-color": "rgba(95, 208, 100, 1)"
+      }
+    }
+  ],
+  "id": "offline-map"
+}

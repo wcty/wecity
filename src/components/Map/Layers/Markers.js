@@ -2,44 +2,80 @@ import React, { useEffect, useState } from 'react'
 import { Source, Layer } from '@urbica/react-map-gl'
 import * as firebase from 'firebase/app';
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { markersAtom, viewAtom } from 'global/Atoms'
+import { markersAtom, viewAtom, locationAtom, swipePosition } from 'global/Atoms'
 import { useGeoFirestore } from 'global/Hooks'
 import { getFeatures } from 'global/Misc'
-import { Redirect, useLocation } from 'react-router-dom';
+import { useLocation, useHistory, useParams } from 'react-router-dom';
+import { useQuery, gql } from '@apollo/client';
+import { nearbyInitiatives } from 'global/Queries'
+
+const querySize = 4
+function arrayUnique(a) {
+  for(var i=0; i<a.length; ++i) {
+      for(var j=i+1; j<a.length; ++j) {
+          if(a[i].properties.uid === a[j].properties.uid)
+              a.splice(j--, 1);
+      }
+  }
+
+  return a;
+}
 
 export default () =>{
   const GeoFirestore = useGeoFirestore() 
   const [markers, setMarkers] = useRecoilState(markersAtom)
-  const [redirect, setRedirect] = useState(null)
   const view = useRecoilValue(viewAtom)
   const location = useLocation()
+  const [geolocation] = useRecoilState(locationAtom)
+  const [sp, setSP] = useRecoilState(swipePosition)
+  const history = useHistory()
+  const { initiativeID, postID } = useParams();
+  const [refreshed, setRefreshed] = useState(Object.values(view))
+  const [vars, setVars] = useState({variables: {nearInitiativesInput:{ point: refreshed, minDistance: 0, limit: querySize }}})
+  const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars);
+  if (loading) console.log('loading');
+  if (error) console.log('error', error);
+
+  useEffect(()=>{
+    if(!markers.features[0] && data) {
+      console.log(data)
+      setMarkers({type:"FeatureCollection", features: data.nearInitiatives})
+    }
+    if(sp===markers.features.length-2) {
+      if(vars.variables.nearInitiativesInput.minDistance!==markers.features[markers.features.length-1].properties.distance){
+        console.log('here')
+        setVars(prev=>{
+          prev.variables.nearInitiativesInput.minDistance = markers.features[markers.features.length-1].properties.distance
+          console.log('new var', prev)
+          refetch(prev)
+          return prev
+        })
+      }
+      if(data && data.nearInitiatives[0].properties.distance>=markers.features[markers.features.length-1].properties.distance){
+        const [first, ...other] = data.nearInitiatives
+        setMarkers({type:"FeatureCollection", features: arrayUnique([...markers.features, ...data.nearInitiatives]) })
+        console.log(data, markers)
+      }
+    }
+  },[sp, setMarkers, data])
 
   const onClick = (event) => {
     if (event.features.length > 0) {
-      // const nextClickedStateId = event.features[0].properties.id;
-      setRedirect(`/initiative/${event.features[0].properties.id}`)
+      //const nextClickedStateId = event.features[0].properties.id;
+      history.push(`/initiative/${event.features[0].properties.uid}`)
     }
   };
+  const [started, setStarted] = useState()
 
   useEffect(()=>{
-
-    const geocollection = GeoFirestore.collection('initiatives');
-    geocollection.near({
-      center: new firebase.firestore.GeoPoint(...Object.values(view)), 
-      radius: 1000 }).get().then((value) => {
-      setMarkers({type:"FeatureCollection", features: getFeatures(value)})
-    });
-  }, [GeoFirestore, setMarkers])
-  
-  useEffect(()=>{
-    if(redirect!==null){
-      setRedirect(null)
+    if(!started&&markers.features[0]&&sp===0&&location.pathname==="/"){
+      setStarted(true)
+      history.push(`/initiative/${markers.features[0].properties.uid}`)
     }
-  },[redirect, setRedirect])
-  
+  },[markers.features, sp, location])
+
   return (
     <>  
-      {redirect && <Redirect to={redirect}/>}
       <Source
         id='markers'
         type='geojson'
@@ -60,7 +96,7 @@ export default () =>{
           'text-halo-color': "white",   
         }}
         layout={{
-          'icon-image': ['case', ['==', ['get', 'id'], location.pathname.replace('/initiative/','')], 'marker-active', 'marker-fixed'],
+          'icon-image': ['case', ['==', ['get', 'uid'], location.pathname.replace('/initiative/','')], 'marker-active', 'marker-fixed'],
           'icon-anchor': 'bottom',
           'icon-allow-overlap': true,
             // ["step",
