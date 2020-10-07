@@ -9,7 +9,7 @@ import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import { nearbyInitiatives } from 'global/Queries'
 
-const querySize = 4
+const querySize = 20
 function arrayUnique(a) {
   for(var i=0; i<a.length; ++i) {
       for(var j=i+1; j<a.length; ++j) {
