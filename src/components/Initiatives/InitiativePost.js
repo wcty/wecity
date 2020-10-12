@@ -17,7 +17,7 @@ const Type = (props)=>{
 export default ({initiative, m, n})=>{
 
   n = n || 0
-  const initiativeID = initiative.id
+  const initiativeID = initiative.properties.uid
   const user = useUser()
   const i18n = useI18n()
   const history = useHistory()

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, Button } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
@@ -53,8 +53,6 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
   const [isCreating, setIsCreating] = useRecoilState(Atoms.creatingAtom)
   const setMarker = useSetRecoilState(Atoms.markerAtom)
   const setMarkers = useSetRecoilState(Atoms.markersAtom)
-
-  const markersCollection = useGeoFirestore().collection('initiatives')
   const user = useUser()
   const [location] = useRecoilState(Atoms.locationAtom)
   const mapDimensions = useRecoilValue(Atoms.mapAtom)
@@ -67,8 +65,11 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
     setMarker(null)
     history.push(`/initiative/${data.createInitiative.properties.uid}`)
   }})
+
+  const locationRef = useRef()
+
   useEffect(()=>{
-    if( loaded && location ){
+    if( loaded && location && !locationRef.current ){
       const map = mapRef.current.getMap()
       const w = mapDimensions.width/2
       const h = (mapDimensions.height - 350)/2
@@ -76,7 +77,7 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
       const point = Object.values(map.getCenter())
       const dist = distance(point, offPoint)
       const center = [location.longitude, location.latitude]
-      const newOffPoint = translate({
+      locationRef.current = translate({
         type:"FeatureCollection",
         features:[
           {
@@ -88,7 +89,7 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
           }
         ]
       }, dist, 180)
-      map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
+      map.flyTo({ center: locationRef.current.features[0].geometry.coordinates });
     }
   }, [mapRef, loaded, isCreating, mapDimensions.height, mapDimensions.width])
 
