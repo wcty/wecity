@@ -1,4 +1,6 @@
-// const dev = process.env.NODE_ENV !== 'production'
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 export const firebaseConfig = {
   apiKey: "AIzaSyC0R35s-u9bZCZOpwg8jVIzYg77HeKgr0Y",
@@ -12,5 +14,5 @@ export const firebaseConfig = {
 };
 
 export const mapboxConfig = {
-  accessToken: 'pk.eyJ1Ijoic3dpdGNoOSIsImEiOiJjamozeGV2bnkxajV2M3FvNnpod3h4ODlpIn0.CTt2IXV8II6finbTlxEddg',
+  accessToken: process.env.MAPBOX_TOKEN
 }

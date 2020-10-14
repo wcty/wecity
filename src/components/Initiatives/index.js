@@ -27,7 +27,7 @@ const useAddress = (coords)=>{
   useEffect(()=>{
     if(!address&&coords!=''){
       const request = async ()=>{
-        const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${coords[0]},${coords[1]}.json?access_token=pk.eyJ1Ijoic3dpdGNoOSIsImEiOiJjamozeGV2bnkxajV2M3FvNnpod3h4ODlpIn0.CTt2IXV8II6finbTlxEddg`)
+        const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${coords[0]},${coords[1]}.json?access_token=${process.env.MAPBOX_TOKEN}`)
         const address = await response.json()
         setAddress(address.features[0].properties.address+', '+(address.features[1]?address.features[1].text:'')+', '+(address.features[3]?address.features[3].text:''))
       }
