@@ -3,8 +3,6 @@ import React, { useEffect, useRef, Suspense, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, useEventCallback } from '@material-ui/core'
 import AppBar from './AppBar'
-import Projects from './Projects'
-import Resources from './Resources'
 import Map from './Map'
 import { barAtom, mapAtom } from 'global/Atoms'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
@@ -15,7 +13,6 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import { FirebaseAppProvider, useUser, useAuth } from 'reactfire'
 import FeedbackForm from './AppBar/FeedbackForm'
 import { BrowserRouter as Router, Route, useHistory } from "react-router-dom";
-import CreateProject from './Projects/CreateProject'
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, gql } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
@@ -116,13 +113,7 @@ const Layout = ()=>{
       <Box className={classes.root}>
         <AppBar />
         <Suspense fallback={null}>
-          <Route path="/projects" render={()=><Projects />} />
-          <Route path="/create-project">
-            <CreateProject cancel={()=>history.push('/projects')} submit={(docRef, doc)=>{history.push(`/projects/${docRef.id}`)}} variant='text' submitText='Додати' />
-          </Route> 
-          <Route path="/resources" render={()=><Resources />} />
           <Route path='/feedback' render={()=><FeedbackForm />} />
-          
         </Suspense>
 
         <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>

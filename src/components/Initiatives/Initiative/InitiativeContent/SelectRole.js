@@ -5,13 +5,10 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import * as Atoms from 'global/Atoms'
 import { useStorage, useFirestore, useUser, useDatabase } from 'reactfire'
 import { DeleteObject } from 'global/Misc'
-import CreateProject from 'components/Projects/CreateProject'
-import ProjectLibrary from 'components/Projects/ProjectLibrary'
-import BackFab from 'components/Projects/BackFab'
 import { useParams, Redirect, useHistory } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { addInitiativeMember } from 'global/Queries'
-import {toJSON} from 'global/Misc'
+import { toJSON } from 'global/Misc'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -308,25 +305,6 @@ const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
         Приєднатися
       </Button>
     </FormControl>
-    {selectType && !selectType.object && <>
-      {selectType.type==="selectProject" && !selectType.object && <>
-        <ProjectLibrary onlyMine 
-          select={(project)=>setSelectType({type: "selectProject", object: project })} 
-        />
-        <BackFab back={()=>setSelectType(null)}/>
-      </>}
-      {selectType.type==="newProject" && !selectType.object && <>
-        <CreateProject 
-          submit={(docRef, doc)=>setSelectType({type: "newProject", object: {...doc.data(), id: docRef.id} })} 
-          cancel={()=>setSelectType(null)}
-        />
-      </>}
-      {selectType.type==="selectResource" && !selectType.object && <>
-        <CreateProject />
-      </>}
-      {selectType.type==="newResource" && !selectType.object && <>
-        <CreateProject />
-      </>} 
-    </>}
+
   </>);
 }

@@ -11,6 +11,7 @@ const shortInitiativeShape = (d)=>`
     uid
     imageURL{
       l
+      xs
     }
     members {
       uid

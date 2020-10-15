@@ -122,6 +122,7 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
         nextButton={(activeStep, setActiveStep, maxSteps, valid, imageLoadedURL, project)=>
           activeStep === (maxSteps - 1) ? (
             <Button color="secondary" disabled={!valid} variant="contained" size="small" onClick={async ()=>{     
+              setFinished(true)
               const submission = {
                 variables: { 
                   initiative:{

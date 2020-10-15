@@ -42,29 +42,13 @@ export default ({ state, setState })=>{
       {
         id:'initiatives',
         text: i18n('myInitiatives')
-      },
-      {
-        id: 'projects',
-        text: i18n('projectLibrary')
-      },
-      // {
-      //   id: 'resources',
-      //   text: i18n('resourceLibrary')
-      // }
+      }
     ]:
     [      
       {
         id:'map',
         text:i18n('initiativeMap')
-      }, 
-      {
-        id: 'projects',
-        text: i18n('projectLibrary')
-      },
-      // {
-      //   id: 'resources',
-      //   text: i18n('resourceLibrary')
-      // }
+      }
     ]
 
   const menuBottom = !user.isAnonymous?
@@ -104,17 +88,11 @@ export default ({ state, setState })=>{
                 history.push('/')
               }else if(val.id==='initiatives'){
                 history.push('/initiatives')
-              }else if(val.id==='projects'){
-                history.push('/projects')
-              }else if(val.id==='resources'){
-                history.push('/resources')
               }
             }}>
               <ListItemIcon>
                 {val.id==='map' && <MapOutlined /> }
                 {val.id==='initiatives' && <PeopleOutline /> }
-                {val.id==='projects' && <LibraryBooksOutlined /> }
-                {val.id==='resources' && <BuildOutlined /> }
               </ListItemIcon>
               <ListItemText primary={val.text} />
             </ListItem>

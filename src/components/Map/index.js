@@ -10,14 +10,13 @@ import LocationIcon from './Layers/LocationIcon.js'
 import LoadIcons from './Layers/LoadIcons.js'
 
 import CreateInitiative from 'components/Initiatives/CreateInitiative'
-import InitiativeFab from 'components/Initiatives/InitiativeFab.js'
-import Initiative from 'components/Initiatives/Initiative.js'
-import Initiatives from 'components/Initiatives'
-
+import InitiativeFab from './Interfaces/InitiativeFab.js'
 import LocateFab from './Interfaces/LocateFab.js'
+import LayersFab from './Interfaces/LayersFab.js'
+import Initiatives from 'components/Initiatives'
+import Initiative from 'components/Initiatives/Initiative'
 import Markers from './Layers/Markers.js'
 import Satellite from './Layers/Satellite.js'
-import LayersFab from './Interfaces/LayersFab.js'
 import { Redirect, Route, useHistory } from 'react-router-dom'
 import SwipeableViews from 'react-swipeable-views';
 

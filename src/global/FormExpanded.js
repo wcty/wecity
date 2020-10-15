@@ -3,9 +3,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, InputAdornment, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, CircularProgress, Box } from '@material-ui/core';
 import { useStorage } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
-import ErrorBoundary from 'global/ErrorBoundary'
 import * as Atoms from 'global/Atoms'
 import { useRecoilState } from 'recoil'
+import { useParams } from 'react-router-dom'
+
 function CircularProgressWithLabel(props) {
 
   return (
@@ -121,6 +122,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 let imageLoadedVar = null
 let fileNameVar = null
+
 export default ({ isFilling, formGetter, nextButton, backButton, directory, variant, floating, finished, setFinished })=> {
   const formSteps = formGetter()
   const classes = useStyles();
@@ -182,6 +184,7 @@ export default ({ isFilling, formGetter, nextButton, backButton, directory, vari
 
   const Reset = ()=>{
     if(imageLoadedURL){
+      console.log('deleted')
       DeleteImage()
       setImageLoadedURL(null)
       setThumbLoadedURL(null)
@@ -296,7 +299,6 @@ export default ({ isFilling, formGetter, nextButton, backButton, directory, vari
                 <div className={classes.img} key={input.id}>
                   <CircularProgressWithLabel value={progressState} style={{color: "#ffffff", visibility:progressState?"visible":"hidden"}}/> 
                   <CircularProgressWithoutLabel style={{color: "#ffffff", visibility:(imageLoadedURL&&!progressState&&!thumbLoadedURL)?"visible":"hidden"}}/>
-                  <ErrorBoundary>
                     <section 
                       className={classes.img} 
                       key={input.id}
@@ -308,7 +310,6 @@ export default ({ isFilling, formGetter, nextButton, backButton, directory, vari
                         backgroundRepeat: 'no-repeat'
                     }}>
                     </section>
-                  </ErrorBoundary>
                     <input
                       accept="image/*"
                       className={classes.input}

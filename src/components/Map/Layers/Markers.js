@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Source, Layer } from '@urbica/react-map-gl'
 import * as firebase from 'firebase/app';
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -30,9 +30,8 @@ export default () =>{
   const [sp, setSP] = useRecoilState(swipePosition)
   const history = useHistory()
   const { initiativeID, postID } = useParams();
-  const [refreshed, setRefreshed] = useState(Object.values(view))
-  const [vars, setVars] = useState({variables: {nearInitiativesInput:{ point: refreshed, minDistance: 0, limit: querySize }}})
-  const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars);
+  const vars = useRef({variables: {nearInitiativesInput:{ point: Object.values(view), minDistance: 0, limit: querySize }}})
+  const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars.current);
   if (loading) console.log('loading');
   if (error) console.log('error', error);
 
@@ -44,12 +43,8 @@ export default () =>{
     if(sp===markers.features.length-2) {
       if(vars.variables.nearInitiativesInput.minDistance!==markers.features[markers.features.length-1].properties.distance){
         console.log('here')
-        setVars(prev=>{
-          prev.variables.nearInitiativesInput.minDistance = markers.features[markers.features.length-1].properties.distance
-          console.log('new var', prev)
-          refetch(prev)
-          return prev
-        })
+        vars.current.variables.nearInitiativesInput.minDistance = markers.features[markers.features.length-1].properties.distance
+        refetch(vars.current)
       }
       if(data && data.nearInitiatives[0].properties.distance>=markers.features[markers.features.length-1].properties.distance){
         const [first, ...other] = data.nearInitiatives
