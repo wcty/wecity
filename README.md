@@ -8,9 +8,9 @@ We.city is a web app to:
 - Collectively gather resources needed for initiative realization.
 - Be an experimental horisontal social governance system independent from any formal institutions, private entities or governmental bodies
 
-<p style="text-align:center;">
-  <img width="75%" src="/public/assets/chat_min.png" />
-</p>
+<div align="center">
+  <img width="50%" src="/public/assets/chat_min.png" />
+</div>
 
 #### For whom?
 
@@ -30,9 +30,9 @@ The map also features markers for organisations and individuals providing goods 
 
 Matching will happen in two ways — organisations or individuals can look through civic initiatives around, and propose them their goods or services, or the members of the initiative can look through organisations, and invite them to help out. The last screen is a Crowdfunding page, where members of the initiative can collect resources to order voted goods or services. It is the final phase of the initiative development, after which comes the actual ordering, implementation and reporting in the group chat. The members of the initiative can share the link to it with their friends or colleagues to find support, or to invite certain organisations to submit their proposal for a certin task. 
 
-<p style="text-align:center;">
-  <img width="75%" src="/public/assets/groups_min.png" />
-</p>
+<div align="center">
+  <img width="50%" src="/public/assets/groups_min.png" />
+</div>
 
 #### What problem does the project address? 
 
