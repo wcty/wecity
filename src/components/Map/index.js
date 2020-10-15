@@ -1,18 +1,19 @@
 import React, { Suspense, useEffect, useState, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { CircularProgress } from '@material-ui/core'
-import MapGL from '@urbica/react-map-gl'
+import MapGL, { AttributionControl } from '@urbica/react-map-gl'
 import { mapboxConfig } from 'config'
 import { AuthCheck, SuspenseWithPerf } from 'reactfire';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { locationAtom,viewAtom, creatingAtom, mapAtom } from 'global/Atoms'
+import { locationAtom,viewAtom, creatingAtom } from 'global/Atoms'
 import LocationIcon from './Layers/LocationIcon.js'
 import LoadIcons from './Layers/LoadIcons.js'
-
+import { useWindowDimensions} from 'global/Hooks'
 import CreateInitiative from 'components/Initiatives/CreateInitiative'
-import InitiativeFab from './Interfaces/InitiativeFab.js'
-import LocateFab from './Interfaces/LocateFab.js'
-import LayersFab from './Interfaces/LayersFab.js'
+import MenuFab from './MenuFab.js'
+import InitiativeFab from './InitiativeFab.js'
+import LocateFab from './LocateFab.js'
+import LayersFab from './LayersFab.js'
 import Initiatives from 'components/Initiatives'
 import Initiative from 'components/Initiatives/Initiative'
 import Markers from './Layers/Markers.js'
@@ -54,10 +55,10 @@ export default ()=>{
   const setView = useSetRecoilState(viewAtom)
   const [viewport, setViewport] = useState({ latitude: 50.4501, longitude: 30.5234, zoom:15 });
   const mapRef = useRef()
-  const mapDimensions = useRecoilValue(mapAtom)
   const [loaded, setLoaded] = useState(false)
   const [satellite, setSatellite] = useState(false)
   const history = useHistory()
+  const mapDimensions = useWindowDimensions()
 
   const getMarker = ()=>{
     const w = mapDimensions.width/2
@@ -89,8 +90,14 @@ export default ()=>{
   
   return (
       <>
+        <MenuFab />
         <Suspense fallback={null}>
           <Route path='/initiatives' render={()=><Initiatives mapRef={mapRef}/>} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Route path={'/initiative/:initiativeID'} >
+            <Initiative mapRef={mapRef} loaded={loaded} getMarker={getMarker}/>
+          </Route>
         </Suspense>
         <Suspense fallback={
           <InitiativeFab active={false} />
@@ -100,11 +107,6 @@ export default ()=>{
           }>
             <InitiativeFab active={true} getMarker={getMarker}/>
           </AuthCheck>
-        </Suspense>
-        <Suspense fallback={null}>
-          <Route path={'/initiative/:initiativeID'} >
-            <Initiative mapRef={mapRef} loaded={loaded} getMarker={getMarker}/>
-          </Route>
         </Suspense>
         <LocateFab mapRef={mapRef} loaded={loaded} />
         <LayersFab satellite={satellite} setSatellite={setSatellite} />
@@ -116,6 +118,7 @@ export default ()=>{
           accessToken={mapboxConfig.accessToken}
           onViewportChange={setViewport}
           onLoad={()=>{setLoaded(true)}}
+          attributionControl={false}
           ref={mapRef}
           //hash={true}
           {...viewport}
@@ -125,6 +128,10 @@ export default ()=>{
             //setSelected(null)
           }}
         >
+          <AttributionControl
+            compact={true}
+            position='bottom-left'
+          />
           {satellite && <Satellite />}
           <SuspenseWithPerf fallback={
             <div className={classes.overlay}>

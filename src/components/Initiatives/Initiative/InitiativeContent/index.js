@@ -1,20 +1,13 @@
-import React, { useState, useEffect, useMemo, Suspense } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Collapse, Paper, Typography, IconButton, Box,Fab, List, ListItem, ListItemText, Button, TextField } from '@material-ui/core'
-import { Alert, AlertTitle } from '@material-ui/lab';
-import addImage from 'assets/images/addImage.png'
+import { Box, List, ListItem, ListItemText, Button } from '@material-ui/core'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
-import { useStorage, useFirestore, useUser, useFirestoreDocData } from 'reactfire'
-import { People, LocationOn, ExpandLess, Close, ArrowBack, ArrowForward } from '@material-ui/icons'
-import distance from '@turf/distance'
-import translate from '@turf/transform-translate'
-import ImageViewer from 'react-simple-image-viewer'
+import { useStorage, useUser } from 'reactfire'
 import { useI18n } from 'global/Hooks'
 import { DeleteObject } from 'global/Misc'
 import moment from 'moment'
 import { useParams, Route, useHistory } from 'react-router-dom'
-import {Helmet} from "react-helmet"
 import { Share } from '@material-ui/icons'
 import SelectRole from './SelectRole'
 import InitiativeGroup from './InitiativeGroup'
@@ -22,67 +15,20 @@ import InitiativeTopic from './InitiativeTopic'
 import { useQuery, useMutation } from '@apollo/client'
 import { getInitiative, updateInitiativeMember, deleteInitiative } from 'global/Queries'
 
-
-const useStyles = makeStyles((theme) => ({
-  paper:{
-    // height: "100%",
-    minHeight: "250px",
-    // width: "100%",
-    overflowX: "hidden",
-    // flexGrow: 1,
-    zIndex: 10,
-    position: 'fixed',
-    transitionDuration: '0.3s',
-    [theme.breakpoints.up('sm')]: {
-      maxWidth: 400,
-		},
-  },
-  img: {
-    height: '160px',
-    maxWidth: 400,
-    overflow: 'hidden',
-    display: 'block',
-    width: '100%',
-    margin: "auto",
-    verticalAlign: 'middle',
-    objectFit: 'cover'
-  },
-  info: {
-    padding: theme.spacing(2),
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
-  },
-  alert: {
-    position: 'absolute',
-    top: '1rem',
-    left: '1rem',
-    zIndex: 999,
-    maxWidth: 'calc( 100% - 4rem )'
-  }
-}));
-
-
 export default ()=>{
-  const classes = useStyles();
-  const initiatives = useRecoilValue(Atoms.markersAtom)?.features
   let { initiativeID, postID } = useParams();
   const vars = {variables: {UID: initiativeID}}
   const { loading, error, data, refetch } = useQuery(getInitiative, vars);
   const initiative = useMemo(()=>data?.initiative, [data])
   if (loading) console.log('loading');
   if (error) console.log('error', error);
-  const [location] = useRecoilState(Atoms.locationAtom)
   const [expanded, setExpanded] = useRecoilState(Atoms.expanded)
-  const mapDimensions = useRecoilValue(Atoms.mapAtom)
-  const bar = useRecoilValue(Atoms.barAtom)
   const user = useUser()
-  const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [markers, setMarkers] = useRecoilState(Atoms.markersAtom)
   const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
   const images = useStorage().ref().child('initiatives')
   const i18n = useI18n()
   const [alert, setAlert] = useState(null)
-  const [sp, setSP] = useRecoilState(Atoms.swipePosition)
   const history = useHistory()
   const [updateMember, memberData] = useMutation(updateInitiativeMember)
   const [deleteInitiativeMutation, removeData] = useMutation(deleteInitiative)
@@ -97,25 +43,25 @@ export default ()=>{
 
       <Box style={{padding: '2rem', paddingTop: 0, paddingBottom: 0 }}>
         <List key='elements' disablePadding>
-          {initiative.properties.problem&& (<ListItem className={classes.item} disableGutters>
+          {initiative.properties.problem&& (<ListItem disableGutters>
             <ListItemText
               primary={i18n('initiativeProblem')}
               secondary={initiative.properties.problem}
             />
           </ListItem>)}
-          {initiative.properties.outcome&& (<ListItem className={classes.item} disableGutters>
+          {initiative.properties.outcome&& (<ListItem disableGutters>
             <ListItemText
               primary={i18n('initiativeExpectedResult')}
               secondary={initiative.properties.outcome}
             />
           </ListItem>)}
-          {initiative.properties.context && (<ListItem className={classes.item} disableGutters>
+          {initiative.properties.context && (<ListItem disableGutters>
             <ListItemText
               primary={i18n('initiativeCurrentState')}
               secondary={initiative.properties.context}
             />
           </ListItem>)}
-          {initiative.properties.timestamp && (<ListItem className={classes.item} disableGutters>
+          {initiative.properties.timestamp && (<ListItem disableGutters>
           <ListItemText
             primary={i18n('initiativeDateAdded')}
             secondary={moment(initiative.properties.timestamp.toDate()).format('DD.MM.YYYY')}

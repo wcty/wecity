@@ -91,5 +91,5 @@ The team is radically open to everyone interested to contribute!
 
 # How to contribute
 
-All contributions are welcome as well as donations to [Biggggidea](https://biggggidea.com/).
+All contributions are welcome as well as donations to [Biggggidea](https://biggggidea.com/project/wecity-platform/).
 If you are the experienced developer, and know how to improve and structure the whole project, your advices or pull requests are even more welcome! The maintainer of this repo has a very limited development experience, and is eager to find a team and to learn from them the best coding/collaboration practices!

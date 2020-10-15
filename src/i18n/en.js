@@ -9,10 +9,10 @@ export default {
     settings: "Settings",
     feedback: "Feedback", 
     language: "Language",
-    en: "🇬🇧",
-    uk: "🇺🇦",
-    ka: "🇬🇪",
-    fi: "🇫🇮",
+    en: "English",
+    uk: "Ukrainian",
+    ka: "Georgian",
+    fi: "Finnish",
 
     //App bar
     enter: "Login",

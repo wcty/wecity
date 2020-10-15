@@ -3,8 +3,6 @@ import { Source, Layer } from '@urbica/react-map-gl'
 import * as firebase from 'firebase/app';
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { markersAtom, viewAtom, locationAtom, swipePosition } from 'global/Atoms'
-import { useGeoFirestore } from 'global/Hooks'
-import { getFeatures } from 'global/Misc'
 import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import { nearbyInitiatives } from 'global/Queries'
@@ -22,14 +20,11 @@ function arrayUnique(a) {
 }
 
 export default () =>{
-  const GeoFirestore = useGeoFirestore() 
   const [markers, setMarkers] = useRecoilState(markersAtom)
   const view = useRecoilValue(viewAtom)
   const location = useLocation()
-  const [geolocation] = useRecoilState(locationAtom)
   const [sp, setSP] = useRecoilState(swipePosition)
   const history = useHistory()
-  const { initiativeID, postID } = useParams();
   const vars = useRef({variables: {nearInitiativesInput:{ point: Object.values(view), minDistance: 0, limit: querySize }}})
   const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars.current);
   if (loading) console.log('loading');

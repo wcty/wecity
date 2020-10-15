@@ -1,18 +1,14 @@
 import React, { useEffect, useRef, Suspense, useState } from 'react'
 // import * as serviceWorker from '../serviceWorker';
 import { makeStyles } from '@material-ui/core/styles'
-import { Box, useEventCallback } from '@material-ui/core'
-import AppBar from './AppBar'
+import { Box } from '@material-ui/core'
 import Map from './Map'
-import { barAtom, mapAtom } from 'global/Atoms'
-import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
-import useMeasure from "use-measure";
+import { RecoilRoot } from 'recoil'
 import { theme } from 'global/Theme'
 import { firebaseConfig } from 'config'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { FirebaseAppProvider, useUser, useAuth } from 'reactfire'
-import FeedbackForm from './AppBar/FeedbackForm'
-import { BrowserRouter as Router, Route, useHistory } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, gql } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
@@ -29,8 +25,6 @@ const useClient = () => {
         localStorage.setItem('token', user.uid);
         const httpLink = createHttpLink({
           uri: 'https://wecity.westeurope.azurecontainer.io/graphql',
-          //uri: 'http://localhost:4000/graphql',
-
         });
         
         const authLink = setContext((_, { headers }) => {
@@ -77,7 +71,7 @@ const useStyles = makeStyles(theme => ({
     right: 0
   },
   map: {
-    top: 70,
+    top: 0,
     width: '100%',
     height: `100%`,
     position: 'fixed',
@@ -99,24 +93,10 @@ const useStyles = makeStyles(theme => ({
 
 const Layout = ()=>{
   const classes = useStyles()
-  const [barDimensions] = useRecoilState(barAtom)
-  const mapRef = useRef()
-  const mapMeasure = useMeasure(mapRef)
-  const setMapDimensions = useSetRecoilState(mapAtom)
-  const history = useHistory()
-
-  useEffect(()=>{
-    setMapDimensions(mapMeasure)
-  }, [mapMeasure, setMapDimensions])
   
   return (
       <Box className={classes.root}>
-        <AppBar />
-        <Suspense fallback={null}>
-          <Route path='/feedback' render={()=><FeedbackForm />} />
-        </Suspense>
-
-        <Box className={classes.map} style={{zIndex: -10, top: barDimensions.height}} ref={mapRef}>
+        <Box className={classes.map}>
           <Map />
         </Box>
       </Box>
@@ -127,7 +107,6 @@ export default () => {
   
   return (
     <Router>
-      
       <FirebaseAppProvider firebaseConfig={firebaseConfig}>
         <ThemeProvider theme={theme}>
           <RecoilRoot>

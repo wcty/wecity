@@ -34,16 +34,6 @@ export const creatingAtom = atom({
   default: false,
 });
 
-export const barAtom = atom({
-  key: 'bar',
-  default: {height: 70},
-});
-
-export const mapAtom = atom({
-  key: 'map',
-  default: {},
-});
-
 export const userAtom = atom({
   key: 'user',
   default: null,

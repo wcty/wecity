@@ -6,14 +6,13 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import * as Atoms from 'global/Atoms'
 import { useUser } from 'reactfire';
-import { useGeoFirestore } from 'global/Hooks'
+import { useWindowDimensions } from 'global/Hooks'
 import * as firebase from 'firebase/app';
-import { getFeatures } from 'global/Misc'
 import createInitiativeForm from 'global/forms/createInitiativeForm'
 import FormExpanded from 'global/FormExpanded'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
-import {  Redirect, useHistory } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import MarkerActive from 'assets/images/markerActive.svg'
 import randomstring from 'randomstring'
 import { useMutation } from '@apollo/client';
@@ -55,7 +54,7 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
   const setMarkers = useSetRecoilState(Atoms.markersAtom)
   const user = useUser()
   const [location] = useRecoilState(Atoms.locationAtom)
-  const mapDimensions = useRecoilValue(Atoms.mapAtom)
+  const mapDimensions = useWindowDimensions()
   const [finished, setFinished] = useState(false)
   const history = useHistory()
   const [addInitiative, addedData] = useMutation(createInitiativeMutation, {onCompleted:(data)=>{

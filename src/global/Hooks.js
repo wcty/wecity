@@ -1,19 +1,11 @@
 
 import { useState, useEffect } from 'react'
-import * as geofirestore from 'geofirestore';
-import { useFirestore } from 'reactfire';
 import en from 'i18n/en.js'
 import uk from 'i18n/uk.js'
 import ka from 'i18n/ka.js'
 import fi from 'i18n/fi.js'
 import { useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
-
-export function useGeoFirestore() {
-  const firestore = useFirestore()    //.settings({ experimentalForceLongPolling: true });
-  const [GeoFirestore] = useState(geofirestore.initializeApp(firestore));
-  return GeoFirestore;
-}
 
 export function useLocation() {
   const defaultValue = {longitude: 30.5234, latitude: 50.4501}
@@ -31,7 +23,6 @@ export function useLocation() {
 
   return location
 }
-
 
 const languages = {
     en,
@@ -81,4 +72,29 @@ export const useI18n = ()=>{
         return i18nData[key];
     }
   }
+}
+
+
+
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height
+  };
+}
+
+export function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
 }

@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
   InitiativeFab: {
     position: 'absolute',
     right: '1rem',
+    zIndex: 5
   },
   alert: {
     position: 'absolute',

@@ -3,13 +3,11 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Collapse, Paper, Typography, IconButton, Box,Fab, List, ListItem, ListItemText, Button, TextField } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { useStorage, useFirestore, useUser, useFirestoreDocData } from 'reactfire'
+import { useStorage, useUser } from 'reactfire'
 import { People, LocationOn, ExpandLess, Close, ArrowBack, ArrowForward } from '@material-ui/icons'
-import { useI18n } from 'global/Hooks'
-import { DeleteObject } from 'global/Misc'
-import { useParams, Route, useHistory } from 'react-router-dom'
+import { useI18n, useWindowDimensions } from 'global/Hooks'
+import { useParams, useHistory } from 'react-router-dom'
 import { Helmet } from "react-helmet"
-import { Share } from '@material-ui/icons'
 import { useQuery, useMutation } from '@apollo/client'
 import { getInitiative, updateInitiativeMember, deleteInitiative } from 'global/Queries'
 import ImageViewer from 'react-simple-image-viewer'
@@ -18,7 +16,6 @@ import * as Atoms from 'global/Atoms'
 import addImage from 'assets/images/addImage.png'
 import distance from '@turf/distance'
 import translate from '@turf/transform-translate'
-import moment from 'moment'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
@@ -60,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default ({ mapRef, loaded })=> {
   const classes = useStyles();
-  const initiatives = useRecoilValue(Atoms.markersAtom)?.features
   let { initiativeID, postID } = useParams();
   const vars = {variables: {UID: initiativeID}}
   const { loading, error, data, refetch } = useQuery(getInitiative, vars);
@@ -70,18 +66,14 @@ export default ({ mapRef, loaded })=> {
 
   const [location] = useRecoilState(Atoms.locationAtom)
   const [expanded, setExpanded] = useRecoilState(Atoms.expanded)
-  const mapDimensions = useRecoilValue(Atoms.mapAtom)
-  const bar = useRecoilValue(Atoms.barAtom)
+  const mapDimensions = useWindowDimensions()
   const user = useUser()
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [markers, setMarkers] = useRecoilState(Atoms.markersAtom)
-  const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
-  const images = useStorage().ref().child('initiatives')
   const i18n = useI18n()
   const [alert, setAlert] = useState(null)
   const [sp, setSP] = useRecoilState(Atoms.swipePosition)
   const history = useHistory()
-  const [updateMember, memberData] = useMutation(updateInitiativeMember)
 
   useEffect(()=>{
     if(markers.features.length>0&&sp!==0){
@@ -174,8 +166,8 @@ export default ({ mapRef, loaded })=> {
             cursor: 'pointer', 
             borderRadius: expanded?'0':"5px",
             overflowY: expanded?'scroll':'hidden',
-            minHeight: expanded?`calc(100% - ${bar.height}px)`:'250px',
-            maxHeight: expanded?`calc(100% - ${bar.height}px)`:'400px',
+            minHeight: expanded?`100%`:'250px',
+            maxHeight: expanded?`100%`:'400px',
             width: expanded?'100%':'calc( 100% - 2rem )',
             bottom: expanded?'0':"1rem",
             right: expanded?'0':"1rem",
@@ -184,8 +176,8 @@ export default ({ mapRef, loaded })=> {
         > 
           {
             !expanded && <>
-              <Fab onClick={()=>{setSP(prev=>prev>0?prev-1:0)}} style={{position: "fixed", transform: "translate( 50%, -50% )", zIndex: 15}}><ArrowBack/></Fab>
-              <Fab onClick={()=>{setSP(prev=>prev+1)}} style={{position: "fixed", right:0, transform: "translate( -50%, -50% )", zIndex: 15}}><ArrowForward/></Fab>
+              <Fab size='small' onClick={()=>{setSP(prev=>prev>0?prev-1:0)}} style={{position: "fixed", transform: "translate( calc( 50% - 1rem ), -50% )", zIndex: 15}}><ArrowBack/></Fab>
+              <Fab size='small' onClick={()=>{setSP(prev=>prev+1)}} style={{position: "fixed", right:0, transform: "translate( -50%, -50% )", zIndex: 15}}><ArrowForward/></Fab>
             </>
           }
           <div id="wrapper">

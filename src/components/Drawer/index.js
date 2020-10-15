@@ -7,11 +7,12 @@ import { useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
 import LangSelect from './LangSelect'
 import { useI18n } from 'global/Hooks'
+import Header from './Header'
 
 const useStyles = makeStyles({
   list: {
     width: 250,
-    padding: '1rem'
+    marginTop: '1rem'
   },
   fullList: {
     width: 'auto',
@@ -30,10 +31,9 @@ export default ({ state, setState })=>{
     }
     setState(open);
   };
-  
-  const i18n = useI18n()
 
-  const menuTop = !user.isAnonymous?
+  const i18n = useI18n()
+  const menuTop = 
     [
       {
         id:'map',
@@ -43,15 +43,8 @@ export default ({ state, setState })=>{
         id:'initiatives',
         text: i18n('myInitiatives')
       }
-    ]:
-    [      
-      {
-        id:'map',
-        text:i18n('initiativeMap')
-      }
     ]
-
-  const menuBottom = !user.isAnonymous?
+  const menuBottom = 
     [
       {
         id: 'settings',
@@ -61,21 +54,15 @@ export default ({ state, setState })=>{
         id: 'feedback',
         text:i18n('feedback')
       }
-    ]:
-    [
-      {
-        id: 'feedback',
-        text:i18n('feedback')
-      }
     ]
 
   const list = (anchor) => {
-    return (
+    return <>
+      <Header />
       <div
         className={clsx(classes.list, {
           [classes.fullList]: anchor === 'top' || anchor === 'bottom',
         })}
-        // role="Menu"
       >
         <List  
           disablePadding       
@@ -98,7 +85,6 @@ export default ({ state, setState })=>{
             </ListItem>
           ))}
         </List>
-        <Divider />
         <List 
           disablePadding
           onClick={toggleDrawer(false)}
@@ -119,17 +105,18 @@ export default ({ state, setState })=>{
                 {val.id==='feedback' && <FeedbackOutlined /> }
               </ListItemIcon>
               <ListItemText primary={val.text} />
+              <Divider />
             </ListItem>
           ))}
+          
         </List>
-        <LangSelect variant="outlined" toggleDrawer={()=>{setState(false)}} style={{marginLeft: 'auto', marginTop: '1rem', float: 'right', minWidth: '2rem'}} />
-
+        
+        <LangSelect variant="standard" toggleDrawer={()=>{setState(false)}} style={{ padding:'1rem', widht:'100%' }} />
       </div>
-    )
+    </>
   };
 
   return (
-    //<div>
     <>          
         <SwipeableDrawer
           open={state}
@@ -142,6 +129,5 @@ export default ({ state, setState })=>{
           {list('left')}
         </SwipeableDrawer>
     </>
-    //</div>
   );
 }

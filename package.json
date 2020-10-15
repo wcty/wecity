@@ -17,7 +17,6 @@
     "dotenv": "^8.2.0",
     "firebase": "^7.17.1",
     "firebaseui": "^4.6.1",
-    "geofirestore": "^4.3.0",
     "graphql": "^15.3.0",
     "gzipper": "^4.0.0",
     "mapbox-gl": "^1.11.1",

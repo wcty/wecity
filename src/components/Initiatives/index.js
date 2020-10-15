@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Divider, List, Typography, ListItem, ListItemText } from '@material-ui/core';
 import { useRecoilValue } from 'recoil';
-import { barAtom, mapAtom, viewAtom } from 'global/Atoms'
-import {  useFirestoreCollectionData, useFirestore, useUser } from 'reactfire';
-import { useI18n } from 'global/Hooks'
+import { viewAtom } from 'global/Atoms'
+import { useUser } from 'reactfire';
+import { useI18n, useWindowDimensions } from 'global/Hooks'
 import { useHistory } from 'react-router-dom'
 import { mapboxConfig } from 'config/index'
 import { useQuery, gql } from '@apollo/client';
 import { nearbyInitiatives } from 'global/Queries'
-import InitiativeFab from 'components/Map/Interfaces/InitiativeFab'
+import InitiativeFab from 'components/Map/InitiativeFab'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,10 +59,8 @@ const InitiativeRow = ({initiative})=>{
 export default ({ mapRef })=> {
   const classes = useStyles();
   const user = useUser()
-  const bar = useRecoilValue(barAtom)
-  const mapDimensions = useRecoilValue(mapAtom)
+  const mapDimensions = useWindowDimensions()
   const i18n = useI18n()
-  const history = useHistory()
   const view = useRecoilValue(viewAtom)
   const vars = useRef({variables: {nearInitiativesInput:{ point: Object.values(view), member: user.uid }}})
   const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars.current);
@@ -76,7 +74,7 @@ export default ({ mapRef })=> {
   return (<>
     <Paper elevation={1} className={classes.root} 
       style={{
-        height: `calc(100% - ${bar.height}px)`, 
+        height: `100%`, 
         width:'100%',
         bottom: '0',
         right: '0',
@@ -102,7 +100,6 @@ export default ({ mapRef })=> {
         </Typography>
         }
         </List>
-        <InitiativeFab active={true} getMarker={getMarker}/>
       </div>
     </Paper>
   </>)
