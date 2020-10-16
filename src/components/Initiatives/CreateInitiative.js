@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
   marker: {
     position: 'absolute',
-    top: 'calc( ( 100% - 350px ) / 2  )',
+    top: 'calc( ( 100% - 250px ) / 2  )',
     left: '50%',
     transform: 'translate(-21px, -42px)'
   }
@@ -54,7 +54,6 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
   const setMarkers = useSetRecoilState(Atoms.markersAtom)
   const user = useUser()
   const [location] = useRecoilState(Atoms.locationAtom)
-  const mapDimensions = useWindowDimensions()
   const [finished, setFinished] = useState(false)
   const history = useHistory()
   const [addInitiative, addedData] = useMutation(createInitiativeMutation, {onCompleted:(data)=>{
@@ -65,32 +64,14 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
     history.push(`/initiative/${data.createInitiative.properties.uid}`)
   }})
 
-  const locationRef = useRef()
-
   useEffect(()=>{
-    if( loaded && location && !locationRef.current ){
+    if( loaded && location ){
       const map = mapRef.current.getMap()
-      const w = mapDimensions.width/2
-      const h = (mapDimensions.height - 350)/2
-      const offPoint = Object.values(map.unproject([w,h]))
-      const point = Object.values(map.getCenter())
-      const dist = distance(point, offPoint)
       const center = [location.longitude, location.latitude]
-      locationRef.current = translate({
-        type:"FeatureCollection",
-        features:[
-          {
-            type: "Feature",
-            geometry:{
-              type: "Point",
-              coordinates: center
-            }
-          }
-        ]
-      }, dist, 180)
-      map.flyTo({ center: locationRef.current.features[0].geometry.coordinates });
+
+      map.flyTo({ center, offset:[0, -125] });
     }
-  }, [mapRef, loaded, isCreating, mapDimensions.height, mapDimensions.width])
+  }, [mapRef, loaded, isCreating])
 
   return <>
   <img alt="Marker for new initiative" src={MarkerActive} className={classes.marker} width={42} height={42} />

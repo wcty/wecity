@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { IconButton, Button, Divider, InputAdornment, Avatar, Typography, Box, TextField, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
+import { IconButton, InputAdornment, Box, TextField } from '@material-ui/core';
 import { useI18n } from 'global/Hooks'
 import { useDatabase, useUser, useDatabaseListData, useFirestore, useFirestoreDocData } from 'reactfire'
-import { useParams, useHistory, Route } from 'react-router-dom'
-import { Send, ThumbUpOutlined, ThumbUp, ThumbDownOutlined, ThumbDown, ModeCommentOutlined } from '@material-ui/icons'
+import { useParams } from 'react-router-dom'
+import { Send } from '@material-ui/icons'
 import Post from './InitiativePost'
 import {toJSON} from 'global/Misc'
 

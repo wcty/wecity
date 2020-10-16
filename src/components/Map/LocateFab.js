@@ -31,7 +31,7 @@ export default ({ mapRef, loaded })=>{
         if(location){
           if(loaded){
             const map = mapRef.current.getMap()
-            map.flyTo({center: [location.longitude, location.latitude], zoom: 16});
+            map.flyTo({center: [location.longitude, location.latitude], offset:[0, -125], zoom: 16});
           }
         }
       }}

@@ -4,12 +4,12 @@ import { ListItem, ListItemAvatar, ListItemText, Toolbar, Box,  Avatar, Button, 
 import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
 import firebase from 'firebase'
-import { userAtom, showBarAtom } from 'global/Atoms'
+import { showBarAtom } from 'global/Atoms'
 import { useAuth, useUser, useFirestore } from 'reactfire';
-import { useSetRecoilState, useRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
 import { useI18n } from 'global/Hooks'
-import { Route, useHistory, Link } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 
 const Styles = makeStyles( theme => ({
   appbar: {
@@ -50,11 +50,7 @@ const LogIn = ()=>{
   const i18n = useI18n()
   const auth = useAuth()
   const user = useUser();
-  const setCurrent = useSetRecoilState(userAtom)
-  const usersRef = useFirestore().collection('users')
-  const [newUser, setNewUser] = useState(false)
   const history = useHistory()
-  const theme = useTheme()
   const provider = new firebase.auth.GoogleAuthProvider()
   const signInWithGoogle = () => {
     auth.signInWithRedirect(provider)

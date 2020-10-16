@@ -98,25 +98,8 @@ export default ({ mapRef, loaded })=> {
     
       if(loaded&&initiative&&initiative.properties){
         const map = mapRef.current.getMap()
-        const center = Object.values(initiative.geometry.coordinates)
-        const w = mapDimensions.width/2
-        const h = (mapDimensions.height - 350)/2
-        const offPoint = Object.values(map.unproject([w,h]))
-        const point = Object.values(map.getCenter())
-        const dist = distance(point, offPoint)
-        const newOffPoint = translate({
-          type:"FeatureCollection",
-          features:[
-            {
-              type: "Feature",
-              geometry:{
-                type: "Point",
-                coordinates: center
-              }
-            }
-          ]
-        }, dist, 180)
-        newOffPoint.features[0].geometry.coordinates && map.flyTo({ center: newOffPoint.features[0].geometry.coordinates });
+        const center = initiative.geometry.coordinates
+        map.flyTo({ center, offset: [0, -125], zoom: 16 });
       } 
   }, [mapRef, loaded, initiative, mapDimensions.width, mapDimensions.height])
 
@@ -165,7 +148,7 @@ export default ({ mapRef, loaded })=> {
             transition: 'all 0.3s',
             cursor: 'pointer', 
             borderRadius: expanded?'0':"5px",
-            overflowY: expanded?'scroll':'hidden',
+            overflowY: expanded?'scroll':'visible',
             minHeight: expanded?`100%`:'250px',
             maxHeight: expanded?`100%`:'400px',
             width: expanded?'100%':'calc( 100% - 2rem )',
@@ -176,8 +159,18 @@ export default ({ mapRef, loaded })=> {
         > 
           {
             !expanded && <>
-              <Fab size='small' onClick={()=>{setSP(prev=>prev>0?prev-1:0)}} style={{position: "fixed", transform: "translate( calc( 50% - 1rem ), -50% )", zIndex: 15}}><ArrowBack/></Fab>
-              <Fab size='small' onClick={()=>{setSP(prev=>prev+1)}} style={{position: "fixed", right:0, transform: "translate( -50%, -50% )", zIndex: 15}}><ArrowForward/></Fab>
+              <Fab size='small' 
+                onClick={()=>{setSP(prev=>prev>0?prev-1:0)}} 
+                style={{position: "fixed", transform: "translate( calc( 50% - 1rem ), -50% )", zIndex: 15}}
+              >
+                <ArrowBack/>
+              </Fab>
+              <Fab size='small' 
+                onClick={()=>{setSP(prev=>prev+1)}} 
+                style={{position: "fixed", right:0, transform: "translate( -50%, -50% )", zIndex: 15}}
+              >
+                <ArrowForward/>
+              </Fab>
             </>
           }
           <div id="wrapper">
