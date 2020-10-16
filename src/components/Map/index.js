@@ -9,6 +9,7 @@ import { locationAtom,viewAtom, creatingAtom } from 'global/Atoms'
 import LocationIcon from './Layers/LocationIcon.js'
 import LoadIcons from './Layers/LoadIcons.js'
 import { useWindowDimensions} from 'global/Hooks'
+import SidePanel from '../SidePanel'
 import CreateInitiative from 'components/Initiatives/CreateInitiative'
 import MenuFab from './MenuFab.js'
 import InitiativeFab from './InitiativeFab.js'
@@ -18,10 +19,10 @@ import Initiatives from 'components/Initiatives'
 import Initiative from 'components/Initiatives/Initiative'
 import Markers from './Layers/Markers.js'
 import Satellite from './Layers/Satellite.js'
-import { Redirect, Route, useHistory } from 'react-router-dom'
+import { Redirect, Route, useHistory, useLocation } from 'react-router-dom'
 import SwipeableViews from 'react-swipeable-views';
-
 import offlineStyle from 'assets/style.json'
+import { useUser } from 'reactfire'
 
 const useStyles = makeStyles(theme => ({
   mapContainer: {
@@ -59,7 +60,8 @@ export default ()=>{
   const [satellite, setSatellite] = useState(false)
   const history = useHistory()
   const mapDimensions = useWindowDimensions()
-
+  const user = useUser()
+  const url = useLocation()
   const getMarker = ()=>{
     const w = mapDimensions.width/2
     const h = (mapDimensions.height - 350)/2
@@ -90,6 +92,7 @@ export default ()=>{
   
   return (
       <>
+        {url?.pathname?.includes('/intro') && <SidePanel />}
         <MenuFab />
         <Suspense fallback={null}>
           <Route path='/initiatives' render={()=><Initiatives mapRef={mapRef}/>} />

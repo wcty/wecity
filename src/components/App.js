@@ -8,7 +8,7 @@ import { theme } from 'global/Theme'
 import { firebaseConfig } from 'config'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { FirebaseAppProvider, useUser, useAuth } from 'reactfire'
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, useHistory, useLocation } from "react-router-dom";
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, gql } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
@@ -93,7 +93,17 @@ const useStyles = makeStyles(theme => ({
 
 const Layout = ()=>{
   const classes = useStyles()
-  
+  const user = useUser()
+  const history = useHistory()
+  const location = useLocation()
+  const [intro, setIntro] = useState()
+  useEffect(()=>{
+    if(!intro && (!user || user.isAnonymous) && !location?.pathname.includes('initiative')){
+      history.push('/intro')
+      setIntro(true)
+    }
+  },[user, user?.isAnonymous, location])
+
   return (
       <Box className={classes.root}>
         <Box className={classes.map}>

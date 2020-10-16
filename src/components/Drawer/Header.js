@@ -3,13 +3,13 @@ import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { ListItem, ListItemAvatar, ListItemText, Toolbar, Box,  Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
 import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
-import firebase from 'firebase'
 import { showBarAtom } from 'global/Atoms'
 import { useAuth, useUser, useFirestore } from 'reactfire';
 import { useRecoilState } from 'recoil';
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
 import { useI18n } from 'global/Hooks'
 import { useHistory, Link } from 'react-router-dom'
+import { signInWithGoogle } from 'global/Misc'
 
 const Styles = makeStyles( theme => ({
   appbar: {
@@ -51,19 +51,16 @@ const LogIn = ()=>{
   const auth = useAuth()
   const user = useUser();
   const history = useHistory()
-  const provider = new firebase.auth.GoogleAuthProvider()
-  const signInWithGoogle = () => {
-    auth.signInWithRedirect(provider)
-  };
+
 
   return !user || user.isAnonymous?
-    <ListItem button style={{height:'5rem'}} onClick={signInWithGoogle}>        
+    <ListItem button style={{height:'5rem'}} onClick={signInWithGoogle(auth)}>        
       <ListItemAvatar>
         <AccountCircle color='primary'/>
       </ListItemAvatar> 
       <ListItemText 
         secondary={i18n('enter')}
-        secondaryTypographyProps={{style: {color:"#ffffff"}}}
+        secondaryTypographyProps={{style: {color: "#ffffff", fontWeight: "lighter"}}}
       />
     </ListItem>
     :
@@ -107,7 +104,7 @@ export default (props)=>{
             </ListItemAvatar>         
             <ListItemText 
               primary={i18n('loading')}
-              primaryTypographyProps={{style: {color:"#ffffff"}}}
+              primaryTypographyProps={{style: {color: "#ffffff", fontWeight: "lighter"}}}
             />
           </ListItem>
         }>

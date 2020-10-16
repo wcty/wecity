@@ -6,6 +6,7 @@ import { markersAtom, viewAtom, locationAtom, swipePosition } from 'global/Atoms
 import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import { nearbyInitiatives } from 'global/Queries'
+import { useUser } from 'reactfire'
 
 const querySize = 20
 function arrayUnique(a) {
@@ -25,6 +26,7 @@ export default () =>{
   const location = useLocation()
   const [sp, setSP] = useRecoilState(swipePosition)
   const history = useHistory()
+  const user = useUser()
   const vars = useRef({variables: {nearInitiativesInput:{ point: Object.values(view), minDistance: 0, limit: querySize }}})
   const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars.current);
   if (loading) console.log('loading');
@@ -51,6 +53,8 @@ export default () =>{
 
   const onClick = (event) => {
     if (event.features.length > 0) {
+      console.log('secondary redirect')
+
       //const nextClickedStateId = event.features[0].properties.id;
       history.push(`/initiative/${event.features[0].properties.uid}`)
     }
@@ -58,7 +62,8 @@ export default () =>{
   const [started, setStarted] = useState()
 
   useEffect(()=>{
-    if(!started&&markers.features[0]&&sp===0&&location.pathname==="/"){
+    if(user&& !user.isAnonymous &&!started&&markers.features[0]&&sp===0&&location.pathname==="/"){
+      console.log('initiatil redirect')
       setStarted(true)
       history.push(`/initiative/${markers.features[0].properties.uid}`)
     }

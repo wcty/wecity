@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import { SwipeableDrawer, List, Divider, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { SwipeableDrawer, List, Divider, Box, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { MapOutlined, LibraryBooksOutlined, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined } from '@material-ui/icons';
 import { useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
@@ -69,7 +69,7 @@ export default ({ state, setState })=>{
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
-          {menuTop.map((val, index) => (
+          { user && !user.isAnonymous && menuTop.map((val, index) => (
             <ListItem button key={val.id} onClick={()=>{
               if(val.id==='map'){
                 history.push('/')
@@ -90,7 +90,7 @@ export default ({ state, setState })=>{
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
-          {menuBottom.map((val, index) => (
+          {user && !user.isAnonymous && menuBottom.map((val, index) => (
             <ListItem button key={val.id} onClick={()=>{
               if(val.id==='settings'){
                 //history.push('/settings')
@@ -105,10 +105,9 @@ export default ({ state, setState })=>{
                 {val.id==='feedback' && <FeedbackOutlined /> }
               </ListItemIcon>
               <ListItemText primary={val.text} />
-              <Divider />
             </ListItem>
           ))}
-          
+        <Box style={{padding:'0.5rem 1rem'}}><Divider /></Box>
         </List>
         
         <LangSelect variant="standard" toggleDrawer={()=>{setState(false)}} style={{ padding:'1rem', widht:'100%' }} />

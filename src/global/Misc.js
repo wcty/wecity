@@ -1,23 +1,9 @@
+import firebase from 'firebase'
 
-export const getFeatures = (value) => {
-  const features = value.docs.map(v=>{
-    const {coordinates, g, ...properties} = v.data()
-    const feature = {
-      type:"Feature",
-      geometry:{
-        type:"Point",
-        coordinates: Object.values(coordinates)
-      },
-      properties: {
-        id: v.id,
-        coordinates,
-        ...properties
-      }
-    }
-    return feature
-  })
-  return features
-}
+const provider = new firebase.auth.GoogleAuthProvider()
+export const signInWithGoogle = (auth) => {
+  auth.signInWithRedirect(provider)
+};
 
 export const DeleteObject = async (object, objects, images, directory, close)=>{
 

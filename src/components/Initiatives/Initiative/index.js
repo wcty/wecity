@@ -76,7 +76,8 @@ export default ({ mapRef, loaded })=> {
   const history = useHistory()
 
   useEffect(()=>{
-    if(markers.features.length>0&&sp!==0){
+    if(user && !user.isAnonymous && markers.features.length>0 && sp!==0){
+      console.log('here', user, !user?.isAnonymous)
       if(sp<=(markers.features.length-1) ){
         console.log('sp1')
 

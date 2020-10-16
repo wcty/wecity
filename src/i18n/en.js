@@ -66,17 +66,31 @@ export default {
     feedbackEmailMessage: "Message",
     feedbackEmailContact: "How to contact me",
 
-    //User form
-    userFormGreetings: '🖐Dear visitor!',
-    userFormDescription: <>
-        <p>- You are on the site, which is the first prototype of the platform for civic self-governance Wecity.</p>
-        <p>- This site works in the experimental mode and its goal is to test different methods of citizen self-organization online to improve our cities.
-        It was launched in the framework of EASA 2020 (European Architectural Student Assembly) in Kyiv, Chokolivka. </p>
-        <p>to take part in this experiment, we kindly ask you to answer couple of question and by this to consent letting us analyse and manage your data at the site for development purposes.</p>
-    </>,
-    userFormName: "Your name:",
-    userFormHowDidYouFindUs: "How did you hear about this site:",
-    userFormHowToContactYou: "How can we contact you:",
+    //Intro
+    introGreetings: 'Hi!',
+    introGreetingsDescription: <>
+        You landed on the site, which is the first prototype of the platform for urban networking We.city. 
+        It can help you to find the others, who share your concerns regarding your city/environment,
+        and organize your communication with them to find solutions, resources and contractors to resolve it collectively. 
+        It is for those who would like to see positive changes around, but do not have time, energy or expertise, to realize them on alone.
+        </>,
+    introPartners: 'Our partners',
+    introPartnersDescription: <>
+        This project is publsihed specially for Tbilisi Architectural Biennial.
+        You can support it at <a style={{color:"black"}} href="https://biggggidea.com/project/wecity-platform/">Biggggidea</a>  and your contribution will be doubled by International Renaissance Foundation.
+        The project is realized together with European Architectural Student Assembly.
+        </>,
+    introFunctions: 'Functionality',
+    introFunctionsDescription: <>
+        This web app is currently under active development, and is not stable. 
+        However, you can use some of its functions already now - look through the initiatives on the map, join them or create new ones.
+        It doesn't matter whether you have plan or time for their realization. Simply say to the whole world that you need changes, and choose the mode of you participation.
+        </>,
+    introLogin: 'What is next?',
+    introLoginDescription: <>
+        In every initiative that you join you will find a news feed. Speak with the other members and comment, and find together the best ways to implement your idea, while we are working to extend the functionality of the app.
+        But before that, please click "Next" button, and register or login🙏
+        </>,
 
     //Project form
     projectFormAddCoverPhoto: "+ Add cover image",
