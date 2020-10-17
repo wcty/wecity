@@ -9,7 +9,7 @@ import { locationAtom,viewAtom, creatingAtom } from 'global/Atoms'
 import LocationIcon from './Layers/LocationIcon.js'
 import LoadIcons from './Layers/LoadIcons.js'
 import { useWindowDimensions} from 'global/Hooks'
-import SidePanel from '../SidePanel'
+import Intro from '../Intro'
 import CreateInitiative from 'components/Initiatives/CreateInitiative'
 import MenuFab from './MenuFab.js'
 import InitiativeFab from './InitiativeFab.js'
@@ -92,7 +92,7 @@ export default ()=>{
   
   return (
       <>
-        {url?.pathname?.includes('/intro') && <SidePanel />}
+        {url?.pathname?.includes('/intro') && <Intro />}
         <MenuFab />
         <Suspense fallback={null}>
           <Route path='/initiatives' render={()=><Initiatives mapRef={mapRef}/>} />
