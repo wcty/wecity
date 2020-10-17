@@ -1,25 +1,29 @@
-make adding tasks for volunteers on project creation (make optional fields: min number of people, min number of hours)
-make adding expenses for budget on project creation
+Make adding tasks for volunteers on project creation (make optional fields: min number of people, min number of hours)
+Make adding expenses for budget on project creation
 
-location\community (initiative, demand) - design(initiative, supply) - resources(initiative, supply) 
-edit or delete comment
-+like, dislike, or comment
-
-+Add writing capability to realm db
-+Add posibility to have distance measured
+Edit initiative functionality
+Edit comment functionality
+Set up the map feed properly
 
 Add circle and line
 Add instructions
-Add initiative interiors
-Change initiative member role to the array, to support multiple
-Button to show labels in an unexplored place
-Set up UserForm - Settings
-fix on create fly to location
-Detect areas where markers are not loaded (and the time passed)
-Reverse download features on the edge?
-Make random initiatives selectable
+Add initiative contents + list of members, projects, etc.
+Change initiative member role to the checkbox, instead of radio button, to support multiple
+Button to download/show labels in an unexplored place
+Set up User Settings
 
-
-Создавать отдельную колекцию для каждого пользователя, в которой просто будет список id просмотренных инициатив в том порядке как пользователь их смотрел
-Новые инициативы показывать после даты последней просмотренной инициативы, в географическом порядке
-Инициативы на которые переходишь по ссылке - не влияют на формирование ленты
+Usage scenario:
+Карта открывается по дефолту на странице Эксплор = /initiative/explore.
+ - Если нажимаем далее или посмотреть, 
+  то загружаем ближайшие 20 из тех которые не отмечены в ленте пользователя
+  переходим на первую по близости, она записываеться юзеру в ленту,
+  Переходим далее по всем, и они поочередно записываються,
+  на последней загружаем ближайшие 20 из тех которые не существуют в ленте
+- дата модель для просмотренных инициатив: 
+  {
+    _id!
+    uid!
+    coords
+    time_added
+    time_created
+  }
