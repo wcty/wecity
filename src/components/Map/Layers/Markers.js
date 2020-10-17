@@ -23,14 +23,35 @@ function arrayUnique(a) {
 export default () =>{
   const [markers, setMarkers] = useRecoilState(markersAtom)
   const view = useRecoilValue(viewAtom)
-  const location = useLocation()
+  const url = useLocation()
+  const [location] = useRecoilState(locationAtom)
   const [sp, setSP] = useRecoilState(swipePosition)
   const history = useHistory()
   const user = useUser()
-  const vars = useRef({variables: {nearInitiativesInput:{ point: Object.values(view), minDistance: 0, limit: querySize }}})
+  const vars = useRef({ 
+    variables: {
+      nearInitiativesInput:{ 
+        point: location?[location.longitude, location.latitude]:Object.values(view), 
+        minDistance: 0, 
+        limit: querySize 
+      }
+    }
+  })
   const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars.current);
   if (loading) console.log('loading');
   if (error) console.log('error', error);
+
+  useEffect(()=>{
+    refetch({ 
+      variables: {
+        nearInitiativesInput:{ 
+          point: location?[location.longitude, location.latitude]:Object.values(view), 
+          minDistance: 0, 
+          limit: querySize 
+        }
+      }
+    })
+  },[location])
 
   useEffect(()=>{
     if(!markers.features[0] && data) {
@@ -38,7 +59,7 @@ export default () =>{
       setMarkers({type:"FeatureCollection", features: data.nearInitiatives})
     }
     if(sp===markers.features.length-2) {
-      if(vars.variables.nearInitiativesInput.minDistance!==markers.features[markers.features.length-1].properties.distance){
+      if(vars.variables?.nearInitiativesInput?.minDistance!==markers.features[markers.features.length-1].properties.distance){
         console.log('here')
         vars.current.variables.nearInitiativesInput.minDistance = markers.features[markers.features.length-1].properties.distance
         refetch(vars.current)
@@ -62,12 +83,12 @@ export default () =>{
   const [started, setStarted] = useState()
 
   useEffect(()=>{
-    if(user&& !user.isAnonymous &&!started&&markers.features[0]&&sp===0&&location.pathname==="/"){
+    if(user&& !user.isAnonymous &&!started&&markers.features[0]&&sp===0&&url.pathname==="/"){
       console.log('initiatil redirect')
       setStarted(true)
       history.push(`/initiative/${markers.features[0].properties.uid}`)
     }
-  },[markers.features, sp, location])
+  },[markers.features, sp, url])
 
   return (
     <>  
@@ -91,7 +112,7 @@ export default () =>{
           'text-halo-color': "white",   
         }}
         layout={{
-          'icon-image': ['case', ['==', ['get', 'uid'], location.pathname.replace('/initiative/','')], 'marker-active', 'marker-fixed'],
+          'icon-image': ['case', ['==', ['get', 'uid'], url.pathname.replace('/initiative/','')], 'marker-active', 'marker-fixed'],
           'icon-anchor': 'bottom',
           'icon-allow-overlap': true,
             // ["step",
@@ -110,7 +131,7 @@ export default () =>{
           'icon-ignore-placement': true,
           'text-ignore-placement': true,
           'symbol-spacing': 1,
-          'text-field': ['case', ['==', ['get', 'id'], location.pathname.replace('/initiative/','')], ['get', 'name'], ''],
+          'text-field': ['case', ['==', ['get', 'id'], url.pathname.replace('/initiative/','')], ['get', 'name'], ''],
           'text-anchor': 'top',
           'text-font': ["Montserrat SemiBold"],
           'text-size': 13,

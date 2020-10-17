@@ -14,6 +14,7 @@ import CreativeEurope from 'assets/images/logos/creativeeurope.png'
 import UCF from 'assets/images/logos/ucf.png'
 import { signInWithGoogle } from 'global/Misc'
 import { useI18n } from 'global/Hooks'
+import LangSelect from './LangSelectShort'
 
 const useStyles = makeStyles((theme) => ({
   sidebar:{
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     bottom: 0,
     right: 0,
-    overflowX: "hidden",
+    overflow: "hidden",
     minHeight: '4rem',
     zIndex: 15,
     position: 'fixed',
@@ -77,6 +78,7 @@ export default ({ mapRef, loaded })=> {
         <Box className={classes.intro}>
           <Toolbar >
             <Logo style={{ height:"20px"}}></Logo>
+            <Box style={{marginLeft: 'auto'}}><LangSelect short/></Box>
           </Toolbar>
           <div className={classes.wrapper} style={{textAlign:"center", marginBottom: '6rem'}}>
             {activeStep==0 && <>
@@ -148,12 +150,15 @@ export default ({ mapRef, loaded })=> {
               </IconButton> 
             }
           />
-          <IconButton size="medium" onClick={()=>setActiveStep(step=>step>0?step-1:0)}
-            style={{position:"absolute", zIndex:15, margin: '1rem 1.5rem' }}
+          <IconButton size="medium" 
+            onClick={()=>{
+              if(activeStep==0 && user&&!user.isAnonymous ) history.push('/')
+              setActiveStep(step=>step>0?step-1:0)
+            }}
+            style={{position:"absolute", zIndex:15, margin: '0.5rem 1.5rem' }}
           >
             <svg width="24px" height="24px"></svg>
           </IconButton>
         </Box>
-
     </>
 }

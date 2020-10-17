@@ -123,12 +123,10 @@ export default ()=>{
           onLoad={()=>{setLoaded(true)}}
           attributionControl={false}
           ref={mapRef}
-          //hash={true}
           {...viewport}
           onClick={()=>{
             history.push('/')
             console.log('mapclick')
-            //setSelected(null)
           }}
         >
           <AttributionControl
@@ -146,7 +144,6 @@ export default ()=>{
               mapRef={mapRef.current} 
               location={location} />
             <Markers />
-
             <Route path="/create-initiative" 
               render={()=>loaded && 
               <CreateInitiative 
@@ -156,7 +153,6 @@ export default ()=>{
                 cancel={()=>{setIsCreating(false); history.push('/') }} 
               />}
             />
-            
             { location &&
             <LocationIcon 
               loaded={loaded} 

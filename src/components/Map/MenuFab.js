@@ -11,6 +11,7 @@ const useStyles = makeStyles(theme => ({
   MenuFab: {
     position: 'absolute',
     left: '1rem',
+    zIndex: 12
   },
   alert: {
     position: 'absolute',
@@ -36,8 +37,7 @@ export default ({ active, getMarker })=>{
           className={classes.MenuFab} 
           style={{
             top: initiativeBar?'unset':'1rem',
-            bottom: initiativeBar?'1rem':'unset',
-            zIndex: 1,
+            bottom: initiativeBar?'1rem':'unset'
           }}
           raised="true" 
           aria-label="add"

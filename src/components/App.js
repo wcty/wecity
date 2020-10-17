@@ -12,6 +12,37 @@ import { BrowserRouter as Router, useHistory, useLocation } from "react-router-d
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, gql } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
+
+const useStyles = makeStyles(theme => ({
+
+  root:{
+    position: "fixed",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0
+  },
+  map: {
+    top: 0,
+    width: '100%',
+    height: `100%`,
+    position: 'fixed',
+    zIndex:0,
+	},
+	sidebar: {
+		marginTop: `100%`,
+		width: '100%',
+		
+		[theme.breakpoints.up('sm')]: {
+			marginTop: 0,
+			width: '50%',
+			maxWidth: 400,
+			justify: "flex-end",
+			float: "right",
+    }
+  }  
+}))
+
 const useClient = () => {
   const [state, setState]= useState()
   const user = useUser()
@@ -51,7 +82,7 @@ const useClient = () => {
   },[user, auth])
 
   return state
-};
+}
 
 const Apollo = ({children})=>{
   const client = useClient()
@@ -60,36 +91,6 @@ const Apollo = ({children})=>{
     {children}
   </ApolloProvider> : null
 }
-
-const useStyles = makeStyles(theme => ({
-
-  root:{
-    position: "fixed",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0
-  },
-  map: {
-    top: 0,
-    width: '100%',
-    height: `100%`,
-    position: 'fixed',
-    zIndex:0,
-	},
-	sidebar: {
-		marginTop: `100%`,
-		width: '100%',
-		
-		[theme.breakpoints.up('sm')]: {
-			marginTop: 0,
-			width: '50%',
-			maxWidth: 400,
-			justify: "flex-end",
-			float: "right",
-    }
-  }  
-}))
 
 const Layout = ()=>{
   const classes = useStyles()

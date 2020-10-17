@@ -14,7 +14,7 @@ import InitiativeFab from 'components/Map/InitiativeFab'
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    zIndex: 999,
+    zIndex: 10,
     position: 'fixed',
     height: "100%",
     width: "100%",
