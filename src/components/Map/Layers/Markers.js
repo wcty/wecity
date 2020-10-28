@@ -1,101 +1,58 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React from 'react'
 import { Source, Layer } from '@urbica/react-map-gl'
-import * as firebase from 'firebase/app';
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { markersAtom, viewAtom, locationAtom, swipePosition } from 'global/Atoms'
-import { useLocation, useHistory, useParams } from 'react-router-dom';
-import { useQuery, gql } from '@apollo/client';
-import { nearbyInitiatives } from 'global/Queries'
-import { useUser } from 'reactfire'
-
-const querySize = 20
-function arrayUnique(a) {
-  for(var i=0; i<a.length; ++i) {
-      for(var j=i+1; j<a.length; ++j) {
-          if(a[i].properties.uid === a[j].properties.uid)
-              a.splice(j--, 1);
-      }
-  }
-
-  return a;
-}
+import { useRecoilState } from 'recoil'
+import * as Atoms from 'global/Atoms'
+import { getFeed } from 'global/Misc'
+import { useLocation, useHistory } from 'react-router-dom';
+import { lastInitiatives } from 'global/Queries';
 
 export default () =>{
-  const [markers, setMarkers] = useRecoilState(markersAtom)
-  const view = useRecoilValue(viewAtom)
+  const [feed,setFeed] = useRecoilState(Atoms.initiativeFeed)
   const url = useLocation()
-  const [location] = useRecoilState(locationAtom)
-  const [sp, setSP] = useRecoilState(swipePosition)
   const history = useHistory()
-  const user = useUser()
-  const vars = useRef({ 
-    variables: {
-      nearInitiativesInput:{ 
-        point: location?[location.longitude, location.latitude]:Object.values(view), 
-        minDistance: 0, 
-        limit: querySize 
-      }
-    }
-  })
-  const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars.current);
-  if (loading) console.log('loading');
-  if (error) console.log('error', error);
-
-  useEffect(()=>{
-    refetch({ 
-      variables: {
-        nearInitiativesInput:{ 
-          point: location?[location.longitude, location.latitude]:Object.values(view), 
-          minDistance: 0, 
-          limit: querySize 
-        }
-      }
-    })
-  },[location])
-
-  useEffect(()=>{
-    if(!markers.features[0] && data) {
-      console.log(data)
-      setMarkers({type:"FeatureCollection", features: data.nearInitiatives})
-    }
-    if(sp===markers.features.length-2) {
-      if(vars.variables?.nearInitiativesInput?.minDistance!==markers.features[markers.features.length-1].properties.distance){
-        console.log('here')
-        vars.current.variables.nearInitiativesInput.minDistance = markers.features[markers.features.length-1].properties.distance
-        refetch(vars.current)
-      }
-      if(data && data.nearInitiatives[0].properties.distance>=markers.features[markers.features.length-1].properties.distance){
-        const [first, ...other] = data.nearInitiatives
-        setMarkers({type:"FeatureCollection", features: arrayUnique([...markers.features, ...data.nearInitiatives]) })
-        console.log(data, markers)
-      }
-    }
-  },[sp, setMarkers, data])
+  const [slideIndex, setSlideIndex] = useRecoilState(Atoms.indexAtom)
+  const [next, setNext] = useRecoilState(Atoms.nextAtom)
+  const [last, setLast] = useRecoilState(Atoms.lastAtom)
+  const [offset, setOffset] = useRecoilState(Atoms.offsetAtom)
 
   const onClick = (event) => {
-    if (event.features.length > 0) {
-      console.log('secondary redirect')
+    if (event.features.length > 0){ 
 
-      //const nextClickedStateId = event.features[0].properties.id;
-      history.push(`/initiative/${event.features[0].properties.uid}`)
+      const selected = [...last.features,...next.features].find(f=>f.properties.uid===event.features[0].properties.uid)
+      // console.log(selected, feed )
+      if(selected){
+        // console.log(base)
+        //setBase(0)
+        setOffset(0)
+        setSlideIndex(1)
+        setFeed([selected])
+        console.log(selected)
+        history.push(`/initiative/${event.features[0].properties.uid}`) 
+
+      }
+
+      // if(feed.length===1){
+      //   setFeed(getFeed({next,last}))
+      // }
+      // console.log(index, feed, last.features, next.features, event.features[0].properties)
+      // if(index!==-1){
+      //   const baseIndex = offset + feed.map(f=>f.properties.uid).indexOf('explore')
+      //   const actualIndex= index-baseIndex
+      //   console.log(actualIndex)
+      //   setSlideIndex(actualIndex)
+      // }
     }
   };
-  const [started, setStarted] = useState()
-
-  useEffect(()=>{
-    if(user&& !user.isAnonymous &&!started&&markers.features[0]&&sp===0&&url.pathname==="/"){
-      console.log('initiatil redirect')
-      setStarted(true)
-      history.push(`/initiative/${markers.features[0].properties.uid}`)
-    }
-  },[markers.features, sp, url])
 
   return (
     <>  
       <Source
         id='markers'
         type='geojson'
-        data={markers}
+        data={{
+          type:'FeatureCollection', 
+          features: [...last.features,...next.features,...(feed.length===1?feed:[])]
+        }}
       />
       <Layer
         id='markers'
@@ -103,11 +60,7 @@ export default () =>{
         source='markers'
         paint={{
           'text-color': 'black',
-          'text-opacity': ["step",
-                            ['zoom'],
-                            0,
-                            15, 1
-                          ],
+          'text-opacity': ["step", ['zoom'], 0, 15, 1 ],
           'text-halo-width': 1,
           'text-halo-color': "white",   
         }}
@@ -115,11 +68,6 @@ export default () =>{
           'icon-image': ['case', ['==', ['get', 'uid'], url.pathname.replace('/initiative/','')], 'marker-active', 'marker-fixed'],
           'icon-anchor': 'bottom',
           'icon-allow-overlap': true,
-            // ["step",
-            //   ['zoom'],
-            //   false,
-            //   13, true
-            // ],
           'icon-size': 
             ["interpolate",
               ["linear"],
@@ -141,7 +89,6 @@ export default () =>{
         onClick={onClick}
         onEnter={()=>{document.body.style.cursor="pointer"}}
         onLeave={()=>{document.body.style.cursor=""}}
-
       />
     </>
   )

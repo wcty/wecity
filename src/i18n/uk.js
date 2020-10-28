@@ -7,6 +7,7 @@ export default {
     projectLibrary: "Проектні пропозиції",
     resourceLibrary: "Локальні ресурси",
     settings: "Налаштування",
+    about: "Про нас",
     feedback: "Зворотній зв'язок", 
     language: "Мова",
     en: "Англійська",

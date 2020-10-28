@@ -10,7 +10,8 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     top: '5.5rem',
     right: '1rem',
-    zIndex: 5
+    zIndex: 5,
+    background: '#ffffff'
   }
 }))  
 

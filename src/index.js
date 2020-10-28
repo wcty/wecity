@@ -8,5 +8,12 @@ import App from './components/App.js'
 import './styles/index.css'
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.unstable_createRoot(document.getElementById('root')).render(<App />);
+//ReactDOM.unstable_createRoot(document.getElementById('root')).render(<App />);
+const rootElement = document.getElementById("root");
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  rootElement
+);
 serviceWorker.unregister()
