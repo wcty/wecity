@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { SwipeableDrawer, List, Divider, Box, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { MapOutlined, LibraryBooksOutlined, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined, InfoOutlined } from '@material-ui/icons';
+import { MapOutlined, LibraryBooksOutlined, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined } from '@material-ui/icons';
 import { useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
 import LangSelect from './LangSelect'
@@ -42,21 +42,19 @@ export default ({ state, setState })=>{
       {
         id:'initiatives',
         text: i18n('myInitiatives')
-      },
+      }
+    ]
+  const menuBottom = 
+    [
       {
         id: 'settings',
         text:i18n('settings')
       }, 
       {
-        id: 'about',
-        text:i18n('about')
-      },
-      {
         id: 'feedback',
         text:i18n('feedback')
       }
     ]
-
 
   const list = (anchor) => {
     return <>
@@ -74,25 +72,14 @@ export default ({ state, setState })=>{
           { user && !user.isAnonymous && menuTop.map((val, index) => (
             <ListItem button key={val.id} onClick={()=>{
               if(val.id==='map'){
-                history.push('/initiative/explore')
+                history.push('/')
               }else if(val.id==='initiatives'){
                 history.push('/initiatives')
-              }else if(val.id==='settings'){
-                history.push('/settings')
-              }else if(val.id==='about'){
-                history.push('/intro')
-              }else if(val.id==='feedback'){
-                history.push('/feedback')
-                console.log('feedback')
               }
             }}>
               <ListItemIcon>
                 {val.id==='map' && <MapOutlined /> }
                 {val.id==='initiatives' && <PeopleOutline /> }
-                {val.id==='settings' && <SettingsApplicationsOutlined /> }
-                {val.id==='about' && <InfoOutlined/> }
-                {val.id==='feedback' && <FeedbackOutlined /> }
-
               </ListItemIcon>
               <ListItemText primary={val.text} />
             </ListItem>
@@ -103,6 +90,23 @@ export default ({ state, setState })=>{
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
+          {user && !user.isAnonymous && menuBottom.map((val, index) => (
+            <ListItem button key={val.id} onClick={()=>{
+              if(val.id==='settings'){
+                //history.push('/settings')
+              }else if(val.id==='feedback'){
+                history.push('/feedback')
+                console.log('feedback')
+              }
+            }}
+            >
+              <ListItemIcon>
+                {val.id==='settings' && <SettingsApplicationsOutlined /> }
+                {val.id==='feedback' && <FeedbackOutlined /> }
+              </ListItemIcon>
+              <ListItemText primary={val.text} />
+            </ListItem>
+          ))}
         <Box style={{padding:'0.5rem 1rem'}}><Divider /></Box>
         </List>
         

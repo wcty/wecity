@@ -14,21 +14,6 @@ export const viewAtom = atom({
   }, 
 });
 
-export const offsetAtom = atom({
-  key: 'offset',
-  default: 0,
-});
-
-export const baseAtom = atom({
-  key: 'base',
-  default: 1,
-});
-
-export const lockKeys = atom({
-  key: 'lockKeys',
-  default: false,
-});
-
 export const markerAtom = atom({
   key: 'marker',
   default: null,
@@ -39,39 +24,9 @@ export const selectedAtom = atom({
   default: null,
 });
 
-export const nextAtom = atom({
-  key: 'next',
+export const markersAtom = atom({
+  key: 'markers',
   default: {type:"FeatureCollection", features:[]},
-});
-
-export const lastAtom = atom({
-  key: 'last',
-  default: {type:"FeatureCollection", features:[]},
-});
-
-export const ownAtom = atom({
-  key: 'own',
-  default: {type:"FeatureCollection", features:[]},
-});
-
-export const indexAtom = atom({
-  key: 'index',
-  default: 0,
-});
-
-export const loadMoreLast = atom({
-  key: 'loadMoreLast',
-  default: false,
-});
-
-export const loadMoreNext = atom({
-  key: 'loadMoreNext',
-  default: false,
-});
-
-export const initiativeFeed = atom({
-  key: 'initiativeFeed',
-  default: [{properties:{uid:'explore'}}],
 });
 
 export const creatingAtom = atom({

@@ -11,7 +11,6 @@ const shortInitiativeShape = (d)=>`
     uid
     imageURL{
       l
-      s
       xs
     }
     members {
@@ -55,26 +54,7 @@ const initiativeShape = (d)=>`
 export const nearbyInitiatives = gql`
   query GetNearInitiatives($nearInitiativesInput: NearInitiativesInput!) {
     nearInitiatives(input: $nearInitiativesInput) {
-      ${initiativeShape(true)}
-    }
-  }
-`;
-
-export const ownInitiatives = gql`
-  query GetOwnInitiatives($nearInitiativesInput: NearInitiativesInput!) {
-    nearInitiatives(input: $nearInitiativesInput) {
-      ${initiativeShape(false)}
-    }
-  }
-`;
-
-export const lastInitiatives = gql`
-  query GetLastInitiatives($user:String!, $limit:Int, $startAt:String){
-    lastInitiatives(user:$user, limit:$limit, startAt:$startAt) {
-      ${initiativeShape(false)}
-      visits {
-        createdAt
-      }
+      ${shortInitiativeShape(true)}
     }
   }
 `;
@@ -91,28 +71,6 @@ export const createInitiativeMutation = gql`
   mutation CreateInitiative($initiative:CreateInitiativeInput!){
     createInitiative(initiative:$initiative){
       ${initiativeShape(false)}
-    }
-  }
-`;
-
-export const addVisitMutation = gql`
-  mutation AddVisit($visit:VisitInput!){
-    addVisit(visit:$visit){
-      _id
-      initUID
-      user
-      createdAt
-    }
-  }
-`;
-
-export const deleteVisitMutation = gql`
-  mutation DeleteVisit($visit:VisitInput!){
-    deleteVisit(visit:$visit){
-      _id
-      initUID
-      user
-      createdAt
     }
   }
 `;
@@ -144,7 +102,17 @@ export const addInitiativeMember = gql`
 export const updateInitiativeMember = gql`
   mutation UpdateInitiativeMember($UID:String!, $member: InitiativeMemberInput){
     updateInitiativeMember(uid:$UID, member:$member){
-      ${initiativeShape(false)}
+      properties {
+        members{
+          uid
+          roles {
+            Initiator
+            Donator
+            Provider
+            Volunteer
+          }
+        }
+      }
     }
   }
 `

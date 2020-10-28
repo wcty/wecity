@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { Source, Layer } from '@urbica/react-map-gl'
-import { useHistory } from 'react-router-dom';
 
 const pulsingDot = (map)=>{
   var size = 60;
@@ -75,7 +74,7 @@ const pulsingDot = (map)=>{
 }
 
 export default ({ mapRef, loaded, location })=>{
-  const history = useHistory()
+
   useEffect(()=>{
     if(loaded){
       const map = mapRef.getMap()
@@ -109,7 +108,6 @@ export default ({ mapRef, loaded, location })=>{
           'icon-image': 'pulsing-dot',
         }}
         before='markers'
-        onClick={()=>history.push('/initiative/explore')}
       />
     </>
   )

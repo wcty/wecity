@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     height: "100%",
     width: "100%",
-    // overflowX: "hidden",
+    overflowX: "hidden",
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
 		},
@@ -62,7 +62,7 @@ export default ({ mapRef })=> {
   const mapDimensions = useWindowDimensions()
   const i18n = useI18n()
   const view = useRecoilValue(viewAtom)
-  const vars = useRef({variables: {nearInitiativesInput:{ point: Object.values(view), user: user.uid, own:true }}})
+  const vars = useRef({variables: {nearInitiativesInput:{ point: Object.values(view), member: user.uid }}})
   const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars.current);
   const initiatives = data?.nearInitiatives
   const getMarker = ()=>{

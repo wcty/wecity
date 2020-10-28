@@ -11,8 +11,7 @@ const useStyles = makeStyles(theme => ({
   MenuFab: {
     position: 'absolute',
     left: '1rem',
-    zIndex: 12,
-    background: '#ffffff'
+    zIndex: 12
   },
   alert: {
     position: 'absolute',

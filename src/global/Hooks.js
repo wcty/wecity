@@ -1,25 +1,11 @@
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import en from 'i18n/en.js'
 import uk from 'i18n/uk.js'
 import ka from 'i18n/ka.js'
 import fi from 'i18n/fi.js'
 import { useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
-
-export function usePrevious(value) {
-  // The ref object is a generic container whose current property is mutable ...
-  // ... and can hold any value, similar to an instance property on a class
-  const ref = useRef();
-  
-  // Store current value in ref
-  useEffect(() => {
-    ref.current = value;
-  }, [value]); // Only re-run if value changes
-  
-  // Return previous value (happens before update in useEffect above)
-  return ref.current;
-}
 
 export function useLocation() {
   const defaultValue = {longitude: 30.5234, latitude: 50.4501}

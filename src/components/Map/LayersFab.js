@@ -4,12 +4,11 @@ import { Fab } from '@material-ui/core'
 import { Layers, Terrain } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
-  layersFab: {
+  satelliteFab: {
     position: 'absolute',
     top: '9rem',
     right: '1rem',
-    zIndex: 5,
-    background: '#ffffff'
+    zIndex: 5
   }
 }))  
 
@@ -21,7 +20,7 @@ export default ({ satellite, setSatellite })=>{
       onClick={()=>{
         setSatellite(!satellite)
       }}
-      className={classes.layersFab} 
+      className={classes.satelliteFab} 
       raised="true" 
       aria-label="satellite layer"
       size='small'

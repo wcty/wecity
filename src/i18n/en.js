@@ -7,7 +7,6 @@ export default {
     projectLibrary: "Project Library",
     resourceLibrary: "Local Resources",
     settings: "Settings",
-    about: "About us",
     feedback: "Feedback", 
     language: "Language",
     en: "English",

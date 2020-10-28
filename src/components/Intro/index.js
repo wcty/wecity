@@ -2,6 +2,7 @@ import React, { Suspense, useEffect, useState, useRef } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { ArrowBack, ArrowForward, ArrowRightAlt } from '@material-ui/icons'
 import { Box, Paper, Divider, Toolbar, MobileStepper, IconButton, Typography } from '@material-ui/core'
+import SwipeableViews from 'react-swipeable-views';
 import { useUser, useAuth } from 'reactfire'
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as Logo } from 'assets/images/wecityLogoBlack.svg'
@@ -24,8 +25,8 @@ const useStyles = makeStyles((theme) => ({
     bottom: '0',
     right: '0',
     minHeight: "250px",
-    // overflowX: "hidden",
-    zIndex: 14,
+    overflowX: "hidden",
+    zIndex: 10,
     position: 'fixed',
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
@@ -137,7 +138,7 @@ export default ({ mapRef, loaded })=> {
                       console.log(user)
                       signInWithGoogle(auth)
                     }
-                    history.push('/initiative/explore')
+                    history.push('/')
                   }
                   setActiveStep(step=>step<maxSteps-1?step+1:0)
                 }}

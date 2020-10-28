@@ -77,7 +77,7 @@ const LogIn = ()=>{
         primary={user.displayName}
         secondary={i18n('exit')}
         primaryTypographyProps={{component: Link, to: "/settings", style: {color: "#ffffff", fontWeight: "normal", textTransform: "uppercase", textDecoration:"none"}}}
-        secondaryTypographyProps={{component: Link, to: "/", onClick: ()=>auth.signOut(), style: {color: "#ffffff", fontWeight: "lighter"}}}
+        secondaryTypographyProps={{component: Link, onClick: ()=>auth.signOut(), style: {color: "#ffffff", fontWeight: "lighter"}}}
       />
     </ListItem>
 }

@@ -4,21 +4,24 @@ import { CircularProgress } from '@material-ui/core'
 import MapGL, { AttributionControl } from '@urbica/react-map-gl'
 import { mapboxConfig } from 'config'
 import { AuthCheck, SuspenseWithPerf } from 'reactfire';
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { locationAtom,viewAtom, creatingAtom } from 'global/Atoms'
 import LocationIcon from './Layers/LocationIcon.js'
 import LoadIcons from './Layers/LoadIcons.js'
 import { useWindowDimensions} from 'global/Hooks'
 import Intro from '../Intro'
+import CreateInitiative from 'components/Initiatives/CreateInitiative'
 import MenuFab from './MenuFab.js'
 import InitiativeFab from './InitiativeFab.js'
 import LocateFab from './LocateFab.js'
 import LayersFab from './LayersFab.js'
 import Initiatives from 'components/Initiatives'
-import Cards from 'components/Cards'
+import Initiative from 'components/Initiatives/Initiative'
 import Markers from './Layers/Markers.js'
 import Satellite from './Layers/Satellite.js'
-import { Route, useHistory, useLocation } from 'react-router-dom'
+import { Redirect, Route, useHistory, useLocation } from 'react-router-dom'
+import SwipeableViews from 'react-swipeable-views';
+import offlineStyle from 'assets/style.json'
 import { useUser } from 'reactfire'
 
 const useStyles = makeStyles(theme => ({
@@ -37,10 +40,17 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  marker: {
+    position: 'absolute',
+    top: 'calc( ( 100% - 350px ) / 2  )',
+    left: '50%',
+    transform: 'translate(-21px, -42px)'
   }
 }))          
 
 export default ()=>{
+  const setIsCreating = useSetRecoilState(creatingAtom)
   const classes = useStyles()
   const [location, setLocation] = useRecoilState(locationAtom)
   const setView = useSetRecoilState(viewAtom)
@@ -54,8 +64,7 @@ export default ()=>{
   const url = useLocation()
   const getMarker = ()=>{
     const w = mapDimensions.width/2
-    const h = (mapDimensions.height/2)-125
-    console.log('unproject')
+    const h = (mapDimensions.height - 350)/2
     return mapRef.current.getMap().unproject ([w,h])
   }
 
@@ -89,7 +98,9 @@ export default ()=>{
           <Route path='/initiatives' render={()=><Initiatives mapRef={mapRef}/>} />
         </Suspense>
         <Suspense fallback={null}>
-          <Cards mapRef={mapRef} getMarker={getMarker} loaded={loaded} getMarker={getMarker}/>
+          <Route path={'/initiative/:initiativeID'} >
+            <Initiative mapRef={mapRef} loaded={loaded} getMarker={getMarker}/>
+          </Route>
         </Suspense>
         <Suspense fallback={
           <InitiativeFab active={false} />
@@ -104,14 +115,19 @@ export default ()=>{
         <LayersFab satellite={satellite} setSatellite={setSatellite} />
         <MapGL
           style={{  width: '100%', height: '100%', border:"none", outline: "none" }}
+          //mapStyle={process.env.NODE_ENV == 'production'?"mapbox://styles/switch9/ckahu5spr0amr1ik3n1fg0fvt": offlineStyle}
           mapStyle="mapbox://styles/switch9/ckahu5spr0amr1ik3n1fg0fvt"
+          //mapStyle='mapbox://styles/mapbox/satellite-v9'
           accessToken={mapboxConfig.accessToken}
           onViewportChange={setViewport}
           onLoad={()=>{setLoaded(true)}}
           attributionControl={false}
           ref={mapRef}
           {...viewport}
-          onClick={()=>{ history.push('/') }}
+          onClick={()=>{
+            history.push('/')
+            console.log('mapclick')
+          }}
         >
           <AttributionControl
             compact={true}
@@ -128,7 +144,15 @@ export default ()=>{
               mapRef={mapRef.current} 
               location={location} />
             <Markers />
-
+            <Route path="/create-initiative" 
+              render={()=>loaded && 
+              <CreateInitiative 
+                getMarker={getMarker} 
+                loaded={loaded} 
+                mapRef={mapRef} 
+                cancel={()=>{setIsCreating(false); history.push('/') }} 
+              />}
+            />
             { location &&
             <LocationIcon 
               loaded={loaded} 
