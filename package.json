@@ -47,6 +47,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && gzipper c -e br --verbose ./build && gzipper c --brotli -e gz --verbose ./build",
+    "build-dev": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

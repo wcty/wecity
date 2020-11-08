@@ -11,7 +11,7 @@ before_script:
 dev-hosting:
   stage: deploy
   script:
-    - CI=false npm run build
+    - CI=false npm run build-dev
     - firebase deploy --only hosting:dev-weee-city --token $FIREBASE_TOKEN
   only:
     - develop
