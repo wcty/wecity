@@ -62,12 +62,6 @@ code {
   }
 }
 
-@media (min-width: 600px) {
-  div.swipeSlide[aria-hidden="true"] {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
 .react-simple-image-viewer__close {
   display: none;
 }

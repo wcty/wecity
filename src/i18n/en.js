@@ -199,8 +199,8 @@ export default {
     exploreProposeNew: "Propose new",
     exploreAddInitiative: "Add initiative",
     exploreWatchedAllAddNew: `
-      You explored all initiatives nearby. Now, please, add new one 
-      to find city-neighborghs who consider it relevant and worth support.
+      Please, add new initiative to find city-neighborghs
+      who consider it relevant and worth support.
     `,
     exploreProposeNewInitiative: "Propose new initiative"
     

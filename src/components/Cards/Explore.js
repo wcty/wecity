@@ -54,7 +54,7 @@ export default ({ mapRef })=>{
       }
       request()
     }
-  }, [next.features[0], setAddress])
+  }, [next.features[0], setAddress, lang])
 
   const onStart = ()=>{setSlideIndex(i=>i+1)}
   

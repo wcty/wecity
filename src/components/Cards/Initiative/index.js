@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "250px",
     minWidth: "100%",
     zIndex: 10,
+    //height: '100%',
     //position: 'fixed',
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
@@ -73,21 +74,30 @@ export default ({ mapRef, initiative })=>{
     }
   }, [initiativeID, setExpanded])
 
-  return <div style={{
-    position:"absolute", padding: expanded?0:'1rem', overflow: 'visible', bottom: 0, width: expanded?'100%':'calc( 100% - 2rem )' }}>
+  return <div 
+    style={{
+      position:"absolute", 
+      padding: expanded?0:'1rem', 
+      overflow: 'visible', 
+      bottom: 0, 
+      width: expanded?'100%':'calc( 100% - 2rem )',
+      //height: '100%',
+      // marginTop: '-40px'
+    }}>
     <Paper 
       className={classes.paper} 
       style={{
         transition: 'all 0.3s',
         cursor: 'pointer', 
         borderRadius: expanded?'0':"5px",
+        overflow: 'visible',
         overflowY: expanded?'scroll':'visible',
         minHeight: expanded?`100vh`:'250px',
         maxHeight: expanded?`100vh`:'400px',
         width: expanded?'100%':'calc( 100% - 2rem )',
         bottom: expanded?'0':"1rem",
         right: expanded?'0':"1rem",
-        willChange: 'height, min-height, width, bottom, right'  
+        willChange: 'height, min-height, width, bottom, right',
       }}
     > 
     { !expanded && <ArrowNavigation /> }

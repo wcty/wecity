@@ -23,9 +23,11 @@ const useStyles = makeStyles((theme) => ({
   slide: {
     overflow:'visible', 
     height:'250px', 
-    minHeight: "250px", 
+    minHeight: "calc( 250px + 40px )", 
     minWidth: "100%",
-    zIndex: 10
+    zIndex: 10,
+    height: '100%',
+    paddingTop: '-40px'
   },
   wrapper: {
     position: 'absolute',
@@ -50,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "250px",
     zIndex: 16,
     position: "absolute",
+    // height: '100vh',
     [theme.breakpoints.up("sm")]: {
       marginTop: 0,
       maxWidth: 400,
@@ -338,8 +341,7 @@ export default ({ mapRef, loaded, getMarker }) => {
         }
       }}
       slideRenderer={slideRenderer}
-      slideClassName="swipeSlide"
-      style={{overflow: 'visible', bottom: 0}}
+      style={{ overflow: 'visible', bottom: 0, height:'100%' }}
       slideClassName={classes.slide}
       enableMouseEvents
       resistance
