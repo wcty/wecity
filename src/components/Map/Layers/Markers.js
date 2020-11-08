@@ -19,28 +19,13 @@ export default () =>{
     if (event.features.length > 0){ 
 
       const selected = [...last.features,...next.features].find(f=>f.properties.uid===event.features[0].properties.uid)
-      // console.log(selected, feed )
       if(selected){
-        // console.log(base)
-        //setBase(0)
         setOffset(0)
         setSlideIndex(1)
         setFeed([selected])
         console.log(selected)
         history.push(`/initiative/${event.features[0].properties.uid}`) 
-
       }
-
-      // if(feed.length===1){
-      //   setFeed(getFeed({next,last}))
-      // }
-      // console.log(index, feed, last.features, next.features, event.features[0].properties)
-      // if(index!==-1){
-      //   const baseIndex = offset + feed.map(f=>f.properties.uid).indexOf('explore')
-      //   const actualIndex= index-baseIndex
-      //   console.log(actualIndex)
-      //   setSlideIndex(actualIndex)
-      // }
     }
   };
 

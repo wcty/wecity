@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Divider, List, Typography, ListItem, ListItemText } from '@material-ui/core';
-import { useRecoilValue } from 'recoil';
-import { viewAtom } from 'global/Atoms'
+import { useRecoilValue, useRecoilState } from 'recoil';
+import * as Atoms from 'global/Atoms'
 import { useUser } from 'reactfire';
 import { useI18n, useWindowDimensions } from 'global/Hooks'
 import { useHistory } from 'react-router-dom'
@@ -29,6 +29,9 @@ const InitiativeRow = ({initiative})=>{
   const history = useHistory()
   const [addressString, setAddress] = useState()
   const coords = initiative.geometry.coordinates
+  const [slideIndex, setSlideIndex] = useRecoilState(Atoms.indexAtom)
+  const [feed,setFeed] = useRecoilState(Atoms.initiativeFeed)
+  const [offset, setOffset] = useRecoilState(Atoms.offsetAtom)
 
   useEffect(()=>{
     if(!addressString&&coords){
@@ -44,6 +47,9 @@ const InitiativeRow = ({initiative})=>{
   return <div>
     <ListItem button onClick={()=>{
       console.log(initiative)
+      setOffset(0)
+      setSlideIndex(1)
+      setFeed([initiative])
       history.push(`/initiative/${initiative.properties.uid}`)
     }}>
       <img src={initiative.properties.imageURL.xs} alt="Cover" width="120px" height="120px" style={{paddingLeft: '2rem', padding: '1rem', objectFit:'cover'}}/>
@@ -61,7 +67,7 @@ export default ({ mapRef })=> {
   const user = useUser()
   const mapDimensions = useWindowDimensions()
   const i18n = useI18n()
-  const view = useRecoilValue(viewAtom)
+  const view = useRecoilValue(Atoms.viewAtom)
   const vars = useRef({variables: {nearInitiativesInput:{ point: Object.values(view), user: user.uid, own:true }}})
   const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars.current);
   const initiatives = data?.nearInitiatives

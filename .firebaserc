@@ -1,5 +1,17 @@
 {
   "projects": {
-    "default":"wecity-223ab"
+    "default": "wecity-223ab"
+  },
+  "targets": {
+    "wecity-223ab": {
+      "hosting": {
+        "dev-weee-city": [
+          "dev-weee-city"
+        ],
+        "wecity": [
+          "wecity-223ab"
+        ]
+      }
+    }
   }
 }

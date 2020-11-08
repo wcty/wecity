@@ -8,37 +8,24 @@ before_script:
   - npm i -g firebase-tools
   - npm install
 
-deploy-firestore:
+dev-hosting:
   stage: deploy
   script:
-    - firebase deploy --only firestore --token $FIREBASE_TOKEN
+    - CI=false npm run build
+    - firebase deploy --only hosting:dev-weee-city --token $FIREBASE_TOKEN
   only:
-    refs:
-      - master
-    changes:
-      - firestore.rules
-      - firestore.indexes.json
-
-# deploy-functions:
-#   stage: deploy
-#   script:
-#     - cd functions
-#     - npm install
-#     - cd ..
-#     - firebase deploy --only functions --token $FIREBASE_TOKEN
-#   only:
-#     refs:
-#       - master
-#     changes:
-#       - functions/**/*
+    - develop
+  environment:
+    name: production
+    url: https://dev.weee.city
 
 prod-hosting:
   stage: deploy
   script:
     - CI=false npm run build
-    - firebase deploy --only hosting --token $FIREBASE_TOKEN
+    - firebase deploy --only hosting:wecity --token $FIREBASE_TOKEN
   only:
-    - master
+    - main
   environment:
     name: production
     url: https://weee.city
