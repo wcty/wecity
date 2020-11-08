@@ -14,7 +14,7 @@ import ArrowNavigation from  './ArrowNavigation'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
-    minHeight: "250px",
+    minHeight: "290px",
     minWidth: "100%",
     zIndex: 10,
     [theme.breakpoints.up('sm')]: {

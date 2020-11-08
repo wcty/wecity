@@ -76,12 +76,14 @@ export default ({ mapRef, initiative })=>{
 
   return <div 
     style={{
+      // height:expanded?"100vh":'290px', 
+      // minHeight: expanded?"100vh":"calc( 250px + 40px )", 
       position:"absolute", 
       padding: expanded?0:'1rem', 
       overflow: 'visible', 
       bottom: 0, 
       width: expanded?'100%':'calc( 100% - 2rem )',
-      //height: '100%',
+      // height: '100%',
       // marginTop: '-40px'
     }}>
     <Paper 

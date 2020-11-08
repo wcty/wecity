@@ -22,11 +22,10 @@ const useStyles = makeStyles((theme) => ({
 
   slide: {
     overflow:'visible', 
-    height:'250px', 
     minHeight: "calc( 250px + 40px )", 
     minWidth: "100%",
     zIndex: 10,
-    height: '100%',
+    height: 'fit-content',
     paddingTop: '-40px'
   },
   wrapper: {
