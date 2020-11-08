@@ -128,7 +128,7 @@ export default ({ isViewerOpen, setIsViewerOpen, initiative })=>{
           />
         </ListItem>)}
         </List>
-        <Box style={{display: "flex", justifyContent: "space-between"}}>
+        <Box style={{display: "flex", justifyContent: "space-between", marginBottom: '1rem'}}>
           <Button onClick={()=>{
               if(alert!=="loading"){
                 setAlert("loading")                

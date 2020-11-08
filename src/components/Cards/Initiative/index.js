@@ -14,19 +14,13 @@ import ArrowNavigation from  '../ArrowNavigation'
 
 const useStyles = makeStyles((theme) => ({
   paper:{
+    overflow: 'visible',
     minHeight: "250px",
     minWidth: "100%",
     zIndex: 10,
     //position: 'fixed',
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
-		},
-  },
-  swipeArea:{
-    minWidth: "100%",
-    [theme.breakpoints.up('sm')]: {
-      maxWidth: 400,
-      minWidth: "50%",
 		},
   },
   img: {
@@ -140,7 +134,7 @@ export default ({ mapRef, initiative })=>{
           setExpanded(!expanded)
         }}>
         {location && initiative.geometry.coordinates && (
-        <span className={classes.span}>
+        <span>
           <LocationOn style={{fontSize: 'large'}} />
           {
             (distance([location.longitude, location.latitude], Object.values(initiative.geometry.coordinates)))<1 ? 

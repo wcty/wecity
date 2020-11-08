@@ -44,9 +44,13 @@ export default ({initiative, m, n})=>{
   };
   
   return Object.keys(m).length!=0 && <Box key={n}>
-    {(m.type!=='message') && <>
+    {(m.type==='volunteer') && <>
       <DateComponent>{m.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")}</DateComponent>
-      <Type>{i18n('chatCreatedInitiative', m.user.name)}</Type>
+      <Type>{i18n('chatJoinedAsVolunteer', m.user.name)}</Type>
+    </>}
+    {(m.type==='donate') && <>
+      <DateComponent>{m.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")}</DateComponent>
+      <Type>{i18n('chatJoinedAsSponsor', m.user.name)}</Type>
     </>}
 
     <Box style={{
@@ -58,9 +62,6 @@ export default ({initiative, m, n})=>{
       marginBottom:'0.2rem',
     }} >
       <div style={{verticalAlign:"middle", marginTop:m.showAvatar?"1.5rem":"0.2rem", display:"flex", justifyContent: "start" }}>
-        {/* <Avatar alt={m.user.name} src={m.user.avatar} >{m.user.name.split(' ').map(l=>l.slice(0,1).toUpperCase()).join('')}</Avatar>
-        <Typography variant="subtitle2" style={{marginRight:"0.5rem"}}>{m.user.name}</Typography>
-        <Typography variant="body2" style={{marginRight:"0.5rem"}}>{initiative.members[m.user.uid].role}</Typography> */}
       <ListItem disableGutters style={{padding:0, width:'100%'}} component='div' ContainerComponent='div' ContainerProps={{style:{width: '100%'}}} >
         <ListItemAvatar>
           <Avatar alt={m.user.name} src={m.user.avatar} >{m.user.name.split(' ').map(l=>l.slice(0,1).toUpperCase()).join('')}</Avatar>
@@ -90,7 +91,11 @@ export default ({initiative, m, n})=>{
       </div>
       
       <Typography variant="body1">
-        {m.text}
+        { m.type==="message"? m.text
+          : m.type==="volunteer"? i18n('chatCanHelpWith') + m.text 
+          : m.type==="donate"? i18n('chatCanSponsor') + m.text + i18n(m.properties.currency) + (m.properties.periodic?i18n('chatMonthly'):'')
+          : m.text
+        }
       </Typography> 
       <Divider style={{margin:"0.5rem 0"}}/>
       <Button onClick={()=>{

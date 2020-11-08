@@ -19,16 +19,9 @@ import { reverseArray, getFeed, rearrangeCards, explore } from 'global/Misc'
 const EnhancedSwipeableViews = virtualize(SwipeableViews)
 
 const useStyles = makeStyles((theme) => ({
-  swipeableViews:{
-    minHeight: "250px",
-    minWidth: "100%",
-    zIndex: 10,
-    [theme.breakpoints.up('sm')]: {
-      maxWidth: "400px",
-		},
-  },
+
   slide: {
-    // overflow:'visible', 
+    overflow:'visible', 
     height:'250px', 
     minHeight: "250px", 
     minWidth: "100%",
@@ -38,14 +31,16 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     right: 0,
     width: '100%',
-    overflowX:'hidden',
     height: '100%',
+    overflow: 'visible',
     [theme.breakpoints.up("sm")]: {
       maxWidth: '400px',
       width: "50%",
+      overflowX:'hidden'
     }
   },
   sidebar: {
+    overflow: 'visible',
     marginTop: `100%`,
     width: "100%",
     maxHeight: `100%`,
@@ -61,21 +56,6 @@ const useStyles = makeStyles((theme) => ({
       justify: "flex-end",
       float: "right",
     }
-  },
-  img: {
-    height: '160px',
-    maxWidth: 400,
-    overflow: 'hidden',
-    display: 'block',
-    width: '100%',
-    margin: "auto",
-    verticalAlign: 'middle',
-    objectFit: 'cover'
-  },
-  info: {
-    padding: theme.spacing(2),
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
   }
 }))
 
@@ -360,7 +340,6 @@ export default ({ mapRef, loaded, getMarker }) => {
       slideRenderer={slideRenderer}
       slideClassName="swipeSlide"
       style={{overflow: 'visible', bottom: 0}}
-      className={classes.swipeableViews}
       slideClassName={classes.slide}
       enableMouseEvents
       resistance

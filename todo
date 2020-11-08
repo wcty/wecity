@@ -13,9 +13,6 @@ Change initiative member role to the checkbox, instead of radio button, to suppo
   
 Add initiative contents + list of members, projects, etc.
   6. Make all the stuff (initiative, post, comment) editable
-  5. Translate joining
-  4. Translate explore
-
-  3.Make photograph expand on click  
-  2.Make initiative Posts show all different member actions!
-  1.Make post comments show!
+  - Translate joining
+  - Make initiative Posts show all different member actions!
+  -Add settings for registered users: default language + login options
