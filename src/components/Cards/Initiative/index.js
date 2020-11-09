@@ -78,7 +78,7 @@ export default ({ mapRef, initiative })=>{
     style={{
       // height:expanded?"100vh":'290px', 
       // minHeight: expanded?"100vh":"calc( 250px + 40px )", 
-      position:"absolute", 
+      // position:"absolute", 
       padding: expanded?0:'1rem', 
       overflow: 'visible', 
       bottom: 0, 

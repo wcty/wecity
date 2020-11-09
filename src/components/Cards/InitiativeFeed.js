@@ -22,10 +22,10 @@ const useStyles = makeStyles((theme) => ({
 
   slide: {
     overflow:'visible', 
-    minHeight: "calc( 250px + 40px )", 
+    // minHeight: "calc( 250px + 40px )", 
     minWidth: "100%",
     zIndex: 10,
-    height: 'fit-content',
+    // height: 'fit-content',
     paddingTop: '-40px'
   },
   wrapper: {
@@ -340,7 +340,7 @@ export default ({ mapRef, loaded, getMarker }) => {
         }
       }}
       slideRenderer={slideRenderer}
-      style={{ overflow: 'visible', bottom: 0, height:'100%' }}
+      // style={{ overflow: 'visible', bottom: 0, height:'100%' }}
       slideClassName={classes.slide}
       enableMouseEvents
       resistance
