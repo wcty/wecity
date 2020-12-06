@@ -55,7 +55,7 @@ const useClient = () => {
       }else{
         localStorage.setItem('token', user.uid);
         const httpLink = createHttpLink({
-          uri: 'https://wecity.westeurope.azurecontainer.io/graphql',
+          uri: 'https://ql.weee.city/graphql',
         });
         
         const authLink = setContext((_, { headers }) => {
