@@ -14,7 +14,8 @@ jobs:
       with:
         fetch-depth: 0
         - name: Cache node modules
-    - uses: actions/cache@v1
+    - name: Cache node modules
+      uses: actions/cache@v1
       with:
         path: node_modules
         key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
@@ -38,4 +39,6 @@ jobs:
       env:
         name: production
         url: https://dev.weee.city
-      run: firebase deploy --only hosting:dev-weee-city --token ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        firebase target:apply hosting wecity wecity-223ab
+        firebase deploy --only hosting:dev-weee-city --token ${{ secrets.FIREBASE_TOKEN }}
