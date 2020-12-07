@@ -17,6 +17,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-${{ env.cache-name }}-
+          ${{ runner.OS }}-build-
+          ${{ runner.OS }}-
     - name: Install Firebase CLI
       run: npm i -g firebase-tools
     - name: Install Packages
@@ -29,4 +38,6 @@ jobs:
       env:
         name: production
         url: https://dev.weee.city
-      run: firebase deploy --only hosting:dev-weee-city --token ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        firebase target:apply hosting wecity wecity-223ab     
+        firebase deploy --only hosting:dev-weee-city --token ${{ secrets.FIREBASE_TOKEN }}
