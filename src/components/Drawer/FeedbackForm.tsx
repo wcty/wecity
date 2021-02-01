@@ -3,8 +3,11 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, FormControl, IconButton, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, Box } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons';
 import { useUser, useFirestore } from 'reactfire';
+import firebase from "firebase/app"
 import { Redirect, useHistory } from 'react-router-dom'
 import { useI18n } from 'global/Hooks'
+
+type User = firebase.User
 
 //1920x1080,851x315,484x252,180x180
 //e
@@ -81,7 +84,7 @@ export default ()=> {
   const formSteps = feedbackForm(i18n)
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = formSteps.length;
-  const [resource, setResource] = useState(null)
+  const [resource, setResource] = useState<any>(null)
   const [imageLoadedURL] = useState(null)
   const [valid, setValid] = useState(false)
   const history = useHistory()
@@ -109,7 +112,7 @@ export default ()=> {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
   const feedbackRef = useFirestore().collection('feedback')
-  const user = useUser()
+  const user :User = useUser()
 
   return (<Box style={{
     backgroundColor:'white',
@@ -140,7 +143,7 @@ export default ()=> {
     )}
     {!user.isAnonymous && <>  
         {
-          formSteps[activeStep].map(( input, i )=>{
+          formSteps[activeStep].map(( input:any, i )=>{
             switch (input.type){
               case 'text':
                 return (
@@ -164,7 +167,7 @@ export default ()=> {
                 )
               case 'select':
                 return (
-                  <FormControl variant="outlined" key={input.id} className={classes.formControl} 
+                  <FormControl variant="outlined" key={input.id} //className={classes.formControl} 
                     style={{width: 'calc(100% - 2rem)', marginLeft:'1rem', marginTop:'1rem'}}>
                     <InputLabel id={input.id} key={input.id+'lbl'} >{input.label}</InputLabel>
                     <Select
@@ -177,7 +180,7 @@ export default ()=> {
                       }}
                       label={input.label}
                     >
-                      {input.options.map(opt=><MenuItem key={opt} value={opt}>{opt}</MenuItem>)}
+                      {input.options.map((opt:any)=><MenuItem key={opt} value={opt}>{opt}</MenuItem>)}
                     </Select>
                   </FormControl>
                 )
