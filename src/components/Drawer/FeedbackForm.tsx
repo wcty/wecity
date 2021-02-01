@@ -7,6 +7,7 @@ import { Redirect, useHistory } from 'react-router-dom'
 import { useI18n } from 'global/Hooks'
 
 //1920x1080,851x315,484x252,180x180
+//e
 
 const feedbackForm = (i18n:any)=>[
   [
