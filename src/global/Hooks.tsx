@@ -24,6 +24,7 @@ export function useLocation() {
   return location
 }
 
+//Languages have to be added also to Atom.ts/type Language and defineLang()  declaration
 const languages:any = {
     en,
     uk,

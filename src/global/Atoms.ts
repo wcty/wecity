@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { isNullishCoalesce } from 'typescript';
+//import { isNullishCoalesce } from 'typescript';
 
 export const locationAtom = atom({
   key: 'location', 
@@ -80,8 +80,11 @@ export const selectedProject = atom({
 })
 
 type Language = 'en' | 'uk'
+
 let defineLang = function(lang:string):Language{
+  alert(lang)
   switch(lang?lang:window.navigator.language.slice(0,2)) {
+    
       case 'uk':
           return 'uk';
       // case 'ka':
@@ -95,7 +98,7 @@ let defineLang = function(lang:string):Language{
 
 export const lang = atom({
   key: 'language',
-  default: defineLang('uk'),
+  default: defineLang(window.navigator.language.slice(0,2)),
 })
 
 export const imageURL = atom({
