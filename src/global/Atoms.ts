@@ -82,9 +82,7 @@ export const selectedProject = atom({
 type Language = 'en' | 'uk'
 
 let defineLang = function(lang:string):Language{
-  alert(lang)
-  switch(lang?lang:window.navigator.language.slice(0,2)) {
-    
+  switch(lang) {
       case 'uk':
           return 'uk';
       // case 'ka':
