@@ -6,12 +6,12 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import * as Atoms from 'global/Atoms'
 import { useUser } from 'reactfire';
-import { useWindowDimensions } from 'global/Hooks'
-import * as firebase from 'firebase/app';
+// import { useWindowDimensions } from 'global/Hooks'
+// import * as firebase from 'firebase/app';
 import createInitiativeForm from 'global/forms/createInitiativeForm'
 import FormExpanded from 'global/FormExpanded'
-import distance from '@turf/distance'
-import translate from '@turf/transform-translate'
+// import distance from '@turf/distance'
+// import translate from '@turf/transform-translate'
 import { Redirect, useHistory } from 'react-router-dom';
 import MarkerActive from 'assets/images/markerActive.svg'
 import randomstring from 'randomstring'
