@@ -7,6 +7,9 @@ import {ReactComponent as UKRFlag} from 'assets/images/flags/ukr.svg'
 import {ReactComponent as ENFlag} from 'assets/images/flags/en.svg'
 // import {ReactComponent as FIFlag} from 'assets/images/flags/fi.svg'
 import {CustomSvgIcon} from 'components/misc'
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
+
 const useForceUpdate = () => useState()[1];
 
 export default ({toggleDrawer, ...props})=>{
@@ -15,6 +18,7 @@ export default ({toggleDrawer, ...props})=>{
     const forceUpdate = useForceUpdate();
     const changeLanguage = (event) => {
       setLang(event.target.value);
+      cookies.set('lang', event.target.value, { path: '/' }); //add selected language in the cookies
       forceUpdate()
     }
     

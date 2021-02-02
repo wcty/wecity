@@ -191,7 +191,7 @@ const Initiative = ({ mapRef, loaded })=>{
   const vars = {variables: {UID: initiativeID}}
   const { loading, error, data, refetch } = useQuery(getInitiative, vars);
   const initiative = useMemo(()=>data?.initiative, [data])
-  if (loading) console.log('loading');
+  // if (loading) console.log('loading');
   if (error) console.log('error', error);
 
   const [location] = useRecoilState(Atoms.locationAtom)

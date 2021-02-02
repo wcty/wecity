@@ -3,6 +3,8 @@ import { FormControl, InputLabel, Select, MenuItem, Box } from '@material-ui/cor
 import * as Atoms from 'global/Atoms'
 import { useRecoilState } from 'recoil'
 import { useI18n } from 'global/Hooks'
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
 
 const useForceUpdate = () => useState()[1];
 
@@ -12,9 +14,9 @@ export default ({toggleDrawer, ...props})=>{
     const forceUpdate = useForceUpdate();
     const changeLanguage = (event) => {
       setLang(event.target.value);
+      cookies.set('lang', event.target.value, { path: '/' }); //add selected language in the cookies
       forceUpdate()
       if(toggleDrawer) toggleDrawer(false)
-      console.log(i18n('learnReact'))
     }
   
     return <Box {...props}><FormControl style={{width:"100%"}}>

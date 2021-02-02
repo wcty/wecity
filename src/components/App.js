@@ -11,7 +11,7 @@ import { FirebaseAppProvider, useUser, useAuth } from 'reactfire'
 import { BrowserRouter as Router, useHistory, useLocation } from "react-router-dom";
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, gql } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-
+// import { CookiesProvider } from "react-cookie"
 
 const useStyles = makeStyles(theme => ({
 
@@ -75,7 +75,7 @@ const useClient = () => {
             addTypename: false
           })
         });
-        console.log(user)
+        //console.log(user)
         setState(client)
       }
       
@@ -117,18 +117,20 @@ const Layout = ()=>{
 export default () => {
   
   return (
-    <Router>
-      <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-        <ThemeProvider theme={theme}>
-          <RecoilRoot>
-            <Suspense fallback={null} >
-              <Apollo>
-                <Layout />
-              </Apollo>
-            </Suspense>
-          </RecoilRoot>
-        </ThemeProvider>
-      </FirebaseAppProvider>
-    </Router>
+    // <CookiesProvider>
+      <Router>
+        <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+          <ThemeProvider theme={theme}>
+            <RecoilRoot>
+              <Suspense fallback={null} >
+                <Apollo>
+                  <Layout />
+                </Apollo>
+              </Suspense>
+            </RecoilRoot>
+          </ThemeProvider>
+        </FirebaseAppProvider>
+      </Router>
+    // </CookiesProvider>
   )
 }

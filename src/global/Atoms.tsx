@@ -1,5 +1,9 @@
 import { atom } from 'recoil';
+//import { useCookies} from "react-cookie";
 //import { isNullishCoalesce } from 'typescript';
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
+//const [cookies, setCookie] = useCookies(["lang"]);
 
 export const locationAtom = atom({
   key: 'location', 
@@ -79,24 +83,26 @@ export const selectedProject = atom({
   default: null,
 })
 
-type Language = 'en' | 'uk'
+type Language = 'en' | 'uk' //List of implemented languages (using html iso ref)
 
-let defineLang = function(lang:string):Language{
-  switch(lang) {
-      case 'uk':
-          return 'uk';
-      // case 'ka':
-      //     return 'ka';
-      // case 'fi':
-      //     return 'fi';
-      default:
-          return 'en';
+let defineLang = function():Language{
+  const implementedLang =  ['en', 'uk'] //List of implemented languages (using html iso ref)
+
+  let navLang:any = window.navigator.language.slice(0,2)  //=browser language
+  let lang:Language //=return language
+
+  if (implementedLang.indexOf(cookies.get('lang')) >-1 ) { //if there is a set language in the cookies: use it as language
+    lang = cookies.get('lang')
+  } else{
+    lang= navLang in implementedLang ? navLang : 'en' //set language to english if browser language is not implemented
+    cookies.set('lang', lang, { path: '/' }); //set language cookie
   }
+  return lang
 }
 
 export const lang = atom({
   key: 'language',
-  default: defineLang(window.navigator.language.slice(0,2)),
+  default: defineLang(), 
 })
 
 export const imageURL = atom({
