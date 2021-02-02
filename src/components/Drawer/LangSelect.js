@@ -3,7 +3,10 @@ import { FormControl, InputLabel, Select, MenuItem, Box } from '@material-ui/cor
 import * as Atoms from 'global/Atoms'
 import { useRecoilState } from 'recoil'
 import { useI18n } from 'global/Hooks'
-
+import {ReactComponent as UKRFlag} from 'assets/images/flags/ukr.svg'
+import {ReactComponent as ENFlag} from 'assets/images/flags/en.svg'
+// import {ReactComponent as FIFlag} from 'assets/images/flags/fi.svg'
+import {CustomSvgIcon} from 'components/misc'
 const useForceUpdate = () => useState()[1];
 
 export default ({toggleDrawer, ...props})=>{
@@ -13,10 +16,9 @@ export default ({toggleDrawer, ...props})=>{
     const changeLanguage = (event) => {
       setLang(event.target.value);
       forceUpdate()
-      toggleDrawer(false)
-      console.log(i18n('learnReact'))
     }
-  
+    
+
     return <Box {...props}><FormControl style={{width:"100%"}}>
         <InputLabel id="label-langSelect">{i18n('language')}</InputLabel>
         <Select
@@ -25,11 +27,23 @@ export default ({toggleDrawer, ...props})=>{
           value={lang}
           onChange={changeLanguage}
           label="lang"
+          SelectDisplayProps={{ style : {display: 'flex'} }} 
         >
-            <MenuItem value={'en'}><span role="img" aria-label="english">English</span></MenuItem>
-            <MenuItem value={'uk'}><span role="img" aria-label="ukrainian">Українська</span></MenuItem>
-            {/* <MenuItem value={'ka'}>ka</MenuItem> */}
-            {/* <MenuItem value={'fi'}>fi</MenuItem> */}
+
+          <MenuItem value={'en'} role="radio" aria-label="english">
+            <CustomSvgIcon><ENFlag/></CustomSvgIcon>
+            English
+          </MenuItem>
+          <MenuItem value={'uk'} role="radio" aria-label="ukrainian" >
+            <CustomSvgIcon><UKRFlag/></CustomSvgIcon>
+            Українська
+          </MenuItem>
+          {/* <MenuItem value={'fi'} role="radio" aria-label="finnish" >
+            <CustomSvgIcon><FIFlag/></CustomSvgIcon>
+            Finnish
+          </MenuItem> */}
+          {/* <MenuItem value={'ka'}>ka</MenuItem> */}
+         
         </Select>
     </FormControl></Box>
 }
