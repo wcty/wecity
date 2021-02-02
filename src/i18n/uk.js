@@ -132,6 +132,7 @@ export default {
     initiativeFormInstruction: "Рухайте мапу щоб навести відмітку ініціативи (червоний маркер) на необхідну локацію, додайте назву і натисніть Далі.",
     initiativeFormName: "Назва вашої ініціативи",
     initiativeFormAddCoverPhoto: "+ Додайте титульне фото",
+    initiativeChangePicture: "Змінити фото",
     initiativeFormProblem: "Яку проблему має вирішити ініціатива?",
     initiativeFormExpectedResult: "Опишіть очікувані результати:",
     initiativeFormCurrentState: "Передумови для реалізації:",

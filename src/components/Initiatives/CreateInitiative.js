@@ -17,7 +17,7 @@ import MarkerActive from 'assets/images/markerActive.svg'
 import randomstring from 'randomstring'
 import { useMutation } from '@apollo/client';
 import { createInitiativeMutation } from 'global/Queries'
-
+import { useI18n } from 'global/Hooks'
 //1920x1080,851x315,484x252,180x180
 
 const useStyles = makeStyles((theme) => ({
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default ({ getMarker, submit, cancel, variant, submitText, cancelText, mapRef, loaded  })=> {
+export default ({ getMarker, cancel, mapRef, loaded  })=> {
   const classes = useStyles();
   const theme = useTheme();
   const [isCreating, setIsCreating] = useRecoilState(Atoms.creatingAtom)
@@ -56,6 +56,7 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
   const [location] = useRecoilState(Atoms.locationAtom)
   const [finished, setFinished] = useState(false)
   const history = useHistory()
+  const i18n = useI18n()
   const [addInitiative, addedData] = useMutation(createInitiativeMutation, {onCompleted:(data)=>{
     setFinished(true)
     setMarkers(prev=>({type:"FeatureCollection", features: [data.createInitiative, ...prev.features] }))
@@ -90,12 +91,12 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
             <Button variant="contained" size="small" onClick={()=>{
               cancel()
             }} >
-              {cancelText?cancelText:'Відмінити'}
+              {i18n('cancel')}
             </Button>
           ):(
             <Button size="small" onClick={()=>setActiveStep((prevActiveStep) => prevActiveStep - 1)} >
               {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-              Назад
+              {i18n('back')}
             </Button>
           )
         }
@@ -123,11 +124,11 @@ export default ({ getMarker, submit, cancel, variant, submitText, cancelText, ma
               }
               addInitiative(submission)
             }}>
-              {submitText?submitText:'Додати'}
+              {i18n('add')}
             </Button>
           ):(
             <Button disabled={!valid} size="small" onClick={()=>setActiveStep((prevActiveStep) => prevActiveStep + 1)}>
-              Далі
+              {i18n('next')}
               {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
             </Button>
           )

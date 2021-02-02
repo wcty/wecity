@@ -6,6 +6,7 @@ import { v1 as uuidv1 } from 'uuid';
 import * as Atoms from 'global/Atoms'
 import { useRecoilState } from 'recoil'
 import { useParams } from 'react-router-dom'
+import { useI18n } from './Hooks';
 
 function CircularProgressWithLabel(props) {
 
@@ -141,6 +142,7 @@ export default ({ isFilling, formGetter, nextButton, backButton, directory, vari
   
   const [valid, setValid] = useState(false)
   const formDOM = useRef()
+  const i18n=useI18n()
 
   useEffect(async()=>{
     let bool = true
@@ -373,7 +375,7 @@ export default ({ isFilling, formGetter, nextButton, backButton, directory, vari
                     }} />
                     <label htmlFor="contained-button-file">
                       <Button className={classes.imageButton} color="default" variant={thumbLoadedURL?"contained":"outlined"} component="span" size="small" disableElevation>
-                        {imageLoadedURL?"Змінити фото":input.label }
+                        {imageLoadedURL?i18n('initiativeChangePicture'):input.label }
                       </Button>
                     </label>
                 </div>

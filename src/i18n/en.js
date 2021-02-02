@@ -130,7 +130,8 @@ export default {
     //Initiative form
     initiativeFormInstruction: "Move the map to locate the initiative marker (red) in the right place, then add the name and click Next.",
     initiativeFormName: "Name of your initiative",
-    initiativeFormAddCoverPhoto: "+ Add the title photo",
+    initiativeFormAddCoverPhoto: "+ Add the cover picture",
+    initiativeChangePicture: "Change Picture",
     initiativeFormProblem: "Which problem stands behind the initiative?",
     initiativeFormExpectedResult: "Describe desired outcomes:",
     initiativeFormCurrentState: "What is the current state of it:",
