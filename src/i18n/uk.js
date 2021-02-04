@@ -7,6 +7,7 @@ export default {
     projectLibrary: "Проектні пропозиції",
     resourceLibrary: "Локальні ресурси",
     settings: "Налаштування",
+    about: "Про нас",
     feedback: "Зворотній зв'язок", 
     language: "Мова",
     en: "Англійська",
@@ -46,6 +47,7 @@ export default {
     join: "Приєднатися",
     leave: "Залишити",
     delete: "Видалити",
+    clear: 'Очистити',
     cancel: "Відмінити",
     back: "Назад",
     next: "Далі",
@@ -155,11 +157,52 @@ export default {
     //Alerts
     alertYouNeedToLogin: "Ви маєте увійти щоб створити ініціативу, проект або ресурс",
     alertLinkWasCopied: "Посилання було успішно скопійовано в буфер обміну",
+    
+    //Join initiative
+    joinInitiativeGoal: "Для реалізаціїї потрібно {0} волонтерів та {1} грн.",
+    joinTheInitiative: "Приєднатися до ініціативи",
+    joinDonateLabel: "Я готова/ий пожертвувати гроші",
+    joinDonateSum: "Сума",
+    joinMonthlyPayment: "Щомісячний платіж?",
+    joinVolunteerLabel: "Я готова/ий бути волонтером",
+    joinVolunteerJob: "Яку роботу ви можете виконувати?",
+    joinContractLabel: "Я готова/ий запропонувати проектне рішення",
+    joinChooseFromLibrary: "Обрати з бібліотеки",
+    joinCreateNew: "Створити нове",
+
+    //Currencies
+    UAH: "грн.",
+    USD: "дол.",
+    EUR: "євро",
 
     //Chat
-    chatCreatedInitiative: "{0} created initiative",
-    chatJoinedInitiative: "{0} joined initiative",
-    chatWriteYourMessage: "Write your message",
-    chatWriteYourComment: "Write your comment",
-    chatWriteReply: "Reply"
+    chatCreatedInitiative: "{0} створив(-ла) ініціативу",
+    chatJoinedInitiative: "{0} приєднався(-лась) до ініціативи",
+    chatJoinedAsVolunteer: "{0} приєднався(-лась) як волонтер",
+    chatCanHelpWith: "Готовий допомогти: ",
+    chatJoinedAsSponsor: "{0} приєднався(-лась) як спонсор",
+    chatCanSponsor: "Готовий підтримати: ",
+    chatMonthly: " щомісячно",
+    chatWriteYourMessage: "Напишіть повідомлення",
+    chatWriteYourComment: "Напишіть коментар",
+    chatWriteReply: "Відповісти",
+
+    //Explore card
+    exploreHelmetTitle: "Знаходьте ініціативи навколо",
+    exploreHelmetDescription: "Платформа для громадського мережування навколо міських ініціатив",
+    exploreYouAreHere: "Ви знаходитесь тут",
+    exploreHereItStarts: "Звідси все почнется",
+    exploreNearestInitiativeDistance: "Найближча від вас нова ініціатива в {0}{#choice м | км#}",
+    exporeTurnOnLocationService: `Будь ласка, увімкніть геолокацію щоб скористуватися всіма функціями.
+    `,
+    exploreNearestToMaidan: "Найближча від Майдану Незалежності нова ініціатива в {0}{#choice м | км#}",
+    exploreShowInitiative: "Переглянути ініціативу",
+    exploreOr: "або",
+    exploreProposeNew: "Запропонувати нову",
+    exploreAddInitiative: "Додайте ініціативу",
+    exploreWatchedAllAddNew: `
+      Будь ласка, запропонуйте нову ініціативу -  
+      можливо саме її підтримають ваші сусіди по місту
+    `,
+    exploreProposeNewInitiative: "Запропонувати нову ініціативу"
 };

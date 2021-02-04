@@ -2,7 +2,6 @@ import React, { Suspense, useEffect, useState, useRef } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { ArrowBack, ArrowForward, ArrowRightAlt } from '@material-ui/icons'
 import { Box, Paper, Divider, Toolbar, MobileStepper, IconButton, Typography } from '@material-ui/core'
-import SwipeableViews from 'react-swipeable-views';
 import { useUser, useAuth } from 'reactfire'
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as Logo } from 'assets/images/wecityLogoBlack.svg'
@@ -15,6 +14,7 @@ import UCF from 'assets/images/logos/ucf.png'
 import { signInWithGoogle } from 'global/Misc'
 import { useI18n } from 'global/Hooks'
 import LangSelect from './LangSelectShort'
+import SwipeableViews from 'react-swipeable-views';
 
 const useStyles = makeStyles((theme) => ({
   sidebar:{
@@ -25,8 +25,8 @@ const useStyles = makeStyles((theme) => ({
     bottom: '0',
     right: '0',
     minHeight: "250px",
-    overflowX: "hidden",
-    zIndex: 10,
+    // overflowX: "hidden",
+    zIndex: 14,
     position: 'fixed',
     [theme.breakpoints.up('sm')]: {
       maxWidth: 400,
@@ -59,7 +59,9 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 5
   },
   wrapper:{
-    padding: '0 2rem'
+    padding: '0 2rem',
+    textAlign:"center",
+    marginBottom: '12rem'
   }
 }));
 
@@ -80,13 +82,18 @@ export default ({ mapRef, loaded })=> {
             <Logo style={{ height:"20px"}}></Logo>
             <Box style={{marginLeft: 'auto'}}><LangSelect short/></Box>
           </Toolbar>
-          <div className={classes.wrapper} style={{textAlign:"center", marginBottom: '6rem'}}>
-            {activeStep==0 && <>
+          <SwipeableViews
+            axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+            index={activeStep}
+            onChangeIndex={(i)=>setActiveStep(i)}
+            enableMouseEvents
+          >
+            <div className={classes.wrapper} key={0}>
               <img src={WecityGroups} style={{width:'70%', position:'relative', marginLeft:'auto', marginRight:'auto' }} alt="Networking" />
               <Typography style={{position:"relative", marginTop:'1rem'}} variant="h6">{i18n('introGreetings')}</Typography>
               <Typography style={{position:"relative"}} variant="body1">{i18n('introGreetingsDescription')}</Typography>
-            </>}
-            {activeStep==1 && <>
+            </div>
+            <div className={classes.wrapper} key={1}>
               <div style={{position:"relative", width:"100%", height: 250}}>
                 <svg width="250px" height="250px" style={{position:'absolute', marginLeft:'auto', marginRight:'auto', left:"0", right:"0", top:0}} alt="Partners">
                   <circle cx="125" cy="125" r="125" fill="#93CBA0" />
@@ -97,20 +104,18 @@ export default ({ mapRef, loaded })=> {
               </div>
               <Typography style={{position:"relative", marginTop:'1rem'}} variant="h6">{i18n('introPartners')}</Typography>
               <Typography style={{position:"relative"}} variant="body1">{i18n('introPartnersDescription')}</Typography>
-            </>}
-            {activeStep==2 && <>
+            </div>
+            <div className={classes.wrapper} key={2}>
               <img src={WecityInterfacesZoomed} style={{width:'80%', position:'relative', marginLeft:'auto', marginRight:'auto' }} alt="Interfaces" />
               <Typography style={{position:"relative", marginTop:'1rem'}} variant="h6">{i18n('introFunctions')}</Typography>
               <Typography style={{position:"relative"}} variant="body1">{i18n('introFunctionsDescription')}</Typography>
-            </>}
-            {activeStep==3 && <>
+            </div>
+            <div className={classes.wrapper} key={3}>
               <img src={WecityChat} style={{width:'80%', position:'relative', marginLeft:'auto', marginRight:'auto' }} alt="Interfaces" />
-
               <Typography style={{position:"relative"}} variant="h6">{i18n('introLogin')}</Typography>
               <Typography style={{position:"relative"}} variant="body1">{i18n('introLoginDescription')}</Typography>
-            </>}
-          </div>
-
+            </div>           
+          </SwipeableViews>
         </Box>
 
       </Paper>
@@ -138,7 +143,7 @@ export default ({ mapRef, loaded })=> {
                       console.log(user)
                       signInWithGoogle(auth)
                     }
-                    history.push('/')
+                    history.push('/initiative/explore')
                   }
                   setActiveStep(step=>step<maxSteps-1?step+1:0)
                 }}

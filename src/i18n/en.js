@@ -7,6 +7,7 @@ export default {
     projectLibrary: "Project Library",
     resourceLibrary: "Local Resources",
     settings: "Settings",
+    about: "About us",
     feedback: "Feedback", 
     language: "Language",
     en: "English",
@@ -46,6 +47,7 @@ export default {
     join: "Join",
     leave: "Leave",
     delete: "Delete",
+    clear: "Clear",
     cancel: "Cancel",
     back: "Back",
     next: "Next",
@@ -72,7 +74,8 @@ export default {
         You landed on the site, which is the first prototype of the platform for urban networking We.city. 
         It can help you to find the others, who share your concerns regarding your city/environment,
         and organize your communication with them to find solutions, resources and contractors to resolve it collectively. 
-        It is for those who would like to see positive changes around, but do not have time, energy or expertise, to realize them on alone.
+        It is for those who would like to see positive changes around, but do not have time, energy or expertise,
+        to realize them on alone.
         </>,
     introPartners: 'Our partners',
     introPartnersDescription: <>
@@ -154,4 +157,52 @@ export default {
     //Alerts
     alertYouNeedToLogin: "You must be logged in to create initiative, project or resource",
     alertLinkWasCopied: "Link was succesfully copied to the clipboard",
+    
+    //Join initiative
+    joinInitiativeGoal: "The goal for initiative to find {0} volunteers and {1} UAH.",
+    joinTheInitiative: "Join the initiative",
+    joinDonateLabel: "I am ready to donate",
+    joinDonateSum: "Amount",
+    joinMonthlyPayment: "Monthly payment?",
+    joinVolunteerLabel: "I am ready to volunteer",
+    joinVolunteerJob: "What kind of job you can do?",
+    joinContractLabel: "I am ready to propose the solution",
+    joinChooseFromLibrary: "Choose from library",
+    joinCreateNew: "Create new",
+
+    //Currencies
+    UAH: "uah",
+    USD: "usd",
+    EUR: "eur",
+
+    //Chat
+    chatCreatedInitiative: "{0} created initiative",
+    chatJoinedInitiative: "{0} joined the initiative",
+    chatJoinedAsVolunteer: "{0} joined as volunteer",
+    chatCanHelpWith: "Ready to help with: ",
+    chatJoinedAsSponsor: "{0} joined as sponsor",
+    chatCanSponsor: "Ready to sponsor: ",
+    chatMonthly: " monthly",
+    chatWriteYourMessage: "Post a message",
+    chatWriteYourComment: "Add comment",
+    chatWriteReply: "Reply",
+
+    //Explore card
+    exploreHelmetTitle: "Explore initiatives",
+    exploreHelmetDescription: "Platform for urban networking around common cases",
+    exploreYouAreHere: "You are here",
+    exploreHereItStarts: "Here we start",
+    exploreNearestInitiativeDistance: "The nearest to you initiative is in {0}{#choice m | km#}",
+    exporeTurnOnLocationService: `Please, turn on location service to use all functions.`,
+    exploreNearestToMaidan: "The nearest to the Independence Square new initiative is in {0}{#choice m | km#}",
+    exploreShowInitiative: "Show initiative",
+    exploreOr: "or",
+    exploreProposeNew: "Propose new",
+    exploreAddInitiative: "Add initiative",
+    exploreWatchedAllAddNew: `
+      Please, add new initiative to find city-neighborghs
+      who consider it relevant and worth support.
+    `,
+    exploreProposeNewInitiative: "Propose new initiative"
+    
 };

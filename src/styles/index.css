@@ -22,6 +22,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+
 canvas {
   outline: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
@@ -59,6 +61,11 @@ code {
     animation: App-logo-spin infinite 20s linear;
   }
 }
+
+.react-simple-image-viewer__close {
+  display: none;
+}
+
 
 .App-header {
   background-color: #282c34;

@@ -1,11 +1,25 @@
 
-import { useState, useEffect } from 'react'
-import en from 'i18n/en'
-import uk from 'i18n/uk'
-import ka from 'i18n/ka'
-import fi from 'i18n/fi'
+import { useState, useEffect, useRef } from 'react'
+import en from 'i18n/en.js'
+import uk from 'i18n/uk.js'
+import ka from 'i18n/ka.js'
+import fi from 'i18n/fi.js'
 import { useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
+
+export function usePrevious(value:any) {
+  // The ref object is a generic container whose current property is mutable ...
+  // ... and can hold any value, similar to an instance property on a class
+  const ref = useRef();
+  
+  // Store current value in ref
+  useEffect(() => {
+    ref.current = value;
+  }, [value]); // Only re-run if value changes
+  
+  // Return previous value (happens before update in useEffect above)
+  return ref.current;
+}
 
 export function useLocation() {
   const defaultValue = {longitude: 30.5234, latitude: 50.4501}
@@ -31,6 +45,7 @@ const languages:any = {
     ka,
     fi
 }
+
 
 export const useI18n = ()=>{
   const lang = useRecoilValue(Atoms.lang)
@@ -69,7 +84,15 @@ export const useI18n = ()=>{
   }
 }
 
-
+function Choice(value:any, i18nKey:String, choiceRegex:RegExp){
+  for (const choicePattern of i18nKey.match(choiceRegex)??[]) {
+    const choices = choicePattern.replace('{#choice','').replace('#}','').split('|')
+    //console.log(choices, choicePattern, value)
+    if(i18nKey){
+      i18nKey = i18nKey.replace(choicePattern, choices[!value?0:1]);
+    }
+  }
+}
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -78,17 +101,7 @@ function getWindowDimensions() {
     height
   };
 }
-function Choice(value:any, i18nKey:String, choiceRegex:RegExp){
-  
-  for (const choicePattern of i18nKey.match(choiceRegex)??[]) {
-    const choices = choicePattern.replace('{#choice','').replace('#}','').split('|')
-    //console.log(choices, choicePattern, value)
-    if(i18nKey){
-      i18nKey = i18nKey.replace(choicePattern, choices[!value?0:1]);
-    }
-  }
-  
-}
+
 export function useWindowDimensions() {
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
 

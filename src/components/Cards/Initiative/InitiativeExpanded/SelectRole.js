@@ -4,54 +4,18 @@ import {  Typography, Card, CardActionArea, CardMedia, CardContent, CardActions,
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import * as Atoms from 'global/Atoms'
 import { useStorage, useFirestore, useUser, useDatabase } from 'reactfire'
-import { DeleteObject } from 'global/Misc'
-import { useParams, useHistory } from 'react-router-dom'
+import { DeleteObject, toJSON } from 'global/Misc'
+import { useParams, Redirect, useHistory } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { addInitiativeMember } from 'global/Queries'
-import { toJSON } from 'global/Misc'
+import { useI18n } from 'global/Hooks'
 
 const useStyles = makeStyles((theme) => ({
-  paper:{
-    // height: "100%",
-    minHeight: "250px",
-    // width: "100%",
-    overflowX: "hidden",
-    // flexGrow: 1,
-    zIndex: 10,
-    position: 'fixed',
-    transitionDuration: '0.3s',
-    [theme.breakpoints.up('sm')]: {
-      maxWidth: 400,
-		},
-  },
-  img: {
-    height: '160px',
-    maxWidth: 400,
-    overflow: 'hidden',
-    display: 'block',
-    width: '100%',
-    margin: "auto",
-    verticalAlign: 'middle',
-    objectFit: 'cover'
-  },
   text:{
     width: "calc( 100% - 2rem )",
     margin: "1rem",
     marginBottom: 0,
     position: "relative"
-  },
-  button:{
-    margin: "0.5rem"
-  },
-
-  input: {
-    display: 'none',
-  },
-  info: {
-    padding: theme.spacing(2),
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
-    //height:'100%',
   },
   selectButton: {
     width: 'calc( 50% - 0.75rem )',
@@ -63,15 +27,6 @@ const useStyles = makeStyles((theme) => ({
   selectGroup:{
     marginTop: '1rem',
     transitionDuration: '0.3s',
-    
-    //transition: 'width 2s'
-  },
-  alert: {
-    position: 'absolute',
-    top: '1rem',
-    left: '1rem',
-    zIndex: 999,
-    maxWidth: 'calc( 100% - 4rem )'
   }
 }));
 
@@ -79,6 +34,7 @@ function MediaCard({ directory }) {
   const objects = useFirestore().collection(directory)
   const images = useStorage().ref().child(directory)
   const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
+  const i18n = useI18n()
 
   return (
     <Card style={{marginTop: '1rem'}}>
@@ -93,7 +49,7 @@ function MediaCard({ directory }) {
             {selectType.object.rendername}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            Для реалізаціїї потрібно {selectType.object.volunteers} волонтерів та {selectType.object.price} грн.
+            {i18n('joinInitiativeGoal', selectType.object.volunteers, selectType.object.price) }
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -107,7 +63,7 @@ function MediaCard({ directory }) {
             }
           }}
         >
-          {selectType.type==='newProject'?'Видалити':'Очистити'}
+          {selectType.type==='newProject'?i18n('delete'):i18n('clear')}
         </Button>
       </CardActions>
     </Card>
@@ -120,6 +76,7 @@ const roleLookup = {
   project: "Contractor",
   resource: "Provider"
 }
+
 export default ({refetch})=>{
   const [value, setValue] = useState({type:'donate'});
   const [periodic, setPeriodic] = useState(false);
@@ -133,7 +90,23 @@ export default ({refetch})=>{
   const user = useUser()
   const classes = useStyles()
   const history = useHistory()
-  const [addMember, memberData] = useMutation(addInitiativeMember)
+  const [clicked, setClicked] = useState(false)
+  const [feed, setFeed] = useRecoilState(Atoms.initiativeFeed)
+  const i18n = useI18n()
+
+  const [addMember] = useMutation(addInitiativeMember, {
+    onCompleted(data){
+      const { addInitiativeMember } = data
+      setFeed(f=>{
+        const index = f.map(v=>v._id).indexOf(addInitiativeMember._id)
+        const newArray = [...f]
+        newArray[index]=addInitiativeMember
+        console.log(addInitiativeMember)
+        return newArray
+      })
+      setTimeout(()=>setClicked(false),10000)},
+    update(cache, data){ console.log('joined')}
+  });
 
 ///
 // const chatDatabase = useDatabase().ref(`chats/${initiativeID}/`)
@@ -145,17 +118,17 @@ const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
   useEffect(()=>console.log(selectType),[selectType])
 
   return (<>
-    <FormControl component="fieldset" style={{display: (!selectType || selectType.object ) ? 'block': 'none'}}>
+    <FormControl component="fieldset" style={{display: (!selectType || selectType.object ) ? 'block': 'none', marginBottom: '1rem'}}>
       <Typography variant="subtitle2">Приєднатися до ініціативи</Typography>
       <RadioGroup aria-label="role" name="role" value={value.type} onChange={handleChange}>
         <Box id='donate' className={classes.selectGroup}>
-          <FormControlLabel value="donate" control={<Radio />} label="Я готова/ий пожертвувати гроші" />
+          <FormControlLabel value="donate" control={<Radio />} label={i18n('joinDonateLabel')} />
           {value.type==="donate" && <><TextField 
             key='donate'
             id='donate'
-            label='Сума'
+            label={i18n('joinDonateSum')}
             InputProps={{
-              endAdornment:<InputAdornment position="end">грн</InputAdornment>
+              endAdornment:<InputAdornment position="end">{i18n('UAH')}</InputAdornment>
             }}
             className={classes.text}
             variant="outlined"
@@ -167,21 +140,20 @@ const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
           />
           <FormControlLabel
             control={<Checkbox checked={periodic} onChange={(e)=>setPeriodic(!periodic)} name="periodic" />}
-            label="Щомісячний платіж?"
+            label={i18n('joinMonthlyPayment')}
             style={{marginLeft: '0.5rem'}}
           /></>}
         </Box>
         <Box id='volunteer'className={classes.selectGroup} >
-          <FormControlLabel value="volunteer" control={<Radio />} label="Я готова/ий бути волонтером" />
+          <FormControlLabel value="volunteer" control={<Radio />} label={i18n('joinVolunteerLabel')} />
           {value.type==="volunteer" && <TextField 
             key='volunteer'
             id='volunteer'
-            label='Яку роботу ви можете виконувати?'
+            label={i18n('joinVolunteerJob')}
             className={classes.text}
             variant="outlined"
             onChange={(e)=>{
               setJob(e.target.value)
-              // console.log(e.target.value)
             }}
             multiline={true}
             rows={2}
@@ -191,7 +163,7 @@ const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
           />}
         </Box>
         <Box id='project' className={classes.selectGroup}>
-          <FormControlLabel value="project" control={<Radio />} label="Я готова/ий запропонувати проектне рішення" />
+          <FormControlLabel value="project" control={<Radio />} label={i18n('joinContractLabel')} />
           {value.type==="project" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}}>
             {!selectType && <>
               <Button 
@@ -203,7 +175,7 @@ const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
                   console.log('selectProject')
                   setSelectType({type: 'selectProject'})
               }}>
-                Обрати з бібліотеки
+                {i18n('joinChooseFromLibrary')}
               </Button>
               <Button 
                 disabled
@@ -214,40 +186,12 @@ const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
                   console.log('newProject')
                   setSelectType({type: 'newProject'})
               }}>
-                Створити нове
+                {i18n('joinCreateNew')}
               </Button>
             </>}
             {selectType && selectType.object && <>
               <MediaCard directory={"projects"} />
             </>}
-          </div>}
-        </Box>
-        <Box id='resource' className={classes.selectGroup}>
-          <FormControlLabel value="resource" control={<Radio />} label="Я готова/ий надати матеріали або послуги" />
-          {value.type==="resource" && <div style={{paddingLeft: '1rem', justifyContent: 'space-between'}} >
-            <Button 
-              disabled
-              size="small" 
-              variant="outlined"  
-              className={classes.selectButton}
-              onClick={async ()=>{    
-                console.log('selectResource')
-                setSelectType({type: 'selectResource'})
-
-            }}>
-              Обрати з бібліотеки
-            </Button>
-            <Button 
-              disabled
-              size="small" 
-              variant="outlined"  
-              className={classes.selectButton}
-              onClick={async ()=>{    
-                console.log('newResource')
-                setSelectType({type: 'newResource'})
-            }}>
-              Створити новий/у
-            </Button>
           </div>}
         </Box>
       </RadioGroup>
@@ -259,7 +203,7 @@ const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
         onClick={async ()=>{    
           setJoining(false)
       }}>
-        Назад
+        {i18n('back')}
       </Button>
       <Button 
         disabled={value.type==="project"||value.type==="resource"||(value.type==="donate"&&sum<50)||(value.type==="volunteer" && (!job || job.length<5) )}
@@ -267,42 +211,47 @@ const messages = useDatabase().ref(`chats/${initiativeID}/messages/`)
         variant="contained"  
         color="secondary"
         style={{marginTop: '1rem', float: 'right'}}
-        onClick={()=>{    
-          console.log('Приєднатися')
-          const vars = {
-            variables: {
-              UID: initiativeID,
-              member: {uid:user.uid, roles: {[roleLookup[value.type]]:true} } 
-            }
-          }
-          console.log(vars)
-          addMember(vars)
-          refetch()
-          const sendMessage = ()=>{
-              const messageId = messages.push().getKey()          
-              const message = {
-                text:value.type==='volunteer'?job:`${sum},${periodic}`, 
-                type: value.type, 
-                timestamp: toJSON(new Date()),
-                id: messageId,
-                user: {
-                  avatar: user.photoURL,
-                  id: user.uid,
-                  name: user.displayName,
-                },
-                likes: {},
-                dislikes: {}
+        onClick={()=>{  
+          if(!clicked){  
+            setClicked(true)
+            const vars = {
+              variables: {
+                UID: initiativeID,
+                member: {uid:user.uid, roles: {[roleLookup[value.type]]:true} } 
               }
-              messages.child(messageId).set(message).catch(function(error) {
-                console.error("Error saving message to Database:", error);
-              });
-              console.log(message)
+            }
+            addMember(vars)
+            refetch()
+            const sendMessage = ()=>{
+                const messageId = messages.push().getKey()          
+                const message = {
+                  text:value.type==='volunteer'?job:sum, 
+                  ...(value.type==='donate' ? {parameters: {
+                    periodic,
+                    currency: 'UAH'
+                  }}:{}),
+                  type: value.type, 
+                  timestamp: toJSON(new Date()),
+                  id: messageId,
+                  user: {
+                    avatar: user.photoURL,
+                    id: user.uid,
+                    name: user.displayName,
+                  },
+                  likes: {},
+                  dislikes: {}
+                }
+                messages.child(messageId).set(message).catch(function(error) {
+                  console.error("Error saving message to Database:", error);
+                });
+                console.log(message)
+            }
+            sendMessage()
+            history.push(`/initiative/${ initiativeID }`)
+            setJoining(false)
           }
-          sendMessage()
-          history.push(`/initiative/${ initiativeID }`)
-          setJoining(false)
       }}>
-        Приєднатися
+        {i18n('join')}
       </Button>
     </FormControl>
 
