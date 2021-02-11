@@ -48,6 +48,7 @@ const languages:any = {
 
 
 export const useI18n = ()=>{
+  
   const lang = useRecoilValue(Atoms.lang)
   const [i18nData, setI18nData] = useState(languages[lang])
   useEffect(()=>{

@@ -1,7 +1,7 @@
 import React from "react"
 export default {
 
-  app_side_drawer:{
+  //Side drawer
     initiativeMap: "Map of initiatives",
     myInitiatives: "My initiatives",
     projectLibrary: "Project Library",
@@ -15,15 +15,12 @@ export default {
     ka: "Georgian",
     fi: "Finnish",
 
-  },
-
-  app_bar:{
+    //App bar
     enter: "Login",
     exit: "Logout",
     loading: "Loading",
-  }
 
-  project_library:{
+    //Project Library
     projectLibraryTitle: "Library of project proposals",
     myProjectsTitle: "My projects", //when adding project to inititiative
     onlyMineCheckbox: "Show only created by me",
@@ -31,9 +28,7 @@ export default {
     noProjects:  `There are no projects in the library{#choice | by this category#}.
     Be the first to propose one.`,
 
-  },
-
-  project_category:{
+    //categories of projects
     chooseCategory: "Choose category",
     allCategories: "All categories",
     greenery: "Greenery",
@@ -45,9 +40,7 @@ export default {
     business: "Enterpreneurship",
     other: "Other",
 
-  },
-
-  global_form_control:{
+    //Form controls
     add: "Add",
     addAndJoin: "Add and join",
     addToInitiative: "Add to Initiative",
@@ -59,8 +52,8 @@ export default {
     back: "Back",
     next: "Next",
     send: "Send",
-  },
-  feedback_form:{
+
+    //Feedback form
     feedbackGreeting: "🖐Welcome to our site!",
     feedbackDescription: <>
       <p>- In case of any questions please contact us by email hi@weee.city.</p>
@@ -69,16 +62,13 @@ export default {
     feedbackName: "Your name:",
     feedbackMessage: "Your message:",
     feedbackContact: "How to contact you:",
-  },
-  feedback_email_content:{
+    //Feedback email contents
     feedbackEmailTitle: "Feedback from",
     feedbackEmailName: "Name",
     feedbackEmailMessage: "Message",
     feedbackEmailContact: "How to contact me",
 
-  },
-
-  app_intro:{
+    //Intro
     introGreetings: 'Hi!',
     introGreetingsDescription: <>
         You landed on the site, which is the first prototype of the platform for urban networking We.city. 
@@ -105,9 +95,7 @@ export default {
         But before that, please click "Next" button, and register or login🙏
         </>,
 
-  },
-
-  project_form:{
+    //Project form
     projectFormAddCoverPhoto: "+ Add cover image",
     projectFormName: "Name of your proposal",
     projectFormContractor: "Contractor organization",
@@ -122,9 +110,8 @@ export default {
     projectFormMinimalBudget: "What is the minimal necessary budget?",
     projectFormBudgetExpenses: "Which expenses will it cover?",
     projectFormCategory: "Choose category",
-  },
 
-  project_preview:{
+    //Project preview
     projectContractor: "Contractor name",
     projectContractorLocation: "Place of implementation",
     projectProblem: "Which problem is solving",
@@ -137,18 +124,13 @@ export default {
     projectBudgetExpenses: "What does the budget covers",
     projectDateAdded: "Date added",
 
-  },
-
-  inititative_library:{
+    //Initiative library
     intiativeLibraryTitle: "Initiatives that you've joined:",
     initiativeLibraryEmpty: 
     `You didn't join any initiative yet! 
     Go to the Map and join the one, that seem important,
     or propose your own`,
-
-  },
-
-  inititative_form:{
+    //Initiative form
     initiativeFormInstruction: "Move the map to locate the initiative marker (red) in the right place, then add the name and click Next.",
     initiativeFormName: "Name of your initiative",
     initiativeFormAddCoverPhoto: "+ Add the cover picture",
@@ -157,9 +139,7 @@ export default {
     initiativeFormExpectedResult: "Describe desired outcomes:",
     initiativeFormCurrentState: "What is the current state of it:",
 
-  },
-
-  initiative_preview:{
+    //Initiative preview
     initiativeDistanceFromMeKM: 'km from me',
     initiativeDistanceFromMeM: 'm from me',
     initiativeShare: 'Share',
@@ -167,23 +147,18 @@ export default {
     initiativeExpectedResult: 'Goals:',
     initiativeCurrentState: 'Current state:',
     initiativeDateAdded: 'Date added:',
-
-  },
-  
-  initiative_group:{
+    
+    //Initiative Group
     initiativeGroupChat: "Chat",
     initiativeGroupMembers: "Members",
     initiativeGroupProjects: "Projects",
     initiativeGroupResources: "Resources",
-
-  },
-  global_alert:{
-
+        
+    //Alerts
     alertYouNeedToLogin: "You must be logged in to create initiative, project or resource",
     alertLinkWasCopied: "Link was succesfully copied to the clipboard",
-  },
-
-  inititative_join:{
+    
+    //Join initiative
     joinInitiativeGoal: "The goal for initiative to find {0} volunteers and {1} UAH.",
     joinTheInitiative: "Join the initiative",
     joinDonateLabel: "I am ready to donate",
@@ -195,14 +170,12 @@ export default {
     joinChooseFromLibrary: "Choose from library",
     joinCreateNew: "Create new",
 
-  },
-  global_currency:{
+    //Currencies
     UAH: "uah",
     USD: "usd",
     EUR: "eur",
 
-  },
-  chat:{
+    //Chat
     chatCreatedInitiative: "{0} created initiative",
     chatJoinedInitiative: "{0} joined the initiative",
     chatJoinedAsVolunteer: "{0} joined as volunteer",
@@ -214,8 +187,7 @@ export default {
     chatWriteYourComment: "Add comment",
     chatWriteReply: "Reply",
 
-  },
-  explore:{
+    //Explore card
     exploreHelmetTitle: "Explore initiatives",
     exploreHelmetDescription: "Platform for urban networking around common cases",
     exploreYouAreHere: "You are here",
@@ -231,8 +203,6 @@ export default {
       Please, add new initiative to find city-neighborghs
       who consider it relevant and worth support.
     `,
-    exploreProposeNewInitiative: "Propose new initiative",
-
-  },
+    exploreProposeNewInitiative: "Propose new initiative"
     
 };
