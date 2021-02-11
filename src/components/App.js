@@ -56,7 +56,9 @@ const useClient = () => {
         localStorage.setItem('token', user.uid);
         const httpLink = createHttpLink({
           uri: 'https://hasura.weee.city/v1/graphql',
-          
+          headers: {
+            "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN
+          },
         });
         
         const authLink = setContext((_, { headers }) => {
@@ -76,9 +78,7 @@ const useClient = () => {
             addTypename: false
             
           }),
-          headers: {
-            "x-hasura-admin-secret": process.env.HASURA_ADMIN
-          },
+
         });
         //console.log(user)
         setState(client)
