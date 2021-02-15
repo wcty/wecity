@@ -10,7 +10,8 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import { FirebaseAppProvider, useUser, useAuth } from 'reactfire'
 import { BrowserRouter as Router, useHistory, useLocation } from "react-router-dom";
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, gql } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
+import { useClient } from 'global/Hooks';
+
 // import { CookiesProvider } from "react-cookie"
 
 const useStyles = makeStyles(theme => ({
@@ -43,51 +44,7 @@ const useStyles = makeStyles(theme => ({
   }  
 }))
 
-const useClient = () => {
-  const [state, setState]= useState()
-  const user = useUser()
-  const auth = useAuth()
 
-  useEffect(()=>{
-    
-      if(!user) {
-        auth.signInAnonymously()
-      }else{
-        localStorage.setItem('token', user.uid);
-        const httpLink = createHttpLink({
-          uri: 'https://hasura.weee.city/v1/graphql',
-          headers: {
-            "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN
-          },
-        });
-        
-        const authLink = setContext((_, { headers }) => {
-          // get the authentication token from local storage if it exists
-          const token = localStorage.getItem('token');
-          // return the headers to the context so httpLink can read them
-          return {
-            headers: {
-              ...headers,
-              authorization: token ? `Bearer ${token}` : "",
-            }
-          }
-        });
-        const client = new ApolloClient({
-          link: authLink.concat(httpLink),
-          cache: new InMemoryCache({
-            addTypename: false
-            
-          }),
-
-        });
-        //console.log(user)
-        setState(client)
-      }
-      
-  },[user, auth])
-
-  return state
-}
 
 const Apollo = ({children})=>{
   const client = useClient()

@@ -6,17 +6,13 @@ const ukrainian =require('./src/i18n/uk.js')
 const client= new ApolloClient({
     cache: new InMemoryCache({
         addTypename: false
-      }),
+        }),
     uri: 'https://hasura.weee.city/v1/graphql',
     headers: {
         "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN
-      },
-  })
+        },
+})
 
-
-
-
-  
 const addKey = gql`
     mutation AddKey($en:String, $uk:String, $key:String, $category:String) {
         insert_i18n (objects: {en: $en, uk: $uk, key: $key, category: $category}) {

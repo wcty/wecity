@@ -1,4 +1,4 @@
-
+import React from 'react'
 import { useState, useEffect, useRef } from 'react'
 import en from 'i18n/en.js'
 import uk from 'i18n/uk.js'
@@ -6,8 +6,61 @@ import ka from 'i18n/ka.js'
 import fi from 'i18n/fi.js'
 import { useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
+import { useQuery, gql, InMemoryCache, ApolloConsumer, ApolloClient, createHttpLink, NormalizedCacheObject} from '@apollo/client'
+import {useUser, useAuth} from 'reactfire'
+import {User} from 'firebase'
+
+import { setContext } from '@apollo/client/link/context';
+
+export const useClient = () => {
+  const [state, setState]= useState<ApolloClient<NormalizedCacheObject>|undefined>()
+  const user:User = useUser()
+  const auth = useAuth()
+
+  useEffect(()=>{
+    
+      if(!user) {
+        auth.signInAnonymously()
+      }else{
+        localStorage.setItem('token', user.uid);
+        //console.log(process.env.REACT_APP_HASURA_ADMIN)
+        const httpLink = createHttpLink({
+          uri: 'https://hasura.weee.city/v1/graphql',
+          headers: {
+            "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN
+          },
+        });
+        
+        const authLink = setContext((_, { headers }) => {
+          // get the authentication token from local storage if it exists
+          const token = localStorage.getItem('token');
+          // return the headers to the context so httpLink can read them
+          return {
+            headers: {
+              ...headers,
+              authorization: token ? `Bearer ${token}` : "",
+            }
+          }
+        });
+        const client = new ApolloClient({
+          link: authLink.concat(httpLink),
+          cache: new InMemoryCache({
+            addTypename: false
+            
+          }),
+
+        });
+        //console.log(user)
+        setState(client)
+      }
+      
+  },[user, auth])
+
+  return state
+}
 
 export function usePrevious(value:any) {
+  
   // The ref object is a generic container whose current property is mutable ...
   // ... and can hold any value, similar to an instance property on a class
   const ref = useRef();
@@ -38,28 +91,59 @@ export function useLocation() {
   return location
 }
 
-//Languages have to be added also to Atom.ts/type Language and defineLang()  declaration
-const languages:any = {
-    en,
-    uk,
-    ka,
-    fi
-}
+// //Languages have to be added also to Atom.ts/type Language and defineLang()  declaration
+// const languages:any = {
+//     en,
+//     uk,
+//     ka,
+//     fi
+// }
+
+// const client= new ApolloClient({
+//   cache: new InMemoryCache({
+//       addTypename: false
+//       }),
+//   uri: 'https://hasura.weee.city/v1/graphql',
+//   headers: {
+//       "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN || ''
+//       },
+// })
+
+
 
 
 export const useI18n = ()=>{
+  const lang = useRecoilValue(Atoms.lang) //lang = 'en' or 'uk', etc
+  //const [i18nData, setI18nData] = useState(languages[lang])
+  const client = useClient()
+  const DICTIONARY = (l:String)=> gql`
+    query Dictionary{
+      i18n(order_by: {key: asc}) {
+        ${l}
+        key
+      }
+    }
+  `
   
-  const lang = useRecoilValue(Atoms.lang)
-  const [i18nData, setI18nData] = useState(languages[lang])
+  const [i18nData, setI18nData] = useState<any>({})
   useEffect(()=>{
-    setI18nData(languages[lang])
-  },[lang])
-  // const TypesArray = typeof (([...Object.keys(en)] as const)[0])
+    client?.query({
+      query : DICTIONARY(lang)
+    }).then((data)=>{
+      const dataObject = data.data.i18n.reduce((a:any,b:any)=>{
+        const {key, ...value} = b
+        a[key]=Object.values(value)[0]
+        return a
+      }, {})
+      setI18nData(dataObject)
+      console.log(dataObject)
+    })
+  },[lang, client])
+  
   const AAA = (([...Object.keys(en)] as const)[0])
   type TypesArray = typeof AAA
 
   return function getI18n (key:TypesArray, params?:any) {
-    
     if (params===false || params || params === 0) {
         let i18nKey = i18nData[key];
         const choiceRegex = /{#choice.*#}/g;
