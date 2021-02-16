@@ -1,9 +1,6 @@
 import React from 'react'
 import { useState, useEffect, useRef } from 'react'
-import en from 'i18n/en.js'
-import uk from 'i18n/uk.js'
-import ka from 'i18n/ka.js'
-import fi from 'i18n/fi.js'
+import defaultLang from './defaultLang.json'
 import { useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
 import { useQuery, gql, InMemoryCache, ApolloConsumer, ApolloClient, createHttpLink, NormalizedCacheObject} from '@apollo/client'
@@ -12,8 +9,10 @@ import {User} from 'firebase'
 
 import { setContext } from '@apollo/client/link/context';
 
+type Client = ApolloClient<NormalizedCacheObject>|undefined
+
 export const useClient = () => {
-  const [state, setState]= useState<ApolloClient<NormalizedCacheObject>|undefined>()
+  const [state, setState]= useState<Client>()
   const user:User = useUser()
   const auth = useAuth()
 
@@ -89,7 +88,7 @@ export function useLocation() {
 }
 
 export const useI18n = ()=>{
-  const lang = useRecoilValue(Atoms.lang) //lang = 'en' or 'uk', etc
+  const lang = useRecoilValue(Atoms.lang)
   const client = useClient()
   const DICTIONARY = (l:String)=> gql`
     query Dictionary{
@@ -99,36 +98,30 @@ export const useI18n = ()=>{
       }
     }
   `
-  type MapSchemaTypes = {
-    string: string;
-    integer: number;
+
+  type MapSchema<T extends Record<string, string>> = {
+    -readonly [K in keyof T]: string
   }
-  
-  type MapSchema<T extends Record<string, keyof MapSchemaTypes>> = {
-    -readonly [K in keyof T]: MapSchemaTypes[T[K]]
-  }
-  let dataObject = { greeting: 'string'} as const;
-  
-  const [i18nData, setI18nData] = useState<any>({})
+
+  let dataObject = {...defaultLang} as const;
+  type i18n = MapSchema<typeof dataObject>
+
+  const [i18nData, setI18nData] = useState<i18n>({...defaultLang})
+
   useEffect(()=>{
     client?.query({
       query : DICTIONARY(lang)
     }).then((data)=>{
-      dataObject = data.data.i18n.reduce((a:any,b:any)=>{
+      const langObject:i18n = data.data.i18n.reduce((a:any,b:any)=>{
         const {key, ...value} = b
         a[key]=Object.values(value)[0]
         return a
       }, {})
-      setI18nData(dataObject)
+      setI18nData(langObject)
     })
   },[lang, client])
 
-  type i18n = MapSchema<typeof dataObject>
-  
-  const AAA = (([...Object.keys(en)] as const)[0])
-  type TypesArray = typeof AAA
-
-  return function getI18n <K extends keyof i18n> (key:TypesArray, params?:any):i18n[K] {
+  return function getI18n <K extends keyof i18n> (key:K, params?:any):i18n[K] {
     if (params===false || params || params === 0) {
         let i18nKey = i18nData[key];
         const choiceRegex = /{#choice.*#}/g;
