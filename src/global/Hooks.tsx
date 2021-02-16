@@ -91,30 +91,8 @@ export function useLocation() {
   return location
 }
 
-// //Languages have to be added also to Atom.ts/type Language and defineLang()  declaration
-// const languages:any = {
-//     en,
-//     uk,
-//     ka,
-//     fi
-// }
-
-// const client= new ApolloClient({
-//   cache: new InMemoryCache({
-//       addTypename: false
-//       }),
-//   uri: 'https://hasura.weee.city/v1/graphql',
-//   headers: {
-//       "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN || ''
-//       },
-// })
-
-
-
-
 export const useI18n = ()=>{
   const lang = useRecoilValue(Atoms.lang) //lang = 'en' or 'uk', etc
-  //const [i18nData, setI18nData] = useState(languages[lang])
   const client = useClient()
   const DICTIONARY = (l:String)=> gql`
     query Dictionary{
@@ -124,26 +102,36 @@ export const useI18n = ()=>{
       }
     }
   `
+  type MapSchemaTypes = {
+    string: string;
+    integer: number;
+  }
+  
+  type MapSchema<T extends Record<string, keyof MapSchemaTypes>> = {
+    -readonly [K in keyof T]: MapSchemaTypes[T[K]]
+  }
+  let dataObject = { greeting: 'string'} as const;
   
   const [i18nData, setI18nData] = useState<any>({})
   useEffect(()=>{
     client?.query({
       query : DICTIONARY(lang)
     }).then((data)=>{
-      const dataObject = data.data.i18n.reduce((a:any,b:any)=>{
+      dataObject = data.data.i18n.reduce((a:any,b:any)=>{
         const {key, ...value} = b
         a[key]=Object.values(value)[0]
         return a
       }, {})
       setI18nData(dataObject)
-      console.log(dataObject)
     })
   },[lang, client])
+
+  type i18n = MapSchema<typeof dataObject>
   
   const AAA = (([...Object.keys(en)] as const)[0])
   type TypesArray = typeof AAA
 
-  return function getI18n (key:TypesArray, params?:any) {
+  return function getI18n <K extends keyof i18n> (key:TypesArray, params?:any):i18n[K] {
     if (params===false || params || params === 0) {
         let i18nKey = i18nData[key];
         const choiceRegex = /{#choice.*#}/g;
@@ -172,7 +160,6 @@ export const useI18n = ()=>{
 function Choice(value:any, i18nKey:String, choiceRegex:RegExp){
   for (const choicePattern of i18nKey.match(choiceRegex)??[]) {
     const choices = choicePattern.replace('{#choice','').replace('#}','').split('|')
-    //console.log(choices, choicePattern, value)
     if(i18nKey){
       i18nKey = i18nKey.replace(choicePattern, choices[!value?0:1]);
     }
