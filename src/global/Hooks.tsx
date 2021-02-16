@@ -121,16 +121,7 @@ export const useI18n = ()=>{
     })
   },[lang, client])
 
-<<<<<<< HEAD
-  type i18n = MapSchema<typeof dataObject>
-  
-  const AAA = (([...Object.keys(dataObject)] as const)[0])
-  type TypesArray = typeof AAA
-
-  return function getI18n <K extends keyof i18n> (key:TypesArray, params?:any):i18n[K] {
-=======
   return function getI18n <K extends keyof i18n> (key:K, params?:any):i18n[K] {
->>>>>>> 5deb8b405357fe7f41df7298597188e645b6aa83
     if (params===false || params || params === 0) {
         let i18nKey = i18nData[key];
         const choiceRegex = /{#choice.*#}/g;
