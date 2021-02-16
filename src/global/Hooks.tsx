@@ -1,9 +1,5 @@
 import React from 'react'
 import { useState, useEffect, useRef } from 'react'
-import en from 'i18n/en.js'
-import uk from 'i18n/uk.js'
-import ka from 'i18n/ka.js'
-import fi from 'i18n/fi.js'
 import { useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
 import { useQuery, gql, InMemoryCache, ApolloConsumer, ApolloClient, createHttpLink, NormalizedCacheObject} from '@apollo/client'
@@ -125,7 +121,7 @@ export const useI18n = ()=>{
 
   type i18n = MapSchema<typeof dataObject>
   
-  const AAA = (([...Object.keys(en)] as const)[0])
+  const AAA = (([...Object.keys(dataObject)] as const)[0])
   type TypesArray = typeof AAA
 
   return function getI18n <K extends keyof i18n> (key:TypesArray, params?:any):i18n[K] {
