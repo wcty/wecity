@@ -26,9 +26,6 @@ export const useClient = () => {
         //console.log(process.env.REACT_APP_HASURA_ADMIN)
         const httpLink = createHttpLink({
           uri: 'https://hasura.weee.city/v1/graphql',
-          headers: {
-            "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN
-          },
         });
         
         const authLink = setContext((_, { headers }) => {
