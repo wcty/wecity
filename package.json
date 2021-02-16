@@ -51,6 +51,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "prebuild": "node i18n.js",
     "build": "react-scripts build && gzipper c -e br --verbose ./build && gzipper c --brotli -e gz --verbose ./build",
     "build-dev": "react-scripts build",
     "test": "react-scripts test",
