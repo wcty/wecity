@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl" : "src/",
-    "target": "es5",
+    "baseUrl": "src/",
+    "target": "es3",
     "module": "esnext",
     "strict": true,
     "esModuleInterop": true,
@@ -18,7 +18,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react"
+    "jsx": "react-jsx",
+    "noFallthroughCasesInSwitch": true
   },
   "include": [
     "src"

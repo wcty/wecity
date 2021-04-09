@@ -30,3 +30,6 @@ yarn-error.log*
 
 *.rdb
 skylight.pid
+package-lock.json
+firebase_users*
+hash_config

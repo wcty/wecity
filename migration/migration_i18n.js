@@ -1,7 +1,7 @@
 global.fetch = require('node-fetch');
 const { ApolloClient, gql, InMemoryCache } = require('@apollo/client');
-const english =require('./src/i18n/en.js')
-const ukrainian =require('./src/i18n/uk.js')
+const english =require('./lang/en.js')
+const ukrainian =require('./lang/uk.js')
 
 const client= new ApolloClient({
     cache: new InMemoryCache({

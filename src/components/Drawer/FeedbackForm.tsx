@@ -3,11 +3,8 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, FormControl, IconButton, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, Box } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons';
 import { useUser, useFirestore } from 'reactfire';
-import firebase from "firebase/app"
 import { Redirect, useHistory } from 'react-router-dom'
 import { useI18n } from 'global/Hooks'
-
-type User = firebase.User
 
 //1920x1080,851x315,484x252,180x180
 //e
@@ -34,7 +31,6 @@ const feedbackForm = (i18n:any)=>[
       rows: 8,
       maxLength: 600
     },
-    
   ],
 ]
 
@@ -112,7 +108,7 @@ export default ()=> {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
   const feedbackRef = useFirestore().collection('feedback')
-  const user :User = useUser()
+  const user:any = useUser()
 
   return (<Box style={{
     backgroundColor:'white',
@@ -218,7 +214,7 @@ export default ()=> {
                     .then(function() {
                         console.log("Document successfully written!");
                     })
-                    .catch(function(error) {
+                    .catch(function(error:any) {
                         console.error("Error writing document: ", error);
                     });
                   }

@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))  
 
-export default ({ active, getMarker })=>{
+export default ()=>{
   const classes = useStyles()
   const [alert, setAlert] = useState(null)
   const user = useRecoilValue(userAtom)
@@ -38,7 +38,8 @@ export default ({ active, getMarker })=>{
           className={classes.MenuFab} 
           style={{
             top: initiativeBar?'unset':'1rem',
-            bottom: initiativeBar?'1rem':'unset'
+            bottom: initiativeBar?'1rem':'unset',
+            position:'absolute'
           }}
           raised="true" 
           aria-label="add"

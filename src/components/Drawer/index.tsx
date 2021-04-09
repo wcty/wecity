@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { SwipeableDrawer, List, Divider, Box, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { MapOutlined, LibraryBooksOutlined, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined, InfoOutlined } from '@material-ui/icons';
-import { useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
 import LangSelect from './LangSelect'
 import { useI18n } from 'global/Hooks'
@@ -19,13 +18,13 @@ const useStyles = makeStyles({
   },
 });
 
-export default ({ state, setState })=>{
+export default ({ state, setState }:any)=>{
   const classes = useStyles();
-  const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const history = useHistory()
-  const user = useUser()
+  const user:any = null;
   
-  const toggleDrawer = (open) => (event) => {
+  const toggleDrawer = (open:any) => (event:any) => {
     if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -58,7 +57,7 @@ export default ({ state, setState })=>{
     ]
 
 
-  const list = (anchor) => {
+  const list = (anchor:any) => {
     return <>
       <Header />
       <div

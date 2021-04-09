@@ -1,74 +1,9 @@
 import React from 'react'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import defaultLang from './defaultLang.json'
 import { useRecoilValue } from 'recoil'
 import * as Atoms from 'global/Atoms'
-import { useQuery, gql, InMemoryCache, ApolloConsumer, ApolloClient, createHttpLink, NormalizedCacheObject} from '@apollo/client'
-import {useUser, useAuth} from 'reactfire'
-import {User} from 'firebase'
-
-import { setContext } from '@apollo/client/link/context';
-
-type Client = ApolloClient<NormalizedCacheObject>|undefined
-
-export const useClient = () => {
-  const [state, setState]= useState<Client>()
-  const user:User = useUser()
-  const auth = useAuth()
-
-  useEffect(()=>{
-    
-      if(!user) {
-        auth.signInAnonymously()
-      }else{
-        localStorage.setItem('token', user.uid);
-        //console.log(process.env.REACT_APP_HASURA_ADMIN)
-        const httpLink = createHttpLink({
-          uri: 'https://hasura.weee.city/v1/graphql',
-        });
-        
-        const authLink = setContext((_, { headers }) => {
-          // get the authentication token from local storage if it exists
-          const token = localStorage.getItem('token');
-          // return the headers to the context so httpLink can read them
-          return {
-            headers: {
-              ...headers,
-              authorization: token ? `Bearer ${token}` : "",
-            }
-          }
-        });
-        const client = new ApolloClient({
-          link: authLink.concat(httpLink),
-          cache: new InMemoryCache({
-            addTypename: false
-            
-          }),
-
-        });
-        //console.log(user)
-        setState(client)
-      }
-      
-  },[user, auth])
-
-  return state
-}
-
-export function usePrevious(value:any) {
-  
-  // The ref object is a generic container whose current property is mutable ...
-  // ... and can hold any value, similar to an instance property on a class
-  const ref = useRef();
-  
-  // Store current value in ref
-  useEffect(() => {
-    ref.current = value;
-  }, [value]); // Only re-run if value changes
-  
-  // Return previous value (happens before update in useEffect above)
-  return ref.current;
-}
+import { useApolloClient, gql } from '@apollo/client'
 
 export function useLocation() {
   const defaultValue = {longitude: 30.5234, latitude: 50.4501}
@@ -89,7 +24,8 @@ export function useLocation() {
 
 export const useI18n = ()=>{
   const lang = useRecoilValue(Atoms.lang)
-  const client = useClient()
+  const client = useApolloClient()
+
   const DICTIONARY = (l:String)=> gql`
     query Dictionary{
       i18n(order_by: {key: asc}) {
@@ -98,7 +34,6 @@ export const useI18n = ()=>{
       }
     }
   `
-
   type MapSchema<T extends Record<string, string>> = {
     -readonly [K in keyof T]: string
   }
@@ -117,6 +52,8 @@ export const useI18n = ()=>{
         a[key]=Object.values(value)[0]
         return a
       }, {})
+      console.log(data, langObject)
+
       setI18nData(langObject)
     })
   },[lang, client])
@@ -156,16 +93,16 @@ function Choice(value:any, i18nKey:String, choiceRegex:RegExp){
   }
 }
 
-function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window;
-  return {
-    width,
-    height
-  };
-}
-
 export function useWindowDimensions() {
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+  
+  function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+      width,
+      height
+    };
+  }
 
   useEffect(() => {
     function handleResize() {

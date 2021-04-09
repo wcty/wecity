@@ -1,0 +1,27 @@
+initiative:
+ id (ex. uid)
+ name
+ geom
+ description
+ created_at
+ modified_at
+ image_url (ex.l)
+
+initiative_member:
+ id
+ initiative_id
+ user_id
+ created_at
+ initiator
+ volunteer
+ donator
+ contractor
+
+initiative_thread:
+ id
+ initiative_id
+ created_at
+ goal (ex. outcome)
+ problem
+ context
+ 

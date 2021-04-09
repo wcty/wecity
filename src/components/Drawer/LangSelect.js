@@ -42,12 +42,6 @@ export default ({toggleDrawer, ...props})=>{
             <CustomSvgIcon><UKRFlag/></CustomSvgIcon>
             Українська
           </MenuItem>
-          {/* <MenuItem value={'fi'} role="radio" aria-label="finnish" >
-            <CustomSvgIcon><FIFlag/></CustomSvgIcon>
-            Finnish
-          </MenuItem> */}
-          {/* <MenuItem value={'ka'}>ka</MenuItem> */}
-         
         </Select>
     </FormControl></Box>
 }

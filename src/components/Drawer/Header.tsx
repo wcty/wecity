@@ -4,15 +4,11 @@ import { ListItem, ListItemAvatar, ListItemText, Toolbar, Box,  Avatar, Button, 
 import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
 import { showBarAtom } from 'global/Atoms'
-import { useAuth, useUser, useFirestore } from 'reactfire';
 import { useRecoilState } from 'recoil';
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
 import { useI18n } from 'global/Hooks'
 import { useHistory, Link } from 'react-router-dom'
-import { signInWithGoogle } from 'global/Misc'
-import firebase from "firebase/app"
 
-type User = firebase.User
 
 const Styles = makeStyles( theme => ({
   appbar: {
@@ -51,13 +47,12 @@ const Styles = makeStyles( theme => ({
 const LogIn = ()=>{
   const classes = Styles()
   const i18n = useI18n()
-  const auth = useAuth()
-  const user:User = useUser();
+  const user:any = null;
   const history = useHistory()
 
 
   return !user || user.isAnonymous?
-    <ListItem button style={{height:'5rem'}} onClick={()=>signInWithGoogle(auth)}>        
+    <ListItem button style={{height:'5rem'}} onClick={()=>{console.log('google signin'); history.push('/login')}}>        
       <ListItemAvatar>
         <AccountCircle color='primary'/>
       </ListItemAvatar> 
@@ -80,7 +75,7 @@ const LogIn = ()=>{
         primary={user.displayName}
         secondary={i18n('exit')}
         primaryTypographyProps={{component: Link, to: "/settings", style: {color: "#ffffff", fontWeight: "normal", textTransform: "uppercase", textDecoration:"none"}}}
-        secondaryTypographyProps={{component: Link, to:"#", onClick: ()=>auth.signOut(), style: {color: "#ffffff", fontWeight: "lighter"}}}
+        secondaryTypographyProps={{component: Link, to:"#", onClick: ()=>{console.log('signout')}, style: {color: "#ffffff", fontWeight: "lighter"}}}
       />
     </ListItem>
 }
