@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Fab, Collapse } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { initiativeBarAtom, userAtom } from 'global/Atoms'
+import { atoms } from 'misc'
 import { Menu as MenuIcon } from '@material-ui/icons'
 import Drawer from '../Drawer'
 
@@ -25,9 +25,9 @@ const useStyles = makeStyles(theme => ({
 
 export default ()=>{
   const classes = useStyles()
-  const [alert, setAlert] = useState(null)
-  const user = useRecoilValue(userAtom)
-  const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)
+  const [alert, setAlert] = useState<null|{description:string}>(null)
+  const user = useRecoilValue(atoms.user)
+  const [initiativeBar, setInitiativeBar] = useRecoilState(atoms.initiativeBarAtom)
   const [drawer, setDrawer] = useState(false)
 
   return (
@@ -41,18 +41,17 @@ export default ()=>{
             bottom: initiativeBar?'1rem':'unset',
             position:'absolute'
           }}
-          raised="true" 
           aria-label="add"
         >
           <MenuIcon />
         </Fab>
         <Drawer state={drawer} setState={setDrawer}/>
       </>
-    { alert && user.isAnonymous && (
+    { alert && !user && (
       <Collapse in={Boolean(alert)}>
         <Alert severity="info" className={classes.alert} onClose={() => {setAlert(null)}}>
           <AlertTitle>Info</AlertTitle>
-          {alert.description}
+          {alert?.description}
         </Alert>
       </Collapse>
     )

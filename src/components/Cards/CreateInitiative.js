@@ -4,17 +4,12 @@ import { Paper, Button } from '@material-ui/core';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import * as Atoms from 'global/Atoms'
 import { useUser } from 'reactfire';
-import createInitiativeForm from 'global/forms/createInitiativeForm'
-import FormExpanded from 'global/FormExpanded'
 import { useHistory } from 'react-router-dom';
 import MarkerActive from 'assets/images/markerActive.svg'
 import randomstring from 'randomstring'
 import { useMutation } from '@apollo/client';
-import { createInitiativeMutation } from 'global/Queries'
-import { SchemaMetaFieldDef } from 'graphql';
-import { useI18n } from 'global/Hooks'
+import { useI18n, atoms, createInitiativeMutation, FormExpanded, createInitiativeForm } from 'misc'
 //1920x1080,851x315,484x252,180x180
 
 const useStyles = makeStyles((theme) => ({
@@ -47,16 +42,16 @@ const useStyles = makeStyles((theme) => ({
 export default ({ getMarker, submit, cancel, variant, submitText, cancelText, mapRef, loaded  })=> {
   const classes = useStyles();
   const theme = useTheme();
-  const [isCreating, setIsCreating] = useRecoilState(Atoms.creatingAtom)
-  const setMarker = useSetRecoilState(Atoms.markerAtom)
-  const setNext = useSetRecoilState(Atoms.nextAtom)
+  const [isCreating, setIsCreating] = useRecoilState(atoms.creatingAtom)
+  const setMarker = useSetRecoilState(atoms.markerAtom)
+  const setNext = useSetRecoilState(atoms.nextAtom)
   const user = useUser()
-  const [location] = useRecoilState(Atoms.locationAtom)
+  const [location] = useRecoilState(atoms.locationAtom)
   const [finished, setFinished] = useState(false)
   const history = useHistory()
-  const [offset, setOffset] = useRecoilState(Atoms.offsetAtom)
-  const [slideIndex, setSlideIndex] = useRecoilState(Atoms.indexAtom)
-  const [feed, setFeed] = useRecoilState(Atoms.initiativeFeed)
+  const [offset, setOffset] = useRecoilState(atoms.offsetAtom)
+  const [slideIndex, setSlideIndex] = useRecoilState(atoms.indexAtom)
+  const [feed, setFeed] = useRecoilState(atoms.initiativeFeed)
   const i18n = useI18n()
 
   const [addInitiative] = useMutation(createInitiativeMutation, {onCompleted:(data)=>{

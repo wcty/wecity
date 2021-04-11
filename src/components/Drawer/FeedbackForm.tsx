@@ -4,7 +4,7 @@ import { Paper, FormControl, IconButton, InputLabel, Select, MenuItem, Typograph
 import { KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons';
 import { useUser, useFirestore } from 'reactfire';
 import { Redirect, useHistory } from 'react-router-dom'
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 
 //1920x1080,851x315,484x252,180x180
 //e

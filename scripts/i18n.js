@@ -6,7 +6,7 @@ const client= new ApolloClient({
     cache: new InMemoryCache({
         addTypename: false
         }),
-    uri: 'https://hasura.weee.city/v1/graphql',
+    uri: 'https://hasura-aws.weee.city/v1/graphql',
 
 })
 const GetKeys = gql`
@@ -26,8 +26,8 @@ client.query({
         a[key]=Object.values(value)[0]
         return a
         }, {}),null, ' ')
-        fs.writeFile('src/global/defaultLang.json', json, { flag: 'w' }, err => {})
+        fs.writeFile('src/misc/i18n/defaultLang.json', json, { flag: 'w' }, err => {})
         const md  = json.slice(1,-1)
-        fs.writeFile('src/global/defaultLang.md', md,  { flag: 'w' }, err => {})
+        fs.writeFile('src/misc/i18n/defaultLang.md', md,  { flag: 'w' }, err => {})
 }
 )

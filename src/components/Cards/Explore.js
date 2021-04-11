@@ -4,11 +4,11 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Paper, Typography, Box, Button, Card, CardActions, CardContent, CardActionArea, useTheme } from '@material-ui/core'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { useUser } from 'reactfire'
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 import { useHistory } from 'react-router-dom'
 import { Helmet } from "react-helmet"
 import WecityGroups from 'assets/images/wecity_groups_512.png'
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/atoms'
 import { mapboxConfig } from 'config/index'
 import ArrowNavigation from  './ArrowNavigation'
 
@@ -29,18 +29,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default ({ mapRef })=>{
-  const [next] = useRecoilState(Atoms.nextAtom)
-  // const [index] = useRecoilState(Atoms.indexAtom)
-  const [location] = useRecoilState(Atoms.locationAtom)
-  const [feed] = useRecoilState(Atoms.initiativeFeed)
+  const [next] = useRecoilState(atoms.nextAtom)
+  // const [index] = useRecoilState(atoms.indexAtom)
+  const [location] = useRecoilState(atoms.locationAtom)
+  const [feed] = useRecoilState(atoms.initiativeFeed)
   const classes = useStyles();
   const i18n = useI18n()
   const theme = useTheme()
   const distance = useMemo(()=>next?.features[0]?.properties?.distance?.toFixed(0), [next])
   const history = useHistory()
   const [addressString, setAddress] = useState()
-  const [slideIndex, setSlideIndex] = useRecoilState(Atoms.indexAtom)
-  const lang = useRecoilValue(Atoms.lang)
+  const [slideIndex, setSlideIndex] = useRecoilState(atoms.indexAtom)
+  const lang = useRecoilValue(atoms.lang)
 
   useEffect(()=>{
     if(next?.features[0]){

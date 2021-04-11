@@ -3,12 +3,11 @@ import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { ListItem, ListItemAvatar, ListItemText, Toolbar, Box,  Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
 import { AccountCircle } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu';
-import { showBarAtom } from 'global/Atoms'
 import { useRecoilState } from 'recoil';
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 import { useHistory, Link } from 'react-router-dom'
-
+import { jwtToken, logout, atoms } from 'misc'
 
 const Styles = makeStyles( theme => ({
   appbar: {
@@ -44,15 +43,16 @@ const Styles = makeStyles( theme => ({
   },
 }))
 
-const LogIn = ()=>{
+const LogIn = (props:any)=>{
   const classes = Styles()
   const i18n = useI18n()
-  const user:any = null;
+  const [auth, setAuth]:any = useRecoilState(atoms.auth);
+  const [user, setUser]:any = useRecoilState(atoms.user);
   const history = useHistory()
 
 
-  return !user || user.isAnonymous?
-    <ListItem button style={{height:'5rem'}} onClick={()=>{console.log('google signin'); history.push('/login')}}>        
+  return !user ?
+    <ListItem button style={{height:'5rem'}} onClick={()=>{console.log('google signin'); history.push('/login'); props.setState(false)}}>        
       <ListItemAvatar>
         <AccountCircle color='primary'/>
       </ListItemAvatar> 
@@ -65,17 +65,17 @@ const LogIn = ()=>{
     <ListItem>
       <ListItemAvatar>
         <Avatar
-          alt={user.displayName||undefined}
-          src={user.photoURL||undefined}
+          alt={user?.display_name||undefined}
+          src={user?.avatar_url||undefined}
           className={classes.userProfileAvatar}
           onClick={()=>history.push('/settings')} 
         />
       </ListItemAvatar>         
       <ListItemText 
-        primary={user.displayName}
+        primary={user?.display_name}
         secondary={i18n('exit')}
         primaryTypographyProps={{component: Link, to: "/settings", style: {color: "#ffffff", fontWeight: "normal", textTransform: "uppercase", textDecoration:"none"}}}
-        secondaryTypographyProps={{component: Link, to:"#", onClick: ()=>{console.log('signout')}, style: {color: "#ffffff", fontWeight: "lighter"}}}
+        secondaryTypographyProps={{component: Link, to:"#", onClick: logout, style: {color: "#ffffff", fontWeight: "lighter"}}}
       />
     </ListItem>
 }
@@ -83,7 +83,7 @@ const LogIn = ()=>{
 export default (props:any)=>{
   const i18n = useI18n()
   const classes = Styles()
-  const [showBar] = useRecoilState(showBarAtom)
+  const [showBar] = useRecoilState(atoms.showBarAtom)
   const [drawer, setDrawer] = useState(false)
   const theme = useTheme()
 
@@ -106,7 +106,7 @@ export default (props:any)=>{
             />
           </ListItem>
         }>
-          <LogIn />
+          <LogIn {...props} />
         </Suspense>
       </div>
     </>

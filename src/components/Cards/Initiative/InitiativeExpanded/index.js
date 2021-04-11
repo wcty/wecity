@@ -3,17 +3,17 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Box, List, ListItem, ListItemText, Button, Collapse, TextField, IconButton } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/atoms'
 import { useStorage, useUser } from 'reactfire'
-import { useI18n } from 'global/Hooks'
-import { DeleteObject, getFeed } from 'global/Misc'
+import { useI18n } from 'misc/hooks'
+import { DeleteObject, getFeed } from 'misc'
 import moment from 'moment'
 import { useParams, Route, useHistory } from 'react-router-dom'
 import { Share, Close } from '@material-ui/icons'
 import SelectRole from './SelectRole'
 import InitiativeForMembers from './InitiativeForMembers/'
 import { useQuery, useMutation } from '@apollo/client'
-import { getInitiative, updateInitiativeMember, deleteInitiative } from 'global/Queries'
+import { getInitiative, updateInitiativeMember, deleteInitiative } from 'misc/Queries'
 import ImageViewer from 'react-simple-image-viewer'
 
 const useStyles = makeStyles((theme)=>({
@@ -32,14 +32,14 @@ export default ({ isViewerOpen, setIsViewerOpen, initiative })=>{
   const vars = {variables: {UID: initiativeID}}
   const { data, refetch } = useQuery(getInitiative, vars);
   const user = useUser()
-  const [next, setNext] = useRecoilState(Atoms.nextAtom)
-  const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
+  const [next, setNext] = useRecoilState(atoms.nextAtom)
+  const [joining, setJoining] = useRecoilState(atoms.joiningAtom)
   const images = useStorage().ref().child('initiatives')
   const i18n = useI18n()
   const [alert, setAlert] = useState( null )
   const history = useHistory()
-  const [feed, setFeed] = useRecoilState(Atoms.initiativeFeed)
-  const [last, setLast] = useRecoilState(Atoms.lastAtom)
+  const [feed, setFeed] = useRecoilState(atoms.initiativeFeed)
+  const [last, setLast] = useRecoilState(atoms.lastAtom)
 
   const [updateMember] = useMutation(updateInitiativeMember,{
     onCompleted(data) {

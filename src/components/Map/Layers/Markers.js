@@ -1,19 +1,19 @@
 import React from 'react'
 import { Source, Layer } from '@urbica/react-map-gl'
 import { useRecoilState } from 'recoil'
-import * as Atoms from 'global/Atoms'
-import { getFeed } from 'global/Misc'
+import * as atoms from 'misc/atoms'
+import { getFeed } from 'misc'
 import { useLocation, useHistory } from 'react-router-dom';
-import { lastInitiatives } from 'global/Queries';
+import { lastInitiatives } from 'misc/Queries';
 
 export default () =>{
-  const [feed,setFeed] = useRecoilState(Atoms.initiativeFeed)
+  const [feed,setFeed] = useRecoilState(atoms.initiativeFeed)
   const url = useLocation()
   const history = useHistory()
-  const [slideIndex, setSlideIndex] = useRecoilState(Atoms.indexAtom)
-  const [next, setNext] = useRecoilState(Atoms.nextAtom)
-  const [last, setLast] = useRecoilState(Atoms.lastAtom)
-  const [offset, setOffset] = useRecoilState(Atoms.offsetAtom)
+  const [slideIndex, setSlideIndex] = useRecoilState(atoms.indexAtom)
+  const [next, setNext] = useRecoilState(atoms.nextAtom)
+  const [last, setLast] = useRecoilState(atoms.lastAtom)
+  const [offset, setOffset] = useRecoilState(atoms.offsetAtom)
 
   const onClick = (event) => {
     if (event.features.length > 0){ 

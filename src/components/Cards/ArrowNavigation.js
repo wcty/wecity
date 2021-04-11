@@ -5,16 +5,13 @@ import { useUser } from 'reactfire'
 import { ArrowBack, ArrowForward } from '@material-ui/icons'
 import { useHistory } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
-import { addVisitMutation } from 'global/Queries'
-import * as Atoms from 'global/Atoms'
-import { addVisitPrevious, getFeed, rearrangeCards } from 'global/Misc'
-
+import { addVisitMutation, atoms, addVisitPrevious, getFeed, rearrangeCards } from 'misc'
 
 export default ({ style })=>{
-  const [slideIndex, setSlideIndex] = useRecoilState(Atoms.indexAtom)
-  const [feed,setFeed] = useRecoilState(Atoms.initiativeFeed)
-  const [next, setNext] = useRecoilState(Atoms.nextAtom)
-  const [last, setLast] = useRecoilState(Atoms.lastAtom)
+  const [slideIndex, setSlideIndex] = useRecoilState(atoms.indexAtom)
+  const [feed,setFeed] = useRecoilState(atoms.initiativeFeed)
+  const [next, setNext] = useRecoilState(atoms.nextAtom)
+  const [last, setLast] = useRecoilState(atoms.lastAtom)
 
   return <>
     <Fab size='small' 

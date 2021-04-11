@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { FormControl, InputLabel, Select, MenuItem, Box } from '@material-ui/core'
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/atoms'
 import { useRecoilState } from 'recoil'
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
@@ -10,7 +10,7 @@ const useForceUpdate = () => useState()[1];
 
 export default ({toggleDrawer, ...props})=>{
     const i18n = useI18n()
-    const [lang, setLang] = useRecoilState(Atoms.lang);
+    const [lang, setLang] = useRecoilState(atoms.lang);
     const forceUpdate = useForceUpdate();
     const changeLanguage = (event) => {
       setLang(event.target.value);

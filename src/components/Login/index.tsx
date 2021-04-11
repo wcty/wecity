@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { FormControl, TextField, Button } from '@material-ui/core'
+export { default as OauthLogin } from './OauthLogin'
 
 export default function Login () {
   const [login, setLogin] = useState({email:'', password:''})
@@ -30,17 +31,13 @@ export default function Login () {
           <Button 
             style={{marginTop:'1rem'}}
             variant="outlined"
-            onClick={()=>{
-              console.log('Google')
-          }}>
+            href="https://auth.weee.city/auth/providers/Google">
             Google
           </Button>
           <Button 
             style={{marginTop:'1rem', marginLeft:'0.5rem'}}
             variant="outlined"
-            onClick={()=>{
-              console.log('Facebook')
-          }}>
+            href="https://auth.weee.city/auth/providers/Facebook">
             Facebook
           </Button>
         </div>

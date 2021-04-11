@@ -1,8 +1,8 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import defaultLang from './defaultLang.json'
+import { defaultLang } from './i18n'
 import { useRecoilValue } from 'recoil'
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/recoil/atoms'
 import { useApolloClient, gql } from '@apollo/client'
 
 export function useLocation() {
@@ -23,7 +23,7 @@ export function useLocation() {
 }
 
 export const useI18n = ()=>{
-  const lang = useRecoilValue(Atoms.lang)
+  const lang = useRecoilValue(atoms.lang)
   const client = useApolloClient()
 
   const DICTIONARY = (l:String)=> gql`

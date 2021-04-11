@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Menu, MenuItem, ListItemSecondaryAction, Toolbar, IconButton, Button, Divider, InputAdornment, Avatar, Typography, Box, TextField, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 import { useDatabase, useUser, useDatabaseListData, useFirestore, useFirestoreDocData, useDatabaseObjectData } from 'reactfire'
 import { useParams, useHistory, Route } from 'react-router-dom'
 import { ArrowBack, Send, MoreVert, ThumbUpOutlined, ThumbUp, ThumbDownOutlined, ThumbDown, ModeCommentOutlined, RefreshRounded } from '@material-ui/icons'
 import Post from './InitiativePost'
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/atoms'
 import { useRecoilState, atom } from 'recoil'
-import {toJSON} from 'global/Misc'
+import {toJSON} from 'misc'
 
 const useStyles = makeStyles((theme)=>({
 
@@ -91,10 +91,10 @@ const AddReply = ({ r, n })=>{
   const user = useUser()
   const i18n = useI18n()
   const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
-  const [reply, setReply]= useRecoilState(Atoms.replyFieldAtom)
+  const [reply, setReply]= useRecoilState(atoms.replyFieldAtom)
   const commentsRef = useDatabase().ref(`chats/${initiativeID}/comments/${postID}`)
 
-  const [replyText, setReplyText] = useRecoilState(Atoms.replyAtom)
+  const [replyText, setReplyText] = useRecoilState(atoms.replyAtom)
   useEffect(()=>{
     if(replyText[r.id]==undefined) {setReplyText(s=>({...s, [r.id]:''}))}
   },[]) 
@@ -136,7 +136,7 @@ const CommentBody = ({c, refDir, initiative})=>{
   const { initiativeID, postID } = useParams()
   const user = useUser()
   const i18n = useI18n()
-  const [reply, setReply]= useRecoilState(Atoms.replyFieldAtom)
+  const [reply, setReply]= useRecoilState(atoms.replyFieldAtom)
   const [anchorEl, setAnchorEl] = useState(null);
   const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
 
@@ -229,7 +229,7 @@ const Comment = ({initiative, m, n })=>{
   const { initiativeID, postID } = useParams()
   const user = useUser()
   const i18n = useI18n()
-  const [reply, setReply]= useRecoilState(Atoms.replyFieldAtom)
+  const [reply, setReply]= useRecoilState(atoms.replyFieldAtom)
 
   useEffect(()=>{
     if(m.reply && reply){
@@ -270,7 +270,7 @@ const Comment = ({initiative, m, n })=>{
 export default ({initiative})=>{
   const { initiativeID, postID } = useParams()
   const classes = useStyles()
-  const [showBar, setShowBar] = useRecoilState(Atoms.showBarAtom)
+  const [showBar, setShowBar] = useRecoilState(atoms.showBarAtom)
   const history = useHistory()
   const messageRef = useDatabase().ref(`chats/${initiativeID}/messages/${postID}`)
   const messageData = useDatabaseObjectData(messageRef, {startWithValue:null})
@@ -279,7 +279,7 @@ export default ({initiative})=>{
   const i18n = useI18n()
   const [text, setText] = useState('')
   const user = useUser()
-  const [expanded, setExpanded] = useRecoilState(Atoms.expanded)
+  const [expanded, setExpanded] = useRecoilState(atoms.expanded)
   const commentsCount = useDatabase().ref(`chats/${initiativeID}/messages/${postID}/commentsCount`)
 
   useEffect(()=>{

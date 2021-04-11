@@ -47,12 +47,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "prebuild": "node i18n.js",
+    "prebuild": "node scripts/i18n.js",
     "build": "react-scripts build && gzipper c -e br --verbose ./build && gzipper c --brotli -e gz --verbose ./build",
     "build-dev": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "generate": "graphql-codegen --config codegen.js"
+    "generate": "graphql-codegen --config scripts/codegen.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -76,6 +76,7 @@
     "@graphql-codegen/typescript-operations": "^1.17.15",
     "@graphql-codegen/typescript-react-apollo": "^2.2.3",
     "@types/react-router-dom": "^5.1.7",
+    "dotenv": "^8.2.0",
     "node-fetch": "^2.6.1"
   }
 }

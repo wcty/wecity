@@ -1,13 +1,13 @@
 import React from 'react'
 import { useSetRecoilState } from 'recoil'
 import { Route, useHistory } from 'react-router-dom'
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/atoms'
 import CreateInitiative from 'components/Cards/CreateInitiative'
 import InitiativeFeed from './InitiativeFeed'
 import { Box } from '@material-ui/core'
 
 export default ({ mapRef, loaded, getMarker }) => {
-  const setIsCreating = useSetRecoilState(Atoms.creatingAtom)
+  const setIsCreating = useSetRecoilState(atoms.creatingAtom)
   const history = useHistory()
   
   return (<>

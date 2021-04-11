@@ -11,8 +11,7 @@ import WecityChat from 'assets/images/wecity_chat_512.png'
 import TAB from 'assets/images/logos/tab.png'
 import CreativeEurope from 'assets/images/logos/creativeeurope.png'
 import UCF from 'assets/images/logos/ucf.png'
-import { signInWithGoogle } from 'global/Misc'
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc'
 import LangSelect from './LangSelectShort'
 import SwipeableViews from 'react-swipeable-views';
 
@@ -141,7 +140,7 @@ export default ({ mapRef, loaded })=> {
                   if(activeStep===maxSteps-1) {
                     if( !user || user.isAnonymous ) {
                       console.log(user)
-                      signInWithGoogle(auth)
+                      //signInWithGoogle(auth)
                     }
                     history.push('/initiative/explore')
                   }

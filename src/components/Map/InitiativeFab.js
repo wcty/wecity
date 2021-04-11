@@ -3,10 +3,10 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Fab, Collapse } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import {  selectedAtom, initiativeBarAtom, creatingAtom, userAtom } from 'global/Atoms'
+import {  selectedAtom, initiativeBarAtom, creatingAtom, user } from 'misc/atoms'
 import { AddLocation } from '@material-ui/icons'
 import { useHistory } from 'react-router-dom'
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 
 const useStyles = makeStyles(theme => ({
   InitiativeFab: {
@@ -28,7 +28,7 @@ export default ({ active, getMarker })=>{
   const classes = useStyles()
   const setIsCreating = useSetRecoilState(creatingAtom)
   const [alert, setAlert] = useState(null)
-  const user = useRecoilValue(userAtom)
+  const user = useRecoilValue(user)
   const fabRef = useRef()
   const setSelected = useSetRecoilState(selectedAtom)
   const [initiativeBar, setInitiativeBar] = useRecoilState(initiativeBarAtom)

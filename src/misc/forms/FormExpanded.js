@@ -3,10 +3,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, InputAdornment, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, CircularProgress, Box } from '@material-ui/core';
 import { useStorage } from 'reactfire';
 import { v1 as uuidv1 } from 'uuid';
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/atoms'
 import { useRecoilState } from 'recoil'
 import { useParams } from 'react-router-dom'
-import { useI18n } from './Hooks';
+import { useI18n } from './hooks';
 
 function CircularProgressWithLabel(props) {
 
@@ -132,13 +132,13 @@ export default ({ isFilling, formGetter, nextButton, backButton, directory, vari
   const [project, setProject] = useState(null)
   const [uuid, setUuid] = useState(uuidv1())
   const imageRef = useStorage().ref().child(directory)
-  const [imageLoadedURL, setImageLoadedURL] = useRecoilState(Atoms.imageURL)
+  const [imageLoadedURL, setImageLoadedURL] = useRecoilState(atoms.imageURL)
 
   //const setImageLoadedURL = (val)=>{imageLoadedURL=val}
   const [thumbLoadedURL, setThumbLoadedURL] = useState(null)
 
   const [progressState, setProgress] = useState(null)
-  const [fileName, setFileName] = useRecoilState(Atoms.fileName)
+  const [fileName, setFileName] = useRecoilState(atoms.fileName)
   
   const [valid, setValid] = useState(false)
   const formDOM = useRef()

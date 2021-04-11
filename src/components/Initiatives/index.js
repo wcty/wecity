@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Divider, List, Typography, ListItem, ListItemText } from '@material-ui/core';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/atoms'
 import { useUser } from 'reactfire';
-import { useI18n, useWindowDimensions } from 'global/Hooks'
+import { useI18n, useWindowDimensions } from 'misc/hooks'
 import { useHistory } from 'react-router-dom'
 import { mapboxConfig } from 'config/index'
 import { useQuery, gql } from '@apollo/client';
-import { nearbyInitiatives } from 'global/Queries'
+import { nearbyInitiatives } from 'misc/Queries'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,9 +28,9 @@ const InitiativeRow = ({initiative})=>{
   const history = useHistory()
   const [addressString, setAddress] = useState()
   const coords = initiative.geometry.coordinates
-  const [slideIndex, setSlideIndex] = useRecoilState(Atoms.indexAtom)
-  const [feed,setFeed] = useRecoilState(Atoms.initiativeFeed)
-  const [offset, setOffset] = useRecoilState(Atoms.offsetAtom)
+  const [slideIndex, setSlideIndex] = useRecoilState(atoms.indexAtom)
+  const [feed,setFeed] = useRecoilState(atoms.initiativeFeed)
+  const [offset, setOffset] = useRecoilState(atoms.offsetAtom)
 
   useEffect(()=>{
     if(!addressString&&coords){
@@ -66,7 +66,7 @@ export default ({ mapRef })=> {
   const user = useUser()
   const mapDimensions = useWindowDimensions()
   const i18n = useI18n()
-  const view = useRecoilValue(Atoms.viewAtom)
+  const view = useRecoilValue(atoms.viewAtom)
   const vars = useRef({variables: {nearInitiativesInput:{ point: Object.values(view), user: user.uid, own:true }}})
   const { loading, error, data, refetch } = useQuery(nearbyInitiatives, vars.current);
   const initiatives = data?.nearInitiatives

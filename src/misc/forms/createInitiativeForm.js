@@ -1,6 +1,6 @@
 import addImage from 'assets/images/addImage.png'
 // import { categories } from './projectCategories'
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 
 export default (initiative)=>{
   const i18n = useI18n()

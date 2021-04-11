@@ -1,34 +1,15 @@
-import firebase from 'firebase'
-import { isNoSubstitutionTemplateLiteral } from 'typescript';
+import Cookies from 'universal-cookie';
 
-const provider = new firebase.auth.GoogleAuthProvider()
-export const signInWithGoogle = (auth) => {
-  auth.signInWithRedirect(provider)
-};
+export * from './i18n'
+export * from './auth'
+export * from './graphql'
+export * from './recoil'
+export * from './style'
+export * from './hooks'
 
-export const DeleteObject = async (object, objects, images, directory, close)=>{
+export const cookies = new Cookies();
 
-    const deleteImages = ()=>{
-      Object.values(object.imageURL?object.imageURL:object.properties.imageURL).forEach((url)=>{
-        const fileName = url.split('?')[0].split((directory==="markers"?"initiatives":directory) + '%2F').reverse()[0]
-        images.child(fileName).delete().then(function() {
-        }).catch(function(error) {
-          console.log('Errored at image deletion', error)
-        });
-      })
-      close()
-    }
-    if(objects&&object.id){
-      objects.doc(object.id).delete().then(function() {
-        deleteImages()
-      }).catch(function(error) {
-          //console.error("Error removing document: ", error);
-      });
-    }else{deleteImages()}
-    console.log('deleted')
-}
-
-export const toJSON = (date)=>{
+export const toJSON = (date:Date)=>{
   var timezoneOffsetInHours = -(date.getTimezoneOffset() / 60); //UTC minus local time
   var sign = timezoneOffsetInHours >= 0 ? '+' : '-';
   var leadingZero = (Math.abs(timezoneOffsetInHours) < 10) ? '0' : '';
@@ -44,7 +25,7 @@ export const toJSON = (date)=>{
   return iso + sign + leadingZero + Math.abs(timezoneOffsetInHours).toString() + ':00';
 }
 
-export function reverseArray(arr) {
+export function reverseArray(arr:any[]) {
   var newArray = [];
   for (var i = arr.length - 1; i >= 0; i--) {
     newArray.push(arr[i]);
@@ -52,7 +33,7 @@ export function reverseArray(arr) {
   return newArray;
 }
 
-export const addVisitPrevious = ({addVisit, user, index, markers, last, initUID})=>{
+export const addVisitPrevious = ({addVisit, user, index, markers, last, initUID}:any)=>{
   addVisit({
     "variables": {
       "visit": {
@@ -63,7 +44,7 @@ export const addVisitPrevious = ({addVisit, user, index, markers, last, initUID}
   })
 }
 
-export const deleteVisitPrevious = ({deleteVisit, user, index, markers, last})=>{
+export const deleteVisitPrevious = ({deleteVisit, user, index, markers, last}:any)=>{
   if (user && !user.isAnonymous && index!==0 && /*markers.features.length>0 &&*/ index!==last.features.length ) {
     const initUID = last.features.length>0?
       (index<last.features.length?
@@ -97,7 +78,7 @@ export const deleteVisitPrevious = ({deleteVisit, user, index, markers, last})=>
 export const explore = {properties:{uid:'explore'}}
 export const loadMore = {properties:{uid:'loadMore'}}
 
-export const getFeed = ({ next, last })=>{
+export const getFeed = ({ next, last }:any)=>{
 
   if(next.features.length>0 && last.features.length>0){
     return [ ...last.features, explore,...next.features]
@@ -110,12 +91,12 @@ export const getFeed = ({ next, last })=>{
   }
 }
 
-export const rearrangeCards = ({uid, setNext, setLast})=>{
-  setNext(next=>{
-    const id = next.features.map(f=>f.properties.uid).indexOf(uid)
+export const rearrangeCards = ({uid, setNext, setLast}:any)=>{
+  setNext((next:any)=>{
+    const id = next.features.map((f:any)=>f.properties.uid).indexOf(uid)
     const behind = [...next.features].slice(0, id+1).reverse()
     const other = [...next.features].slice(id+1, next.features.length)
-    setLast(last=>({type:"FeatureCollection", features:[...last.features, ...behind]}))
+    setLast((last:any)=>({type:"FeatureCollection", features:[...last.features, ...behind]}))
 
     // const [first, ...other] = next.features
     // setLast(last=>({type:"FeatureCollection", features:[...last.features, first]}))

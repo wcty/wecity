@@ -5,16 +5,16 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { useUser } from 'reactfire'
 import { useParams, useHistory } from 'react-router-dom'
 import { useQuery, useMutation, useLazyQuery } from '@apollo/client'
-import { getInitiative, addVisitMutation, lastInitiatives } from 'global/Queries'
-import * as Atoms from 'global/Atoms'
+import { getInitiative, addVisitMutation, lastInitiatives } from 'misc/Queries'
+import * as atoms from 'misc/atoms'
 import SwipeableViews from 'react-swipeable-views'
 import { virtualize } from 'react-swipeable-views-utils'
 import { querySize } from 'config'
 import Initiative from './Initiative/'
 import Explore from './Explore'
 import LoadMore from  './LoadMore'
-import { nearbyInitiatives, ownInitiatives } from 'global/Queries'
-import { reverseArray, getFeed, rearrangeCards, explore } from 'global/Misc'
+import { nearbyInitiatives, ownInitiatives } from 'misc/Queries'
+import { reverseArray, getFeed, rearrangeCards, explore } from 'misc'
 
 const EnhancedSwipeableViews = virtualize(SwipeableViews)
 
@@ -62,23 +62,23 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default ({ mapRef, loaded, getMarker }) => {
-  const [slideIndex, setSlideIndex] = useRecoilState(Atoms.indexAtom)
+  const [slideIndex, setSlideIndex] = useRecoilState(atoms.indexAtom)
   const classes = useStyles()
   const { initiativeID } = useParams()
-  const [next, setNext] = useRecoilState(Atoms.nextAtom)
-  const [last, setLast] = useRecoilState(Atoms.lastAtom)
+  const [next, setNext] = useRecoilState(atoms.nextAtom)
+  const [last, setLast] = useRecoilState(atoms.lastAtom)
   const history = useHistory()
-  const [loadMoreLast, setLoadMoreLast] = useRecoilState(Atoms.loadMoreLast)
-  const [loadMoreNext, setLoadMoreNext] = useRecoilState(Atoms.loadMoreNext)
+  const [loadMoreLast, setLoadMoreLast] = useRecoilState(atoms.loadMoreLast)
+  const [loadMoreNext, setLoadMoreNext] = useRecoilState(atoms.loadMoreNext)
   const user = useUser()
   const [addVisit] = useMutation(addVisitMutation)
-  const [feed, setFeed] = useRecoilState(Atoms.initiativeFeed)
-  const [location] = useRecoilState(Atoms.locationAtom)
+  const [feed, setFeed] = useRecoilState(atoms.initiativeFeed)
+  const [location] = useRecoilState(atoms.locationAtom)
   const locationRef = useRef(location)
-  const [own, setOwn] = useRecoilState(Atoms.ownAtom)
-  const view = useRecoilValue(Atoms.viewAtom)
-  const [offset, setOffset] = useRecoilState(Atoms.offsetAtom)
-  const [lockKeys, setLock] = useRecoilState(Atoms.lockKeys)
+  const [own, setOwn] = useRecoilState(atoms.ownAtom)
+  const view = useRecoilValue(atoms.viewAtom)
+  const [offset, setOffset] = useRecoilState(atoms.offsetAtom)
+  const [lockKeys, setLock] = useRecoilState(atoms.lockKeys)
   
   useEffect(()=>{
     function Keys (event) {

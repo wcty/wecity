@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {  Typography, Card, CardActionArea, CardMedia, CardContent, CardActions,  Box, Button, Radio, RadioGroup, FormControlLabel, FormControl, TextField, InputAdornment, Checkbox } from '@material-ui/core'
 import { useRecoilState, useSetRecoilState } from 'recoil'
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/atoms'
 import { useStorage, useFirestore, useUser, useDatabase } from 'reactfire'
-import { DeleteObject, toJSON } from 'global/Misc'
+import { DeleteObject, toJSON } from 'misc'
 import { useParams, Redirect, useHistory } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
-import { addInitiativeMember } from 'global/Queries'
-import { useI18n } from 'global/Hooks'
+import { addInitiativeMember } from 'misc/Queries'
+import { useI18n } from 'misc/hooks'
 
 const useStyles = makeStyles((theme) => ({
   text:{
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 function MediaCard({ directory }) {
   const objects = useFirestore().collection(directory)
   const images = useStorage().ref().child(directory)
-  const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
+  const [selectType, setSelectType] = useRecoilState(atoms.selectType)
   const i18n = useI18n()
 
   return (
@@ -82,16 +82,16 @@ export default ({refetch})=>{
   const [periodic, setPeriodic] = useState(false);
   const [sum, setSum] = useState(200);
   const [job, setJob] = useState()
-  // const [joining, setJoining] = useRecoilState(Atoms.joiningAtom)
-  const [selectType, setSelectType] = useRecoilState(Atoms.selectType)
-  const setJoining = useSetRecoilState(Atoms.joiningAtom)
+  // const [joining, setJoining] = useRecoilState(atoms.joiningAtom)
+  const [selectType, setSelectType] = useRecoilState(atoms.selectType)
+  const setJoining = useSetRecoilState(atoms.joiningAtom)
   const { initiativeID } = useParams()
   const initiativeRef = useFirestore().collection("initiatives").doc( initiativeID )
   const user = useUser()
   const classes = useStyles()
   const history = useHistory()
   const [clicked, setClicked] = useState(false)
-  const [feed, setFeed] = useRecoilState(Atoms.initiativeFeed)
+  const [feed, setFeed] = useRecoilState(atoms.initiativeFeed)
   const i18n = useI18n()
 
   const [addMember] = useMutation(addInitiativeMember, {

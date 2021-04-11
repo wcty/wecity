@@ -2,7 +2,7 @@ require('dotenv').config()
 
 module.exports = {
   schema: [{
-      'https://hasura.weee.city/v1/graphql': {
+      'https://hasura-aws.weee.city/v1/graphql': {
           headers: {
               "X-Hasura-Admin-Secret": process.env.HASURA,
               "content-type": "application/json"

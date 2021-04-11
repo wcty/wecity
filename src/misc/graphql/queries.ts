@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 
-const shortInitiativeShape = (d)=>`
+const shortInitiativeShape = (d:Boolean)=>`
   geometry {
     type
     coordinates
@@ -20,7 +20,7 @@ const shortInitiativeShape = (d)=>`
   }
 `
 
-const initiativeShape = (d)=>`
+const initiativeShape = (d:Boolean)=>`
   _id
   geometry {
     type

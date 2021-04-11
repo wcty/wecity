@@ -1,5 +1,6 @@
 import { atom } from 'recoil';
 import Cookies from 'universal-cookie';
+import { JWTResponse } from '../auth'
 const cookies = new Cookies();
 
 export const locationAtom = atom({
@@ -81,7 +82,7 @@ export const creatingAtom = atom({
 });
 
 export const userAtom = atom({
-  key: 'user',
+  key: 'userAtom',
   default: null,
 });
 
@@ -181,3 +182,14 @@ export const minDistance = atom({
   key: 'minDistance',
   default: 0,
 })
+
+export const user = atom({
+  key: 'user',
+  default: null,
+});
+
+export const auth = atom({
+  key: 'auth',
+  default: null as JWTResponse|null,
+});
+

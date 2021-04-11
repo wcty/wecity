@@ -3,13 +3,13 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Paper, Typography, IconButton, Box } from '@material-ui/core'
 import { useRecoilState } from 'recoil'
 import { People, LocationOn, ExpandLess } from '@material-ui/icons'
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 import { useParams } from 'react-router-dom'
 import { Helmet } from "react-helmet"
 import InitiativeExpanded from './InitiativeExpanded/'
 import addImage from 'assets/images/addImage.png'
 import distance from '@turf/distance'
-import * as Atoms from 'global/Atoms'
+import * as atoms from 'misc/atoms'
 import ArrowNavigation from  '../ArrowNavigation'
 
 const useStyles = makeStyles((theme) => ({
@@ -45,10 +45,10 @@ export default ({ mapRef, initiative })=>{
   //const initiative  = useState(initiativeRef)
   const classes = useStyles();
   const { initiativeID, postID } = useParams()
-  const [location] = useRecoilState(Atoms.locationAtom)
+  const [location] = useRecoilState(atoms.locationAtom)
   const [expanded, setExpanded] = useState()
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const [lockKeys, setLock] = useRecoilState(Atoms.lockKeys)
+  const [lockKeys, setLock] = useRecoilState(atoms.lockKeys)
   const i18n = useI18n()
 
   useEffect(()=>{

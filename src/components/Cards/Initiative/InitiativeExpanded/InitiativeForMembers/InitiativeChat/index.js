@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { IconButton, InputAdornment, Box, TextField } from '@material-ui/core';
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 import { useDatabase, useUser, useDatabaseListData, useFirestore, useFirestoreDocData } from 'reactfire'
 import { useParams } from 'react-router-dom'
 import { Send } from '@material-ui/icons'
 import Post from './InitiativePost'
-import { toJSON, reverseArray } from 'global/Misc'
+import { toJSON, reverseArray } from 'misc'
 
 
 const useStyles = makeStyles((theme)=>({

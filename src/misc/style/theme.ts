@@ -15,13 +15,17 @@ export const theme = createMuiTheme({
       dark: '#ba000d',
       contrastText: '#000',
     },
-    accent: {
-      ...amber,
-    },
+    // accent: {
+    //   ...amber,
+    // },
   },
-  overrides: {
+  components:{
     MuiAppBar: {
-      height: 100,
+      styleOverrides:{
+        root:{
+          height: 100
+        }
+      }
     },
-  },
+  }
 })

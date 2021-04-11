@@ -2,7 +2,7 @@ import React, {  useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Fab } from '@material-ui/core'
 import { useRecoilState } from 'recoil'
-import { locationAtom } from 'global/Atoms'
+import { locationAtom } from 'misc/atoms'
 import { MyLocation } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({

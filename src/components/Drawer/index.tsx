@@ -5,7 +5,7 @@ import { SwipeableDrawer, List, Divider, Box, ListItem, ListItemIcon, ListItemTe
 import { MapOutlined, LibraryBooksOutlined, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined, InfoOutlined } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 import LangSelect from './LangSelect'
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 import Header from './Header'
 
 const useStyles = makeStyles({
@@ -59,7 +59,7 @@ export default ({ state, setState }:any)=>{
 
   const list = (anchor:any) => {
     return <>
-      <Header />
+      <Header {...{state, setState}} />
       <div
         className={clsx(classes.list, {
           [classes.fullList]: anchor === 'top' || anchor === 'bottom',

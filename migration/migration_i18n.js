@@ -7,7 +7,7 @@ const client= new ApolloClient({
     cache: new InMemoryCache({
         addTypename: false
         }),
-    uri: 'https://hasura.weee.city/v1/graphql',
+    uri: 'https://hasura-aws.weee.city/v1/graphql',
     headers: {
         "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN
         },

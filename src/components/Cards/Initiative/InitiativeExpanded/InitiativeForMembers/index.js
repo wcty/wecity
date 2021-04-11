@@ -2,7 +2,7 @@ import React from 'react';
 import SwipeableViews from 'react-swipeable-views';
 import { makeStyles, withStyles, useTheme } from '@material-ui/core/styles';
 import { Divider, Tabs, Tab, Typography, Box} from '@material-ui/core';
-import { useI18n } from 'global/Hooks'
+import { useI18n } from 'misc/hooks'
 import { Route } from 'react-router-dom'
 import { useUser } from 'reactfire'
 import InitiativeChat from './InitiativeChat/'
