@@ -3,13 +3,10 @@ import {ReactComponent as ActiveMarker} from 'assets/images/markerActive.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { Paper, Typography, Box, Button, Card, CardActions, CardContent, CardActionArea, useTheme } from '@material-ui/core'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { useUser } from 'reactfire'
-import { useI18n } from 'misc/hooks'
 import { useHistory } from 'react-router-dom'
 import { Helmet } from "react-helmet"
 import WecityGroups from 'assets/images/wecity_groups_512.png'
-import * as atoms from 'misc/atoms'
-import { mapboxConfig } from 'config/index'
+import { mapboxConfig, atoms, useI18n } from 'misc'
 import ArrowNavigation from  './ArrowNavigation'
 
 const useStyles = makeStyles((theme) => ({

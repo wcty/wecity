@@ -1,32 +1,52 @@
 import React, { useState } from 'react'
 import { FormControl, TextField, Button } from '@material-ui/core'
+import { register, login } from 'misc'
+import { useHistory } from 'react-router'
 export { default as OauthLogin } from './OauthLogin'
-
 export default function Login () {
-  const [login, setLogin] = useState({email:'', password:''})
-
+  const [credentials, setCredentials] = useState({email:'', password:''})
+  const history = useHistory()
   return <div style={{ left:'calc(50vw - 150px)', top:'calc(50vh - 150px)', position:'absolute', backgroundColor:'#ccc', zIndex:5}}>
     <FormControl style={{ zIndex: 5, padding:'1rem'}}>
       <TextField 
         id="email" 
         label="Email"
-        value={login.email}
-        onChange={(e)=>setLogin({...login, email:e.target.value})}
+        value={credentials.email}
+        onChange={(e)=>setCredentials({...credentials, email:e.target.value})}
         variant="standard" />
       <TextField 
         id="password" 
         label="Password"
-        value={login.password}
-        onChange={(e)=>setLogin({...login, password:e.target.value})}
+        value={credentials.password}
+        onChange={(e)=>setCredentials({...credentials, password:e.target.value})}
         variant="standard" />
-        <Button 
-          style={{marginTop:'1rem'}}
-          variant="outlined"
-          onClick={()=>{
-          console.log('register')
-        }}>
-          Register
-        </Button>
+        <div style={{display:'flex'}}>
+          <Button 
+            style={{marginTop:'1rem'}}
+            variant="outlined"
+            onClick={()=>{
+              if( credentials.email && credentials.password ) {
+                login(credentials).then(success=>{
+                  console.log(success)
+                  if(success){
+                    history.push('/')
+                  }
+                })
+              }
+          }}>
+            Login
+          </Button>
+          <Button 
+            style={{marginTop:'1rem', marginLeft:'0.5rem'}}
+            variant="outlined"
+            onClick={()=>{
+              if( credentials.email && credentials.password ) {
+                register(credentials)
+              }
+          }}>
+            Register
+          </Button>
+        </div>
         <div style={{display:'flex',}}>
           <Button 
             style={{marginTop:'1rem'}}

@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState, useRef } from 'react'
 // import { makeStyles } from '@material-ui/core/styles'
 // import { CircularProgress } from '@material-ui/core'
 import MapGL, { AttributionControl } from '@urbica/react-map-gl'
-import { mapboxConfig } from 'config'
+import { mapboxConfig } from 'misc'
 // import { AuthCheck, SuspenseWithPerf } from 'reactfire';
 // import { useRecoilState, useSetRecoilState } from 'recoil'
 // import { locationAtom,viewAtom, creatingAtom } from 'misc/atoms'

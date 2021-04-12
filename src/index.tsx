@@ -12,6 +12,7 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error'
 import { jwtToken, logout } from 'misc'
 import { RecoilRoot, SetterOrUpdater,  } from 'recoil';
+import { createBrowserHistory } from 'history'
 
 const logoutLink = onError(({ networkError }) => {
  if ( 
@@ -46,11 +47,13 @@ export const client = new ApolloClient({
   }),
 });
 
+export const history = createBrowserHistory();
+
 const rootElement = document.getElementById("root");
 ReactDOM.render(
   <React.StrictMode>
     {/* <CookiesProvider> */}
-      <Router>
+      <Router {...{history}}>
         <ThemeProvider theme={theme}>
           <RecoilRoot>
             <RecoilExternalStatePortal />

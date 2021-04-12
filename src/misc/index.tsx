@@ -6,6 +6,8 @@ export * from './graphql'
 export * from './recoil'
 export * from './style'
 export * from './hooks'
+export * from './config'
+export * from './nhost'
 
 export const cookies = new Cookies();
 

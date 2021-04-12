@@ -8,6 +8,7 @@ import MenuFab from './Fabs/MenuFab'
 import { useRecoilState } from 'recoil'
 import { cookies, atoms, refreshJWT } from 'misc'
 import { useLazyQuery, gql } from '@apollo/client'
+import Uploader from './Uploader'
 
 const useStyles = makeStyles(theme => ({
 
@@ -77,6 +78,7 @@ export default () => {
 
   return (
     <Box className={classes.root}>
+      <Uploader/>
       <Route path="/login">
         <Login/>
       </Route>

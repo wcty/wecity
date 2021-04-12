@@ -2,13 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Divider, List, Typography, ListItem, ListItemText } from '@material-ui/core';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import * as atoms from 'misc/atoms'
-import { useUser } from 'reactfire';
-import { useI18n, useWindowDimensions } from 'misc/hooks'
 import { useHistory } from 'react-router-dom'
-import { mapboxConfig } from 'config/index'
-import { useQuery, gql } from '@apollo/client';
-import { nearbyInitiatives } from 'misc/Queries'
+import { mapboxConfig, atoms, nearbyInitiatives, useI18n, useWindowDimensions } from 'misc'
+import { useQuery, gql,  } from '@apollo/client';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,7 +59,7 @@ const InitiativeRow = ({initiative})=>{
 
 export default ({ mapRef })=> {
   const classes = useStyles();
-  const user = useUser()
+  const user = null;
   const mapDimensions = useWindowDimensions()
   const i18n = useI18n()
   const view = useRecoilValue(atoms.viewAtom)
