@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { FormControl, InputLabel, Select, MenuItem, Box } from '@material-ui/core'
 import { useRecoilState } from 'recoil'
 import {ReactComponent as UKRFlag} from 'assets/images/flags/ukr.svg'

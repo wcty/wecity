@@ -1,0 +1,11 @@
+
+subscription s_getFiles($limit: Int!) {
+  files(limit: $limit, order_by: { created_at: desc }) {
+    id
+    created_at
+    file_path
+    downloadable_url
+  }
+}
+
+

@@ -1,17 +1,16 @@
 import 'resize-observer-polyfill/dist/ResizeObserver.global';
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { render, hydrate } from 'react-dom'
 import App from './components/App'
 import './styles/index.css'
 import * as serviceWorker from './serviceWorker';
-import { theme, atoms, RecoilExternalStatePortal } from 'misc'
+import { theme, RecoilExternalStatePortal, auth } from 'misc'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { BrowserRouter as Router } from "react-router-dom";
 import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error'
-import { jwtToken, logout } from 'misc'
-import { RecoilRoot, SetterOrUpdater,  } from 'recoil';
+import { RecoilRoot, } from 'recoil';
 import { createBrowserHistory } from 'history'
 
 const logoutLink = onError(({ networkError }) => {
@@ -19,7 +18,7 @@ const logoutLink = onError(({ networkError }) => {
     networkError &&
     'statusCode' in networkError &&
     networkError.statusCode === 401
-  ) { logout() };
+  ) { auth.logout() };
 })
 
 const httpLink = createHttpLink({
@@ -27,13 +26,12 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  
-  if (jwtToken.current) {
+  const jwtToken = auth.getJWTToken();
+  if (jwtToken) {
       return {
           headers: {
               ...headers,
-              Authorization: `Bearer ${jwtToken.current}`
+              Authorization: `Bearer ${jwtToken}`
           }
       }
   }
@@ -49,22 +47,25 @@ export const client = new ApolloClient({
 
 export const history = createBrowserHistory();
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(
+const rootElement = document.getElementById("root")!!
+
+const AppRoot = ()=> 
   <React.StrictMode>
-    {/* <CookiesProvider> */}
-      <Router {...{history}}>
-        <ThemeProvider theme={theme}>
-          <RecoilRoot>
-            <RecoilExternalStatePortal />
-            <ApolloProvider client={client}>
-              <App />
-            </ApolloProvider>
-          </RecoilRoot>
-        </ThemeProvider>
-      </Router>
-    {/* </CookiesProvider> */}
-  </React.StrictMode>,
-  rootElement
-);
+    <Router {...{history}}>
+      <ThemeProvider theme={theme}>
+        <RecoilRoot>
+          <RecoilExternalStatePortal />
+          <ApolloProvider client={client}>
+            <App />
+          </ApolloProvider>
+        </RecoilRoot>
+      </ThemeProvider>
+    </Router>
+  </React.StrictMode>
+
+if (rootElement.hasChildNodes()) {
+  hydrate(<AppRoot />, rootElement);
+} else {
+  render(<AppRoot />, rootElement);
+}
 serviceWorker.unregister()

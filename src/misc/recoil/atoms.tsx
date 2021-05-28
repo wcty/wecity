@@ -1,19 +1,17 @@
 import { atom } from 'recoil';
-import Cookies from 'universal-cookie';
-import { JWTResponse } from '../auth'
-const cookies = new Cookies();
+import { Viewport, ViewportChangeMethodProps } from '@urbica/react-map-gl'
+import { Users, Maybe, InitiativesNearbyQuery, InitiativesLastVisitedQuery } from 'generated'
+import { defineLang } from '../i18n'
+import { explore, FeedEntry, loadMore } from '../'
 
-export const locationAtom = atom({
-  key: 'location', 
-  default: null, 
-});
-
-export const viewAtom = atom({
-  key: 'view', 
+export const viewport = atom({
+  key: 'viewport', 
   default: {
-    latitude: 50.4501,
-    longitude: 30.5234,
-  }, 
+    latitude: 50.4501, 
+    longitude: 30.5234, 
+    zoom:15,
+    viewportChangeMethod: 'flyTo'
+  } as Viewport & { viewportChangeMethod: ViewportChangeMethodProps }, 
 });
 
 export const offsetAtom = atom({
@@ -43,17 +41,22 @@ export const selectedAtom = atom({
 
 export const nextAtom = atom({
   key: 'next',
-  default: {type:"FeatureCollection", features:[]},
+  default: [] as InitiativesNearbyQuery['initiatives_nearby'],
 });
 
 export const lastAtom = atom({
   key: 'last',
-  default: {type:"FeatureCollection", features:[]},
+  default: [] as InitiativesLastVisitedQuery['initiative_visits'],
 });
 
 export const ownAtom = atom({
   key: 'own',
-  default: {type:"FeatureCollection", features:[]},
+  default: [] as InitiativesNearbyQuery['initiatives_nearby'],
+});
+
+export const initiativeFeed = atom({
+  key: 'initiativeFeed',
+  default: [explore] as FeedEntry[],
 });
 
 export const indexAtom = atom({
@@ -71,33 +74,8 @@ export const loadMoreNext = atom({
   default: false,
 });
 
-export const initiativeFeed = atom({
-  key: 'initiativeFeed',
-  default: [{properties:{uid:'explore'}}],
-});
-
-export const creatingAtom = atom({
-  key: 'creating',
-  default: false,
-});
-
-export const userAtom = atom({
-  key: 'userAtom',
-  default: null,
-});
-
 export const initiativeBarAtom = atom({
   key: 'initiativeBar',
-  default: false,
-})
-
-export const projectBarAtom = atom({
-  key: 'projectBar',
-  default: false,
-})
-
-export const resourceBarAtom = atom({
-  key: 'resourceBar',
   default: false,
 })
 
@@ -118,7 +96,7 @@ export const initiative = atom({
 
 export const selectType = atom({
   key: 'selectType',
-  default: null,
+  default: undefined as 'project'|'donate'|'volunteer'|undefined,
 })
 
 export const selectedProject = atom({
@@ -126,36 +104,9 @@ export const selectedProject = atom({
   default: null,
 })
 
-type Language = 'en' | 'uk' //List of implemented languages (using html iso ref)
-
-let defineLang = function():Language{
-  const implementedLang =  ['en', 'uk'] //List of implemented languages (using html iso ref)
-
-  let navLang:any = window.navigator.language.slice(0,2)  //=browser language
-  let lang:Language //=return language
-
-  if (implementedLang.indexOf(cookies.get('lang')) >-1 ) { //if there is a set language in the cookies: use it as language
-    lang = cookies.get('lang')
-  } else{
-    lang= navLang in implementedLang ? navLang : 'en' //set language to english if browser language is not implemented
-    cookies.set('lang', lang, { path: '/' }); //set language cookie
-  }
-  return lang
-}
-
 export const lang = atom({
   key: 'language',
   default: defineLang(), 
-})
-
-export const imageURL = atom({
-  key: 'imageURL',
-  default: null,
-})
-
-export const fileName = atom({
-  key: 'fileName',
-  default: null,
 })
 
 export const showBarAtom = atom({
@@ -173,23 +124,18 @@ export const replyFieldAtom = atom({
   default: undefined,
 })
 
-export const swipePosition = atom({
-  key: 'swipePosition',
-  default: 0,
-})
-
-export const minDistance = atom({
-  key: 'minDistance',
-  default: 0,
-})
-
 export const user = atom({
   key: 'user',
-  default: null,
+  default: undefined as Maybe<Pick<Users, "id" | "avatar_url" | "created_at" | "display_name">> | undefined,
 });
 
-export const auth = atom({
-  key: 'auth',
-  default: null as JWTResponse|null,
+export const satellite = atom({
+  key: 'satellite',
+  default: false as boolean
+});
+
+export const cursor = atom({
+  key: 'cursor',
+  default: "" as string
 });
 

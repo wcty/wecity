@@ -1,0 +1,96 @@
+# Initiative mutations:
+
+mutation AddInitiative(
+  $geom: geometry!, 
+  $name: String!
+  $description: String!, 
+  $user_id: uuid!, 
+  $problem: String = "", 
+  $goal: String = "", 
+  $context: String = "", 
+  $image: String = ""
+) {
+  insert_initiatives_one(
+    object: {
+      description: $description, 
+      geom: $geom, 
+      image: $image, 
+      initiative_members: {
+        data: {
+          initiator: true, 
+          user_id: $user_id
+        }
+      }, 
+      initiative_threads: {
+        data: {
+          context: $context, 
+          goal: $goal, problem: $problem}}, initiative_visits: {data: {user_id: $user_id}}, name: $name}) {
+    created_at
+    description
+    geom
+    id
+    image
+    name
+  }
+}
+
+mutation DeleteInitiative($initiative_id: uuid!){
+  delete_initiatives_by_pk(id: $initiative_id) {
+    id
+  }
+}
+
+# Initiative Post mutations:
+
+mutation AddInitiativePost($initiative_id: uuid!, $user_id: uuid!, $post: String){
+  insert_initiative_thread_posts_one(object: {user_id:$user_id, post: $post, initiative_threads:{initiative_id:$initiative_id} }) {
+    id
+  }
+}
+
+# Initiative members mutations:
+
+mutation DeleteInitiativeMember($initiative_id: uuid!, $user_id: uuid!) {
+  delete_initiative_members(where: {initiative_id:{_eq:$initiative_id}, user_id:{_eq:$user_id} }) {
+    affected_rows
+    returning {
+      initiative_id
+      user_id
+    }
+  }
+}
+
+mutation AddInitiativeMember($initiative_id: uuid!, $user_id: uuid!, $contractor: Boolean, $donator: Boolean, $volunteer: Boolean ) {
+  insert_initiative_members_one(object: {initiative_id:$initiative_id, user_id:$user_id, contractor:$contractor, donator:$donator, volunteer:$volunteer }) {
+    user_id
+    initiative_id
+  }
+}
+
+
+
+# Initiative visits mutations:
+
+mutation AddInitiativeVisit($initiative_id: uuid!, $user_id: uuid!) {
+  insert_initiative_visits_one(object: {initiative_id: $initiative_id, user_id: $user_id}) {
+    initiative {
+      id
+    }
+  }
+}
+
+
+
+# Files mutations:
+
+mutation insertFile($file: files_insert_input!) {
+  insert_files_one(object: $file) {
+    id
+  }
+}
+
+mutation deleteFiles($where: files_bool_exp!) {
+  delete_files(where: $where) {
+    affected_rows
+  }
+}

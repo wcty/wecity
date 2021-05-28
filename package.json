@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/client": "^3.3.14",
+    "@apollo/client": "^3.3.17",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.3.0",
+    "@loadable/component": "^5.14.1",
     "@material-ui/core": "^5.0.0-alpha.29",
     "@material-ui/icons": "^5.0.0-alpha.28",
     "@material-ui/lab": "^5.0.0-alpha.29",
@@ -15,9 +16,11 @@
     "@turf/distance": "^6.3.0",
     "@turf/transform-translate": "^5.1.5",
     "@types/jest": "^26.0.22",
+    "@types/mapbox-gl": "^2.1.2",
     "@types/node": "^14.14.37",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
+    "@types/react-swipeable-views": "^0.13.0",
     "@urbica/react-map-gl": "^1.14.2",
     "dom-helpers": "^5.2.0",
     "graphql": "^15.5.0",
@@ -47,13 +50,16 @@
     "warning": "^4.0.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "prebuild": "node scripts/i18n.js",
-    "build": "react-scripts build && gzipper c -e br --verbose ./build && gzipper c --brotli -e gz --verbose ./build",
-    "build-dev": "react-scripts build",
+    "start": "concurrently \"react-scripts start\" \"npm run generate-watch\"",
+    "prebuild": "npm run i18n && npm run generate",
+    "build-zip": "react-scripts build && gzipper c -e br --verbose ./build && gzipper c --brotli -e gz --verbose ./build",
+    "build": "react-scripts build",
+    "i18n": "node scripts/i18n.js",
+    "generate": "dotenv -- graphql-codegen --config scripts\\codegen.yml",
+    "generate-watch": "dotenv -- graphql-codegen --config scripts\\codegen.yml --watch",
+    "postbuild": "react-snap",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "generate": "graphql-codegen --config scripts/codegen.js"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -71,13 +77,26 @@
     ]
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^1.21.3",
-    "@graphql-codegen/introspection": "^1.18.1",
-    "@graphql-codegen/typescript": "^1.21.1",
-    "@graphql-codegen/typescript-operations": "^1.17.15",
-    "@graphql-codegen/typescript-react-apollo": "^2.2.3",
+    "@apollo/rover": "^0.1.0",
+    "@graphql-codegen/cli": "1.21.4",
+    "@graphql-codegen/fragment-matcher": "2.0.1",
+    "@graphql-codegen/introspection": "1.18.2",
+    "@graphql-codegen/typescript": "1.22.0",
+    "@graphql-codegen/typescript-apollo-client-helpers": "^1.1.5",
+    "@graphql-codegen/typescript-document-nodes": "^1.17.11",
+    "@graphql-codegen/typescript-graphql-files-modules": "^1.18.1",
+    "@graphql-codegen/typescript-operations": "1.17.16",
+    "@graphql-codegen/typescript-react-apollo": "2.2.4",
+    "@graphql-codegen/urql-introspection": "^1.3.0",
+    "@types/react-helmet": "^6.1.1",
     "@types/react-router-dom": "^5.1.7",
+    "@types/react-swipeable-views-utils": "^0.13.2",
+    "apollo": "^2.33.2",
+    "concurrently": "^6.1.0",
     "dotenv": "^8.2.0",
-    "node-fetch": "^2.6.1"
+    "dotenv-cli": "^4.0.0",
+    "graphqurl": "^0.3.3",
+    "node-fetch": "^2.6.1",
+    "react-snap": "^1.23.0"
   }
 }

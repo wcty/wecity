@@ -1,47 +1,40 @@
-import React, { useState, useRef } from 'react'
-import { FormControl, TextField, Button } from '@material-ui/core'
-import { register, login, storage, INSERT_FILE, BACKEND_ENDPOINT } from 'misc'
-import { useMutation } from '@apollo/client'
+import { useState, useRef } from 'react'
+import { Button } from '@material-ui/core'
+import { storage, atoms } from 'misc'
 import { v4 as uuidv4 } from 'uuid'
+import { useRecoilValue } from 'recoil'
+import { useInsertFileMutation } from 'generated'
 
 export interface IFilesProps {}
 
 export default function Files(props: IFilesProps) {
-  const fileInput = useRef<HTMLInputElement>(null);
-  const [fileData, setFileData] = useState<File | null>();
-  const [uploadState, setUploadState] = useState("");
-  const [uploadCompleted, setUploadCompleted] = useState(0);
 
-  console.log("inside files component");
-
-  const [
-    insertFile,
-    // { loading: mutationLoading, error: mutationError },
-  ] = useMutation(INSERT_FILE);
+  const fileInput = useRef<HTMLInputElement>(null)
+  const user = useRecoilValue(atoms.user)
+  const [ initiativeID, setInitiativeID ] = useState<string>()
+  const [ fileData, setFileData ] = useState<File | null>()
+  const [ uploadState, setUploadState ] = useState("")
+  const [ uploadCompleted, setUploadCompleted ] = useState(0)
+  const [ insertFile ] = useInsertFileMutation()
 
   const handleSubmit = async () => {
-    if (!fileData || !fileInput.current) {
-      // console.log("No file selected");
-      return;
-    }
-
+    if ( !fileData || !fileInput.current || !initiativeID ) { return; }
     const uuid = uuidv4();
     const extension = fileData.name.split(".").pop();
-    const file_path = `/public/${uuid}.${extension}`;
-
+    const file_path = `/public/initiatives/${initiativeID}/${uuid}.${extension}`;
     await storage.put(file_path, fileData, null, (d: any) => {
       setUploadCompleted((d.loaded / d.total) * 100);
     });
-
     setUploadState("");
     fileInput.current.value = "";
-
-    const downloadable_url = `${BACKEND_ENDPOINT}/storage/o${file_path}`;
+    const downloadable_url = `https://api.weee.city/storage/o${file_path}`;
     await insertFile({
       variables: {
         file: {
           file_path,
           downloadable_url,
+          user_id: user?.id,
+          initiative_id: initiativeID
         },
       },
     });
@@ -76,18 +69,6 @@ export default function Files(props: IFilesProps) {
               </Button>
             </div>
           </form>
-        </div>
-        <div className="py-6">
-          <Button
-            disabled={uploadState === "UPLOADING"}
-            onClick={async () => {
-              const metadata = await storage.getMetadata("/public/");
-              console.log({ metadata });
-              alert("check logs for metadta ");
-            }}
-          >
-            Get /public/ metadata
-          </Button>
         </div>
 
         {uploadState === "UPLOADING" && (

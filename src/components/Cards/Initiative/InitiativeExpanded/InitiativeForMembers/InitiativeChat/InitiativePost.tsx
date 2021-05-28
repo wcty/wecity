@@ -1,0 +1,141 @@
+import { useState, useEffect, ReactNode } from 'react';
+import { IconButton, ListItemSecondaryAction, Menu, MenuItem, Button, Divider, Avatar, Typography, Box, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
+import { useI18n, atoms } from 'misc'
+import { useHistory } from 'react-router-dom'
+import { MoreVert, ThumbUpOutlined, ThumbUp, ThumbDownOutlined, ThumbDown, ModeCommentOutlined } from '@material-ui/icons'
+import { useRecoilValue } from 'recoil';
+import { InitiativeFieldsFragment } from 'generated';
+
+const DateComponent = (props:{children:ReactNode})=>{
+  return <Typography style={{textAlign:"center", margin: "0.5rem", marginTop:"1rem"}} variant="body2">{props.children}</Typography>
+}
+
+const Type = (props:{children:ReactNode})=>{
+  return <Typography style={{textAlign:"center", margin: "0.5rem", marginBottom: "1rem"}} variant="body2">{props.children}</Typography>
+}
+
+export default ({initiative, m, n}:{initiative:InitiativeFieldsFragment, m:{}, n:number})=>{
+
+  n = n || 0
+  const initiativeID = initiative.properties.uid
+  const user = useRecoilValue(atoms.user)
+  const i18n = useI18n()
+  const history = useHistory()
+  const { data: messages } = useInitiativePostsQuery({variables:{initiative_id:initiativeID}})
+
+  useEffect(()=>{console.log(initiative)},[initiative])
+  useEffect(()=>{
+    if(Object.keys(m).length===0) history.replace(`/initiative/${initiativeID}`)
+  },[m])
+
+  const [anchorEl, setAnchorEl] = useState();
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = (event) => {
+    event.preventDefault();
+    if(event.target.innerText=='Delete'){
+      messages.child(m.id).remove()
+      commentsCount.child(m.id).remove()
+    }
+    setAnchorEl(null);
+  };
+  
+  return Object.keys(m).length!=0 ? <Box key={n}>
+    {(m.type==='volunteer') && <>
+      <DateComponent>{m.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")}</DateComponent>
+      <Type>{i18n('chatJoinedAsVolunteer', m.user.name)}</Type>
+    </>}
+    {(m.type==='donate') && <>
+      <DateComponent>{m.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")}</DateComponent>
+      <Type>{i18n('chatJoinedAsSponsor', m.user.name)}</Type>
+    </>}
+
+    <Box style={{
+      backgroundColor:"white", 
+      borderColor:"rgba(0,0,0,0.1)", 
+      borderWidth:"1px",
+      borderStyle: "solid",
+      padding:"1rem",
+      marginBottom:'0.2rem',
+    }} >
+      <div style={{verticalAlign:"middle", marginTop:m.showAvatar?"1.5rem":"0.2rem", display:"flex", justifyContent: "start" }}>
+      <ListItem disableGutters style={{padding:0, width:'100%'}} component='div' ContainerComponent='div' ContainerProps={{style:{width: '100%'}}} >
+        <ListItemAvatar>
+          <Avatar alt={m.user.name} src={m.user.avatar} >{m.user.name.split(' ').map(l=>l.slice(0,1).toUpperCase()).join('')}</Avatar>
+        </ListItemAvatar>
+        <ListItemText 
+          primary={m.user.name}
+          secondary={
+            initiative.properties?Object.entries(initiative.properties.members.find(mem=>mem.uid===m.user.id).roles).filter(r=>r[1]).map(r=>r[0]).join(', '):'' + ' | ' + 
+            m.timestamp.replace("T"," at ").split(":").slice(0,2).join(":")
+          }
+        />
+        {user.uid===m.user.id&& <ListItemSecondaryAction>
+          <IconButton edge="end" aria-label="more" style={{marginTop:'-1rem'}} aria-controls="more-menu" aria-haspopup="true" onClick={handleClick}>
+            <MoreVert fontSize='small'/>
+          </IconButton>
+          <Menu
+            id="more-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem component='button' onPointerDown={handleClose} /*onTouchEnd={handleClose} onMouseDown={handleClose} onClick={handleClose}*/ >Delete</MenuItem>
+          </Menu>
+        </ListItemSecondaryAction>}
+      </ListItem>
+      </div>
+      
+      <Typography variant="body1">
+        { m.type==="message"? m.text
+          : m.type==="volunteer"? i18n('chatCanHelpWith') + m.text 
+          : m.type==="donate"? i18n('chatCanSponsor') + m.text + i18n(m.properties.currency) + (m.properties.periodic?i18n('chatMonthly'):'')
+          : m.text
+        }
+      </Typography> 
+      <Divider style={{margin:"0.5rem 0"}}/>
+      <Button onClick={()=>{
+        if(m.likes&&m.likes[user.uid]){
+          var updates = {};
+          updates['/likes/' + user.uid] = null;
+          messages.child(m.id).update(updates)
+        }else{
+          var updates = {};
+          if(m.dislikes&&m.dislikes[user.uid]){
+            updates['/dislikes/' + user.uid] = null;
+          }
+          updates['/likes/' + user.uid] = true;
+          messages.child(m.id).update(updates)
+        }
+      }}>
+        {(m.likes&&m.likes[user.uid])?<ThumbUp />:<ThumbUpOutlined />}
+        <span style={{marginLeft:'0.5rem'}}>{m.likes?Object.keys(m.likes).length:0}</span>
+      </Button>
+      <Button onClick={()=>{
+        if(m.dislikes&&m.dislikes[user.uid]){
+          var updates = {};
+          updates['/dislikes/' + user.uid] = null;
+          messages.child(m.id).update(updates)
+        }else{
+          var updates = {};
+          if(m.likes&&m.likes[user.uid]){
+            updates['/likes/' + user.uid] = null; 
+          }
+          updates['/dislikes/' + user.uid] = true;
+          messages.child(m.id).update(updates)
+        }
+      }}>
+        {(m.dislikes&&m.dislikes[user.uid])?<ThumbDown />:<ThumbDownOutlined />}
+          <span style={{marginLeft:'0.5rem'}}>{m.dislikes?Object.keys(m.dislikes).length:0}</span>
+      </Button>
+      <Button onClick={()=>{history.push(`/initiative/${initiativeID}/post/${m.id}`)}}>
+        <ModeCommentOutlined/>
+        <span style={{marginLeft:'0.5rem'}}>{m.commentsCount?Object.keys(m.commentsCount).length:0} Comments</span>
+      </Button>
+    </Box>
+  </Box>: null
+}

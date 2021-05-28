@@ -9,7 +9,7 @@ const client= new ApolloClient({
         }),
     uri: 'https://hasura-aws.weee.city/v1/graphql',
     headers: {
-        "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN
+        "x-hasura-admin-secret": process.env.HASURA_ADMIN
         },
 })
 

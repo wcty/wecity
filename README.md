@@ -12,6 +12,25 @@ We.city is a web app to:
   <img width="50%" src="/public/assets/chat_min.png" />
 </div>
 
+#### Amazing open source tech that we use:
+
+  ###### Backend services and data management:
+  Hasura GraphQL Engine, to generate all our api's: https://hasura.io/docs/latest/graphql/core/index.html
+  NHost Hasura Backend Plus, to authorise users and store files on remote server: https://github.com/nhost/hasura-backend-plus
+  NHost JS SDK, to authorise and upload files from browser: https://docs.nhost.io/libraries/nhost-js-sdk
+  Apollo Client, to consume our api's from browser: https://www.apollographql.com/docs/react/
+  Recoil, to manage state in React app: https://recoiljs.org/
+
+  ###### Maps
+  Urbica React Map GL, to wrap Mapbox GL JS in components: https://urbica.github.io/react-map-gl/
+  Mapbox GL JS, to render beautiful maps: https://docs.mapbox.com/mapbox-gl-js/api/
+  Urbica Martin, to serve vector tiles for our maps from our database: https://martin.urbica.co/
+
+  ###### User Interfaces
+  Material UI, to start of with well thought through design system: https://material-ui.com/
+  React-Spring, to make nice animations: https://www.react-spring.io/
+  React-Swipeable-Views, to swipe our initiative cards.
+
 #### For whom?
 
 ​It is for those who would like to see positive changes around them, but do not have the time, energy or knowledge to implement them on their own. It is an online platform for public networking around common urban problems, to find solutions, resources and contractors for them collectively. Our goal is to prove that changing the space around is easy if doing it together.
@@ -82,6 +101,8 @@ It is only limited to the creativity of its contributors✨
 The core team consists of:
 
 - Herman Mitish, architect and urban planner by education, converted to web developer in the end of 2019.
+
+- Ivan Milaev, beard man and experienced developer.
 
 - Maryna Osnach, architect by education, graphic designer by the calling.
 

@@ -8,10 +8,6 @@ html {
   width: 0px;  /* Remove scrollbar space */
   background: transparent;  /* Optional: just make scrollbar invisible */
 }
-/* Optional: show position indicator in red */
-/* ::-webkit-scrollbar-thumb {
-  background: #FF0000;
-} */
 
 body {
   margin: 0;
@@ -22,8 +18,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
-
 canvas {
   outline: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
@@ -33,60 +27,3 @@ p::-moz-selection { background-color: lightgrey}
 p::selection { background-color: lightgrey; }
 input::-moz-selection { background-color: lightgrey}
 input::selection { background-color: lightgrey; }
-
-.react-simple-image-viewer__modal{
-  z-index: 9;
-}
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-::selection {
-  background-color: rgba(0,0,0,0);
-}
-* {
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-}
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.react-simple-image-viewer__close {
-  display: none;
-}
-
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}

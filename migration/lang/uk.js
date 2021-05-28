@@ -1,5 +1,3 @@
-// import React from "react"
-// export default {
 module.exports = {
   //Side drawer
     initiativeMap: "Мапа ініціатив",

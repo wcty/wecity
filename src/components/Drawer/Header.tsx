@@ -1,13 +1,11 @@
-import React, { Suspense, useRef, useEffect, useState } from 'react'
+import { Suspense, useState } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { ListItem, ListItemAvatar, ListItemText, Toolbar, Box,  Avatar, Button, Typography, IconButton, CircularProgress } from '@material-ui/core'
+import { ListItem, ListItemAvatar, ListItemText, Toolbar, Avatar, CircularProgress } from '@material-ui/core'
 import { AccountCircle } from '@material-ui/icons'
-import MenuIcon from '@material-ui/icons/Menu';
 import { useRecoilState } from 'recoil';
 import {ReactComponent as Logo} from 'assets/images/wecityLogoBlack.svg'
-import { useI18n } from 'misc/hooks'
 import { useHistory, Link } from 'react-router-dom'
-import { jwtToken, logout, atoms } from 'misc'
+import { atoms, useI18n, auth } from 'misc'
 
 const Styles = makeStyles( theme => ({
   appbar: {
@@ -46,8 +44,7 @@ const Styles = makeStyles( theme => ({
 const LogIn = (props:any)=>{
   const classes = Styles()
   const i18n = useI18n()
-  const [auth, setAuth]:any = useRecoilState(atoms.auth);
-  const [user, setUser]:any = useRecoilState(atoms.user);
+  const [user]:any = useRecoilState(atoms.user);
   const history = useHistory()
 
 
@@ -75,7 +72,7 @@ const LogIn = (props:any)=>{
         primary={user?.display_name}
         secondary={i18n('exit')}
         primaryTypographyProps={{component: Link, to: "/settings", style: {color: "#ffffff", fontWeight: "normal", textTransform: "uppercase", textDecoration:"none"}}}
-        secondaryTypographyProps={{component: Link, to:"#", onClick: logout, style: {color: "#ffffff", fontWeight: "lighter"}}}
+        secondaryTypographyProps={{component: Link, to:"#", onClick: ()=>auth.logout(), style: {color: "#ffffff", fontWeight: "lighter"}}}
       />
     </ListItem>
 }

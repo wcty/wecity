@@ -1,5 +1,3 @@
-//import React from "react"
-//export default {
 module.exports = {
   app_side_drawer:{
     initiativeMap: "Map of initiatives",

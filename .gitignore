@@ -33,3 +33,8 @@ skylight.pid
 package-lock.json
 firebase_users*
 mongo_initiatives*
+
+# Ignore (and don't ignore) for dotenv.
+.env
+.env.me
+!.env.project

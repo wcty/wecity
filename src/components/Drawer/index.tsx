@@ -1,12 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { SwipeableDrawer, List, Divider, Box, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { MapOutlined, LibraryBooksOutlined, PeopleOutline, SettingsApplicationsOutlined, FeedbackOutlined, BuildOutlined, InfoOutlined } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 import LangSelect from './LangSelect'
-import { useI18n } from 'misc/hooks'
+import { useI18n, atoms } from 'misc'
 import Header from './Header'
+import { useRecoilValue } from 'recoil';
 
 const useStyles = makeStyles({
   list: {
@@ -22,7 +23,7 @@ export default ({ state, setState }:any)=>{
   const classes = useStyles();
   const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const history = useHistory()
-  const user:any = null;
+  const user = useRecoilValue(atoms.user)
   
   const toggleDrawer = (open:any) => (event:any) => {
     if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -70,7 +71,7 @@ export default ({ state, setState }:any)=>{
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
-          { user && !user.isAnonymous && menuTop.map((val, index) => (
+          { user && menuTop.map((val, index) => (
             <ListItem button key={val.id} onClick={()=>{
               if(val.id==='map'){
                 history.push('/initiative/explore')

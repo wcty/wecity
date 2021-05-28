@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { FormControl, TextField, Button } from '@material-ui/core'
-import { register, login } from 'misc'
+import { auth } from 'misc'
 import { useHistory } from 'react-router'
-export { default as OauthLogin } from './OauthLogin'
+
 export default function Login () {
   const [credentials, setCredentials] = useState({email:'', password:''})
   const history = useHistory()
-  return <div style={{ left:'calc(50vw - 150px)', top:'calc(50vh - 150px)', position:'absolute', backgroundColor:'#ccc', zIndex:5}}>
+  return <div style={{ left:'calc(50vw - 150px)', top:'calc(50vh - 150px)', position:'absolute', backgroundColor:'#ccc', zIndex:5 }}>
     <FormControl style={{ zIndex: 5, padding:'1rem'}}>
       <TextField 
         id="email" 
@@ -26,12 +26,7 @@ export default function Login () {
             variant="outlined"
             onClick={()=>{
               if( credentials.email && credentials.password ) {
-                login(credentials).then(success=>{
-                  console.log(success)
-                  if(success){
-                    history.push('/')
-                  }
-                })
+                auth.login(credentials)
               }
           }}>
             Login
@@ -41,7 +36,7 @@ export default function Login () {
             variant="outlined"
             onClick={()=>{
               if( credentials.email && credentials.password ) {
-                register(credentials)
+                auth.register(credentials)
               }
           }}>
             Register
@@ -51,13 +46,15 @@ export default function Login () {
           <Button 
             style={{marginTop:'1rem'}}
             variant="outlined"
-            href="https://auth.weee.city/auth/providers/Google">
+            onClick={()=>auth.login({ provider: 'google' })}
+          >
             Google
           </Button>
           <Button 
             style={{marginTop:'1rem', marginLeft:'0.5rem'}}
             variant="outlined"
-            href="https://auth.weee.city/auth/providers/Facebook">
+            onClick={()=>auth.login({ provider: 'facebook' })}
+          >
             Facebook
           </Button>
         </div>

@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     "baseUrl": "src/",
+    "typeRoots": [
+      "src/types",
+      "node_modules/@types"
+    ],
     "target": "es3",
     "module": "esnext",
     "strict": true,

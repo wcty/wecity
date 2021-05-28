@@ -5,4 +5,10 @@ export const mapboxConfig = {
 
 export const querySize = 10
 
-export const BACKEND_ENDPOINT = 'https://auth.weee.city'
+const origin = window.location.origin
+console.log(origin)
+
+export const BACKEND_ENDPOINT = 
+  origin === 'http://localhost:3000' ? 'https://api-local.weee.city':
+  origin === 'https://dev.weee.city' ? 'https://api-dev.weee.city':
+  'https://api.weee.city'

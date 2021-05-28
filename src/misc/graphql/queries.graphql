@@ -1,0 +1,115 @@
+# Initiative queries
+
+fragment InitiativeFields on initiatives {
+  geom
+  name
+  id
+  image
+  description
+  created_at
+  initiative_members {
+    user_id
+  }
+}
+
+query InitiativesNearby($location: geometry!, $limit: Int = 20, $max_date: timestamptz = "2999-01-01T00:00:00.000Z", $max_distance: float8 = 20037500.0, $min_date: timestamptz = "1970-01-01T00:00:00.000Z", $min_distance: float8 = 0.0, $user_id: uuid, $own: Boolean = false) {
+  initiatives_nearby(args: {location: $location, own: $own, user_id: $user_id, max_date: $max_date, limit: $limit, max_distance: $max_distance, min_date: $min_date, min_distance: $min_distance}) {
+    ...InitiativeFields
+  }
+}
+
+query MyInitiativesNearby($location: geometry!, $limit: Int = 20, $max_date: timestamptz = "2999-01-01T00:00:00.000Z", $max_distance: float8 = 20037500.0, $min_date: timestamptz = "1970-01-01T00:00:00.000Z", $min_distance: float8 = 0.0, $user_id: uuid!, $own: Boolean = true) {
+  initiatives_nearby(args: {location: $location, own: $own, user_id: $user_id, max_date: $max_date, limit: $limit, max_distance: $max_distance, min_date: $min_date, min_distance: $min_distance}) {
+    ...InitiativeFields
+  }
+}
+
+query InitiativesLastVisited( $limit: Int = 20, $max_date: timestamptz = "2999-01-01T00:00:00.000Z", $min_date: timestamptz = "1970-01-01T00:00:00.000Z", $user_id: uuid! ) {
+  initiative_visits(
+    where: {_and:[
+        {user_id:{_eq: $user_id}},
+        {visited_at:{_gt: $min_date}},
+        {visited_at:{ _lte: $max_date}}
+      ]}, order_by: {visited_at: desc}, limit: $limit ){
+    initiative {
+      ...InitiativeFields
+    }
+    visited_at
+  }
+}
+
+query Initiative ($initiative_id: uuid!){
+  initiatives_by_pk(id: $initiative_id) {
+    ...InitiativeFields
+  }
+}
+
+query MyInitiatives($user_id:uuid!) {
+  initiatives(where: {initiative_members: {user: {id: {_eq: $user_id}}}}) {
+    ...InitiativeFields
+  }
+}
+
+
+
+# Initiative threads
+
+query InitiativeThreads ($initiative_id: uuid!){
+  initiative_threads (where: {initiative_id: {_eq: $initiative_id}}) {
+    context
+    goal
+    problem
+  }
+}
+
+query InitiativePosts ($initiative_id: uuid!){
+  initiative_thread_messages (where:{initiative_thread:{initiative_id: {_eq: $initiative_id}}}) {
+    id
+    thread_id
+    created_at
+    message
+    initiative_thread_comments {
+      created_at
+    }
+    user {
+      avatar_url
+      display_name
+    }
+  }
+}
+
+query InitiativePostComments ($message_id: Int!){
+  initiative_thread_comments (where: {message_id: {_eq: $message_id}}) {
+    created_at
+    comment
+    user {
+      avatar_url
+      display_name
+    }
+  }
+}
+
+
+# User data
+
+query User ($user_id: uuid!) {
+  users_by_pk(id: $user_id) {
+    id
+    avatar_url
+    created_at
+    display_name
+  }
+}
+
+
+
+# Files
+
+query Files($limit: Int!) {
+  files(limit: $limit) {
+    id
+    created_at
+    file_path
+    downloadable_url
+  }
+}

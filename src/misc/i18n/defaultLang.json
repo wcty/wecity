@@ -142,5 +142,6 @@
  "joinTheInitiative": "Join the initiative",
  "joinDonateSum": "Amount",
  "joinChooseFromLibrary": "Choose from library",
- "initiativeFormAddCoverPhoto": "+ Add the cover picture"
+ "initiativeFormAddCoverPhoto": "+ Add the cover picture",
+ "initiativeFormShortDescription": "Short description"
 }

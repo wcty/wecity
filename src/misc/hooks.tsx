@@ -1,96 +1,54 @@
-import React from 'react'
 import { useState, useEffect } from 'react'
-import { defaultLang } from './i18n'
-import { useRecoilValue } from 'recoil'
-import * as atoms from 'misc/recoil/atoms'
-import { useApolloClient, gql } from '@apollo/client'
+import { useRecoilState } from 'recoil'
+import { atoms } from 'misc'
 
-export function useLocation() {
-  const defaultValue = {longitude: 30.5234, latitude: 50.4501}
-  const [location, setLocation] = useState(defaultValue)
-  
+export function useGeolocation() {
+
+  // const defaultValue = {longitude: 30.5234, latitude: 50.4501}
+  const [loaded, setLoaded] =  useState(false)
+  const [location, setLocation] = useState<{longitude: number, latitude: number}|null>(null)
+  const [viewport, setViewport] = useRecoilState(atoms.viewport)
+
+  useEffect(()=>{
+    if(location && !loaded){
+      // console.log('viewport')
+      setViewport(prev=>({...prev, ...location}))
+      setLoaded(true)
+    }
+  },[loaded, location, setViewport])
+
   useEffect(()=>{
     if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const updateLocation = position.coords.longitude?{
-          longitude: position.coords.longitude, latitude: position.coords.latitude}:defaultValue
-        setLocation(updateLocation);
-      })
+
+      const success = ( pos:any )=>{
+        var crd = pos.coords;
+        const updateLocation = crd.longitude?
+          {
+            longitude: crd.longitude, 
+            latitude: crd.latitude
+          } : null
+        // console.log(updateLocation, crd)
+        setLocation(updateLocation)
+      }
+      
+      const error = ( err:any )=>{
+        console.warn('ERROR(' + err.code + '): ' + err.message);
+        setLocation(null)
+      }
+
+      const options = {
+        enableHighAccuracy: false,
+        timeout: 5000,
+        maximumAge: 5000
+      }
+
+      navigator.geolocation.watchPosition(success, error, options)
+    }else{
+      setLocation(null)
     }
-  }, [ defaultValue ])
+  }, [setLocation])
 
   return location
-}
-
-export const useI18n = ()=>{
-  const lang = useRecoilValue(atoms.lang)
-  const client = useApolloClient()
-
-  const DICTIONARY = (l:String)=> gql`
-    query Dictionary{
-      i18n(order_by: {key: asc}) {
-        ${l}
-        key
-      }
-    }
-  `
-  type MapSchema<T extends Record<string, string>> = {
-    -readonly [K in keyof T]: string
-  }
-
-  let dataObject = {...defaultLang} as const;
-  type i18n = MapSchema<typeof dataObject>
-
-  const [i18nData, setI18nData] = useState<i18n>({...defaultLang})
-
-  useEffect(()=>{
-    client?.query({
-      query : DICTIONARY(lang)
-    }).then((data)=>{
-      const langObject:i18n = data.data.i18n.reduce((a:any,b:any)=>{
-        const {key, ...value} = b
-        a[key]=Object.values(value)[0]
-        return a
-      }, {})
-      console.log(data, langObject)
-
-      setI18nData(langObject)
-    })
-  },[lang, client])
-
-  return function getI18n <K extends keyof i18n> (key:K, params?:any):i18n[K] {
-    if (params===false || params || params === 0) {
-        let i18nKey = i18nData[key];
-        const choiceRegex = /{#choice.*#}/g;
-
-        if(typeof params !== 'object'){
-          if(i18nKey){
-            i18nKey = i18nKey.replace('{0}', params);
-          }
-          Choice(params, i18nKey, choiceRegex)
-        }else{
-          for (let i = 0; i < params.length; i++) {
-            if(i18nKey){
-              i18nKey = i18nKey.replace(`{${i}}`, params[i]);
-            }
-            Choice(params[i], i18nKey, choiceRegex)
-          }
-        }
-        
-        return i18nKey;
-    }else{
-        return i18nData[key];
-    }
-  }
-}
-
-function Choice(value:any, i18nKey:String, choiceRegex:RegExp){
-  for (const choicePattern of i18nKey.match(choiceRegex)??[]) {
-    const choices = choicePattern.replace('{#choice','').replace('#}','').split('|')
-    if(i18nKey){
-      i18nKey = i18nKey.replace(choicePattern, choices[!value?0:1]);
-    }
-  }
 }
 
 export function useWindowDimensions() {

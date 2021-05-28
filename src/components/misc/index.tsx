@@ -1,5 +1,4 @@
-import React from 'react'
-import {SvgIcon} from '@material-ui/core'
+import { SvgIcon } from '@material-ui/core'
 
 
 // extends SvgIcon, just adds some styling

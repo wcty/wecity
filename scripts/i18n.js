@@ -22,12 +22,10 @@ client.query({
     query : GetKeys
 }).then((data) => {
     const json = JSON.stringify(data.data.i18n.reduce( (a,b)=>{
-        const {key, ...value} = b
-        a[key]=Object.values(value)[0]
-        return a
-        }, {}),null, ' ')
-        fs.writeFile('src/misc/i18n/defaultLang.json', json, { flag: 'w' }, err => {})
-        const md  = json.slice(1,-1)
-        fs.writeFile('src/misc/i18n/defaultLang.md', md,  { flag: 'w' }, err => {})
-}
+      const {key, ...value} = b
+      a[key]=Object.values(value)[0]
+      return a
+    }, {}), null, ' ')
+    fs.writeFile('src/misc/i18n/defaultLang.json', json, { flag: 'w' }, err => {})
+  }
 )

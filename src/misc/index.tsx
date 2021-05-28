@@ -1,8 +1,8 @@
+import { InitiativesLastVisitedQuery, InitiativesNearbyQuery } from 'generated';
+import { SetterOrUpdater } from 'recoil';
 import Cookies from 'universal-cookie';
 
 export * from './i18n'
-export * from './auth'
-export * from './graphql'
 export * from './recoil'
 export * from './style'
 export * from './hooks'
@@ -46,62 +46,38 @@ export const addVisitPrevious = ({addVisit, user, index, markers, last, initUID}
   })
 }
 
-export const deleteVisitPrevious = ({deleteVisit, user, index, markers, last}:any)=>{
-  if (user && !user.isAnonymous && index!==0 && /*markers.features.length>0 &&*/ index!==last.features.length ) {
-    const initUID = last.features.length>0?
-      (index<last.features.length?
-        last.features[index].properties.uid:
-        markers.features[index-last.features.length-1].properties.uid):
-        markers.features[index-1].properties.uid
-    console.log('delete',initUID)
-    deleteVisit({
-      "variables": { 
-        "visit": {
-          "initUID": initUID,
-          "user": user.uid
-        }
-      }
-    })
-  }
+type Explore = { id:'explore' }
+export const explore = { id:'explore' } as Explore
 
-  if(index===0){
-    console.log('delete 0')
-    deleteVisit({
-      "variables": { 
-        "visit": {
-          "initUID": last.features[0].properties.uid,
-          "user": user.uid
-        }
-      }
-    })
-  }
-}
+type LoadMore = { id:'loadMore' }
+export const loadMore = { id:'loadMore' } as LoadMore
 
-export const explore = {properties:{uid:'explore'}}
-export const loadMore = {properties:{uid:'loadMore'}}
+export type FeedEntry = (InitiativesNearbyQuery['initiatives_nearby'][number]|typeof explore)
 
-export const getFeed = ({ next, last }:any)=>{
+export const getFeed = ({ next, last }:{
+  next: InitiativesNearbyQuery['initiatives_nearby'], 
+  last: InitiativesLastVisitedQuery['initiative_visits']
+}):FeedEntry[]=>{
 
-  if(next.features.length>0 && last.features.length>0){
-    return [ ...last.features, explore,...next.features]
+  if(next.length>0 && last.length>0){
+    return [ ...last.map(v=>v.initiative), explore, ...next ]
   }else{
-    if(last.features.length>0){
-      return [...last.features, explore]
+    if(last.length>0){
+      return [...last.map(v=>v.initiative), explore ]
     }else{
-      return [ explore, ...next.features]
+      return [ explore, ...next ]
     }
   }
 }
 
-export const rearrangeCards = ({uid, setNext, setLast}:any)=>{
-  setNext((next:any)=>{
-    const id = next.features.map((f:any)=>f.properties.uid).indexOf(uid)
-    const behind = [...next.features].slice(0, id+1).reverse()
-    const other = [...next.features].slice(id+1, next.features.length)
-    setLast((last:any)=>({type:"FeatureCollection", features:[...last.features, ...behind]}))
-
-    // const [first, ...other] = next.features
-    // setLast(last=>({type:"FeatureCollection", features:[...last.features, first]}))
-    return {type:"FeatureCollection", features: other}
+export const rearrangeCards = ({ initiative_id, setNext, setLast}:{
+  initiative_id:string, setNext:SetterOrUpdater<InitiativesNearbyQuery['initiatives_nearby']>, setLast: SetterOrUpdater<InitiativesLastVisitedQuery['initiative_visits']>
+})=>{
+  setNext((next)=>{
+    const id = next.map((f:any)=>f.properties.id).indexOf(initiative_id)
+    const behind = [...next].slice(0, id + 1).reverse()
+    const other = [...next].slice(id+1, next.length)
+    setLast((last)=>[...last, ...behind.map((v)=>({visited_at: new Date(), initiative: v}))])
+    return other
   })
 }

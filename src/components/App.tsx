@@ -1,15 +1,18 @@
-import React, { useEffect, useRef, Suspense, useState } from 'react'
+import { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box } from '@material-ui/core'
 import Map from './Map'
-import { Route } from 'react-router-dom'
-import Login, {  OauthLogin } from './Login'
-import MenuFab from './Fabs/MenuFab'
+import { Route, useHistory, useLocation } from 'react-router-dom'
+import Login from './Login'
+import Intro from './Intro'
+// import Cards from './Cards'
+import Initiatives from './Initiatives'
+import { InitiativeFab, MenuFab, LocateFab, LayersFab } from './Fabs'
 import { useRecoilState } from 'recoil'
-import { cookies, atoms, refreshJWT } from 'misc'
-import { useLazyQuery, gql } from '@apollo/client'
+import { atoms, auth } from 'misc'
+import { useLazyQuery, gql, useApolloClient } from '@apollo/client'
 import Uploader from './Uploader'
-
+import { useUserLazyQuery } from 'generated'
 const useStyles = makeStyles(theme => ({
 
   root:{
@@ -40,57 +43,60 @@ const useStyles = makeStyles(theme => ({
   }  
 }))
 
-
 export default () => {
   const classes = useStyles()
-  const [auth, setAuth]  = useRecoilState(atoms.auth)
   const [user, setUser] = useRecoilState(atoms.user)
+  const url = useLocation()
+  const client = useApolloClient()
+  const history = useHistory()
+  const [satellite, setSatellite] = useRecoilState(atoms.satellite)
 
-  const [getUser, {data:userData}] = useLazyQuery(gql`
-    query getUser ($pk: uuid!) {
-      users_by_pk(id: $pk) {
-        avatar_url
-        created_at
-        display_name
-      }
-  }`, {variables:{pk:auth?.user.id}})
+  const [getUser, {data:userData}] = useUserLazyQuery()
   
   useEffect(()=>{
-    //Startup auto-login
-    const token = cookies.get('refresh_token')
-    // console.log('refresh_token: ', token)
-    if(token){
-      refreshJWT(token, setAuth)
+    if(userData){
+      console.log(userData)
+      setUser(userData?.users_by_pk)
+      history.push('/')
     }
-  },[])
+  },[userData])
 
   useEffect(()=>{
-    if(auth){
-      if(!userData){
-        // console.log('get user', auth)
-        getUser()
+    auth.onAuthStateChanged((loggedIn) => {
+      if(loggedIn){
+        const userId = auth.getClaim("x-hasura-user-id");
+        console.log(userId)
+        getUser({variables:{pk: userId}})
+      }else if(loggedIn===false){
+        setUser(null)
       }else{
-        console.log('set user', userData)
-        setUser({...auth?.user, ...userData?.users_by_pk})
+        setUser(null)
+        client.resetStore()
       }
-    }
-  },[auth, userData])
+    });
+  },[])
 
   return (
     <Box className={classes.root}>
-      <Uploader/>
       <Route path="/login">
         <Login/>
-      </Route>
-      <Route path="/oauth/success">
-        <OauthLogin/>
       </Route>
       <Route path="/">
         <Box className={classes.map}>
           <Map />
           <MenuFab />
+          {url?.pathname?.includes('/intro') && <Intro />}
+          {/* <Cards /> */}
+          {user?
+            <InitiativeFab active={false} />:
+            <InitiativeFab active={true} />
+          }
+          <LocateFab />
+          <LayersFab />
+
         </Box>
       </Route>
+      <Route path='/initiatives' render={()=>user?<Initiatives />:null} />
     </Box>
   )
 }

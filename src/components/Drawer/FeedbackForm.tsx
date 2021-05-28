@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Paper, FormControl, IconButton, InputLabel, Select, MenuItem, Typography, TextField, Button, MobileStepper, Box } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight, Close } from '@material-ui/icons';
